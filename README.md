@@ -5,6 +5,8 @@ Markdown is a text-to-HTML conversion tool for web writers. Markdown
 allows you to write using an easy-to-read, easy-to-write plain text
 format, then convert it to structurally valid XHTML (or HTML).
 
+This mobule renders all CMS pages and every block which extends Mage_Core_Block_Abstract.
+
 Full documentation of Markdown's syntax is available on John's
 Markdown page: <http://daringfireball.net/projects/markdown/>
 
@@ -17,7 +19,7 @@ Because you want to get rid of the TinyMCE.
 Configuration
 -------------
 
-@todo
+None.
 
 Installation Instructions
 -------------------------
