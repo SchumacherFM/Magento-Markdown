@@ -16,6 +16,13 @@
                 <class>SchumacherFM_Markdown_Model</class>
             </markdown>
         </models>
+        <resources>
+            <markdown_setup>
+                <setup>
+                    <module>SchumacherFM_Markdown</module>
+                </setup>
+            </markdown_setup>
+        </resources>
         <blocks>
             <markdown>
                 <class>SchumacherFM_Markdown_Block</class>
@@ -27,8 +34,26 @@
             </markdown>
         </helpers>
     </global>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <markdown before="Mage_Adminhtml">SchumacherFM_Markdown_Adminhtml</markdown>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
 
     <adminhtml>
+        <layout>
+            <updates>
+                <markdown>
+                    <file>markdown.xml</file>
+                </markdown>
+            </updates>
+        </layout>
         <translate>
             <modules>
                 <SchumacherFM_Markdown>
@@ -39,15 +64,14 @@
             </modules>
         </translate>
         <events>
-            <adminhtml_block_html_before>
+            <cms_wysiwyg_config_prepare>
                 <observers>
-                    <markdown_adminhtml_block_html_before>
-                        <!--<type>singleton</type>-->
-                        <!--<class>SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock</class>-->
-                        <!--<method>todo</method>-->
-                    </markdown_adminhtml_block_html_before>
+                    <markdown_observer>
+                        <class>markdown/editor_observer</class>
+                        <method>prepareWysiwygPluginConfig</method>
+                    </markdown_observer>
                 </observers>
-            </adminhtml_block_html_before>
+            </cms_wysiwyg_config_prepare>
 
         </events>
     </adminhtml>

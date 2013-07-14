@@ -2,3 +2,6 @@ src/app/code/community/SchumacherFM/Markdown app/code/community/SchumacherFM/Mar
 src/app/etc/modules/SchumacherFM_Markdown.xml app/etc/modules/SchumacherFM_Markdown.xml
 src/app/locale/en_US/SchumacherFM_Markdown.csv app/locale/en_US/SchumacherFM_Markdown.csv
 src/app/locale/de_DE/SchumacherFM_Markdown.csv app/locale/de_DE/SchumacherFM_Markdown.csv
+src/app/design/adminhtml/default/default/layout/markdown.xml app/design/adminhtml/default/default/layout/markdown.xml
+src/js/mage/adminhtml/markdown.js js/mage/adminhtml/markdown.js
+src/skin/adminhtml/default/default/markdown.css skin/adminhtml/default/default/markdown.css

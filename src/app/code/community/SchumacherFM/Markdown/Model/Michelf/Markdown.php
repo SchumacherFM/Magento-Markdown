@@ -1558,7 +1558,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown
 # one.
 #
 
-class _MarkdownExtra_TmpImpl extends \Michelf\Markdown
+class _MarkdownExtra_TmpImpl extends SchumacherFM_Markdown_Model_Michelf_Markdown
 {
 
     ### Configuration Variables ###
