@@ -8,12 +8,16 @@
 class SchumacherFM_Markdown_Model_Markdown_Render
 {
     /**
-     * @param string $text
+     * @param  string $text
+     * @param bool    $force
      *
      * @return string
      */
-    protected function _renderMarkdown($text)
+    protected function _renderMarkdown($text, $force = FALSE)
     {
+        if (!$this->_isMarkdown($text) && $force === FALSE) {
+            return $text;
+        }
         $renderer = Mage::getModel('markdown/michelf_markdown');
         return $renderer->defaultTransform($text);
     }
@@ -33,7 +37,7 @@ class SchumacherFM_Markdown_Model_Markdown_Render
      *
      * @return $this
      */
-    public function renderContentObserver(Varien_Event_Observer $observer)
+    public function renderPageObserver(Varien_Event_Observer $observer)
     {
         /** @var Mage_Cms_Model_Page $page */
         $page = $observer->getEvent()->getPage();
@@ -44,6 +48,57 @@ class SchumacherFM_Markdown_Model_Markdown_Render
         }
 
         return $this;
+    }
+
+    /**
+     * renders every block as markdown except those having the html tags of method _isMarkdown in it
+     *
+     * @param Varien_Event_Observer $observer
+     *
+     * @return $this
+     */
+    public function renderBlockObserver(Varien_Event_Observer $observer)
+    {
+        /** @var Mage_Cms_Model_Page $page */
+        $block = $observer->getEvent()->getBlock();
+
+        if ($this->_isAllowedBlock($block)) {
+            /** @var Varien_Object $transport */
+            $transport = $observer->getEvent()->getTransport();
+
+            /**
+             * you can set on any block the property ->setData('is_markdown',true)
+             * then the block will get rendered as markdown even if it contains html
+             */
+            $isMarkdown = (boolean)$block->getIsMarkdown();
+            $html       = $transport->getHtml();
+            $transport->setHtml($this->_renderMarkdown($html, $isMarkdown));
+
+        }
+        return $this;
+    }
+
+    /**
+     * checks if text contains no html ... if so considered as markdown ... not a nice way...
+     *
+     * @param string $text
+     *
+     * @return bool
+     */
+    protected function _isMarkdown($text)
+    {
+        $flag = !empty($text);
+        return $flag === TRUE && !preg_match('~<(div|span|h1|h2|h3|p|hr|em|strong|a|img|ul|ol|li|table|input|form)~i', $text);
+    }
+
+    /**
+     * @param Mage_Core_Block_Abstract $block
+     *
+     * @return bool
+     */
+    protected function _isAllowedBlock($block)
+    {
+        return $block instanceof Mage_Core_Block_Abstract;
     }
 
 }

@@ -33,17 +33,28 @@
                 <class>SchumacherFM_Markdown_Helper</class>
             </markdown>
         </helpers>
+    </global>
+    <frontend>
         <events>
             <cms_page_render>
                 <observers>
                     <markdown_renderer>
                         <class>markdown/markdown_render</class>
-                        <method>renderContentObserver</method>
+                        <method>renderPageObserver</method>
                     </markdown_renderer>
                 </observers>
             </cms_page_render>
+
+            <core_block_abstract_to_html_after>
+                <observers>
+                    <markdown_renderer>
+                        <class>markdown/markdown_render</class>
+                        <method>renderBlockObserver</method>
+                    </markdown_renderer>
+                </observers>
+            </core_block_abstract_to_html_after>
         </events>
-    </global>
+    </frontend>
     <admin>
         <routers>
             <adminhtml>
