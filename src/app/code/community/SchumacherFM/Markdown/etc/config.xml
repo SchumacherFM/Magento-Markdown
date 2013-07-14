@@ -33,6 +33,16 @@
                 <class>SchumacherFM_Markdown_Helper</class>
             </markdown>
         </helpers>
+        <events>
+            <cms_page_render>
+                <observers>
+                    <markdown_renderer>
+                        <class>markdown/markdown_render</class>
+                        <method>renderContentObserver</method>
+                    </markdown_renderer>
+                </observers>
+            </cms_page_render>
+        </events>
     </global>
     <admin>
         <routers>

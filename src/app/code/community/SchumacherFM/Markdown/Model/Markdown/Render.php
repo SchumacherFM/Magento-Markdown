@@ -7,6 +7,16 @@
  */
 class SchumacherFM_Markdown_Model_Markdown_Render
 {
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    protected function _renderMarkdown($text)
+    {
+        $renderer = Mage::getModel('markdown/michelf_markdown');
+        return $renderer->defaultTransform($text);
+    }
 
     /**
      * @param string $text
@@ -15,8 +25,25 @@ class SchumacherFM_Markdown_Model_Markdown_Render
      */
     public function renderMarkdown($text)
     {
-        $renderer = Mage::getModel('markdown/michelf_markdown');
-        return $renderer->defaultTransform($text);
+        return $this->_renderMarkdown($text);
+    }
+
+    /**
+     * @param Varien_Event_Observer $observer
+     *
+     * @return $this
+     */
+    public function renderContentObserver(Varien_Event_Observer $observer)
+    {
+        /** @var Mage_Cms_Model_Page $page */
+        $page = $observer->getEvent()->getPage();
+
+        if ($page instanceof Mage_Cms_Model_Page) {
+            $content = $this->_renderMarkdown($page->getContent());
+            $page->setContent($content);
+        }
+
+        return $this;
     }
 
 }
