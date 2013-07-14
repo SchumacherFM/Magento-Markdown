@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <SchumacherFM_Markdown>
+            <active>true</active>
+            <codePool>community</codePool>
+        </SchumacherFM_Markdown>
+    </modules>
+</config>

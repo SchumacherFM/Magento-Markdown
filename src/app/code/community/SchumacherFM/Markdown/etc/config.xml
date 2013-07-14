@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!--* @category    SchumacherFM_Markdown-->
+<!--* @package     etc-->
+<!--* @author      Cyrill at Schumacher dot fm / @SchumacherFM-->
+<!--* @copyright   Copyright (c)-->
+<config>
+    <modules>
+        <SchumacherFM_Markdown>
+            <version>1.0.0</version>
+        </SchumacherFM_Markdown>
+    </modules>
+
+    <global>
+        <models>
+            <markdown>
+                <class>SchumacherFM_Markdown_Model</class>
+            </markdown>
+        </models>
+        <blocks>
+            <markdown>
+                <class>SchumacherFM_Markdown_Block</class>
+            </markdown>
+        </blocks>
+        <helpers>
+            <markdown>
+                <class>SchumacherFM_Markdown_Helper</class>
+            </markdown>
+        </helpers>
+    </global>
+
+    <adminhtml>
+        <translate>
+            <modules>
+                <SchumacherFM_Markdown>
+                    <files>
+                        <default>SchumacherFM_Markdown.csv</default>
+                    </files>
+                </SchumacherFM_Markdown>
+            </modules>
+        </translate>
+        <events>
+            <adminhtml_block_html_before>
+                <observers>
+                    <markdown_adminhtml_block_html_before>
+                        <!--<type>singleton</type>-->
+                        <!--<class>SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock</class>-->
+                        <!--<method>todo</method>-->
+                    </markdown_adminhtml_block_html_before>
+                </observers>
+            </adminhtml_block_html_before>
+
+        </events>
+    </adminhtml>
+    <phpunit>
+        <suite>
+            <modules>
+                <SchumacherFM_Markdown/>
+            </modules>
+        </suite>
+    </phpunit>
+</config>
