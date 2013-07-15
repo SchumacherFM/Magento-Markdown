@@ -30,10 +30,19 @@ Anywhere in a .phtml file you can access the renderer via:
 
 Catalog product and category description fields have already enabled the markdown feature in the backend.
 
+CMS pages and nearly every blocks will be rendered automatically ... but only if no html tag is detected.
+
 Configuration
 -------------
 
-None.
+None!
+
+Todo
+----
+
+ * Better usability in the backend
+ * Tiny markdown documentation
+ * Live edit
 
 Installation Instructions
 -------------------------
