@@ -56,15 +56,15 @@
         </events>
     </frontend>
     <!--<admin>-->
-        <!--<routers>-->
-            <!--<adminhtml>-->
-                <!--<args>-->
-                    <!--<modules>-->
-                        <!--<markdown before="Mage_Adminhtml">SchumacherFM_Markdown_Adminhtml</markdown>-->
-                    <!--</modules>-->
-                <!--</args>-->
-            <!--</adminhtml>-->
-        <!--</routers>-->
+    <!--<routers>-->
+    <!--<adminhtml>-->
+    <!--<args>-->
+    <!--<modules>-->
+    <!--<markdown before="Mage_Adminhtml">SchumacherFM_Markdown_Adminhtml</markdown>-->
+    <!--</modules>-->
+    <!--</args>-->
+    <!--</adminhtml>-->
+    <!--</routers>-->
     <!--</admin>-->
 
     <adminhtml>
@@ -93,6 +93,15 @@
                     </markdown_observer>
                 </observers>
             </cms_wysiwyg_config_prepare>
+            <adminhtml_block_html_before>
+                <observers>
+                    <markdown_adminhtml_block_html_before>
+                        <type>singleton</type>
+                        <class>markdown/observer_adminhtmlBlock</class>
+                        <method>alterTextareaBlockTemplate</method>
+                    </markdown_adminhtml_block_html_before>
+                </observers>
+            </adminhtml_block_html_before>
 
         </events>
     </adminhtml>

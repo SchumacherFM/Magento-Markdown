@@ -21,7 +21,7 @@ class SchumacherFM_Markdown_Model_Editor_Config
             'search'  => array('html_id'),
             'subject' => 'renderMarkdown(\'{{html_id}}\');'
         );
-        $onclickPartsSyntax              = array(
+        $onclickPartsSyntax        = array(
             'search'  => array('html_id'),
             'subject' => 'markdownSyntax(\'http://daringfireball.net/projects/markdown/syntax\',\'{{html_id}}\');'
         );
