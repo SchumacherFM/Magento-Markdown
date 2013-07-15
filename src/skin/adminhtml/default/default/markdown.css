@@ -62,7 +62,7 @@
 }
 
 .markdown ul, ol {
-    list-style: disc outside;
+    list-style: disc inside;
     padding : 0;
     margin  : 0;
 }

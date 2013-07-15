@@ -10,12 +10,25 @@ Markdown page: <http://daringfireball.net/projects/markdown/>
 
 This mobule renders all CMS pages and every block which extends Mage_Core_Block_Abstract.
 
+Rendering of catalog description fields has to be enabled in the phtml files.
+
 Preview possibility in the backend. No live preview available maybe later.
 
 Why do I need this?
 -------------------
 
-Because you want to get rid of the TinyMCE.
+Because you want to get rid of the TinyMCE and force your customer to use easy and limited syntax.
+
+Developer Usage
+---------------
+
+Anywhere in a .phtml file you can access the renderer via:
+
+```
+<?php echo Mage::helper('markdown')->render($_description); ?>
+```
+
+Catalog product and category description fields have already enabled the markdown feature in the backend.
 
 Configuration
 -------------
@@ -89,6 +102,12 @@ profits; or business interruption) however caused and on any theory of
 liability, whether in contract, strict liability, or tort (including
 negligence or otherwise) arising in any way out of the use of this
 software, even if advised of the possibility of such damage.
+
+Backend preview rendering via:
+
+ * marked - a markdown parser
+ * Copyright (c) 2011-2013, Christopher Jeffrey. (MIT Licensed)
+ * https://github.com/chjj/marked
 
 
 Author
