@@ -4,13 +4,15 @@
  * @author      Cyrill at Schumacher dot fm / @SchumacherFM
  * @copyright   Copyright (c)
  */
-var renderMarkdown = function (actionUrl, htmlId) {
-
+;
+(function () {
     var FORM_ID = 'edit_form';
     var dialogWindow;
     var dialogWindowId = 'markdown-preview';
     var TEXT_PREFIX = '<div class="markdown">';
     var TEXT_SUFFIX = '</div>';
+
+    var actionUrl = '', htmlId = '';
 
     var _processFailure = function (e) {
         console.log('Markdown Failure:', e);
@@ -23,13 +25,6 @@ var renderMarkdown = function (actionUrl, htmlId) {
             console.log('Markdown Failure in rendering process!');
         }
     }
-
-    new Ajax.Request(actionUrl, {
-        method: 'post',
-        parameters: $(FORM_ID).serialize(),
-        onComplete: _processResult.bind(this),
-        onFailure: _processFailure.bind(this)
-    });
 
     var showPreview = function (responseText) {
 
@@ -50,6 +45,7 @@ var renderMarkdown = function (actionUrl, htmlId) {
             onClose: closeDialogWindow.bind(this)
         });
     }
+
     var closeDialogWindow = function (window) {
         if (!window) {
             window = dialogWindow;
@@ -59,4 +55,32 @@ var renderMarkdown = function (actionUrl, htmlId) {
         }
     }
 
-}
+    var _renderPhp = function () {
+        new Ajax.Request(actionUrl, {
+            method: 'post',
+            parameters: $(FORM_ID).serialize(),
+            onComplete: _processResult.bind(this),
+            onFailure: _processFailure.bind(this)
+        });
+    }
+
+    var _renderJs = function () {
+        var transport = {
+            responseText: marked($(htmlId).value)
+        };
+        _processResult(transport);
+    }
+
+    var renderMarkdown = function (urlAction, Idhtml) {
+        actionUrl = urlAction;
+        htmlId = Idhtml;
+        _renderJs();
+        return;
+
+    }
+
+    this.renderMarkdown = renderMarkdown;
+
+}).call(function () {
+        return this || (typeof window !== 'undefined' ? window : global);
+    }());
