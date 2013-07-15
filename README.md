@@ -8,11 +8,11 @@ format, then convert it to structurally valid XHTML (or HTML).
 Full documentation of Markdown's syntax is available on John's
 Markdown page: <http://daringfireball.net/projects/markdown/>
 
-This mobule renders all CMS pages and every block which extends Mage_Core_Block_Abstract.
+This module renders all CMS pages and every block which extends Mage_Core_Block_Abstract.
 
-Rendering of catalog description fields has to be enabled in the phtml files.
+Rendering of catalog description fields have to be implemented in the phtml files by yourself.
 
-Preview possibility in the backend. No live preview available maybe later.
+Preview in the backend. No live preview available maybe later.
 
 Why do I need this?
 -------------------
