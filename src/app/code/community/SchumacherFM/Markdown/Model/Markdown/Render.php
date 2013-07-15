@@ -24,12 +24,13 @@ class SchumacherFM_Markdown_Model_Markdown_Render
 
     /**
      * @param string $text
+     * @param bool   $force
      *
      * @return string
      */
-    public function renderMarkdown($text)
+    public function renderMarkdown($text, $force = FALSE)
     {
-        return $this->_renderMarkdown($text);
+        return $this->_renderMarkdown($text, $force);
     }
 
     /**

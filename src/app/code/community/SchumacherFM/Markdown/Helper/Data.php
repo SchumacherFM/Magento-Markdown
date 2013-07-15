@@ -8,4 +8,17 @@
 class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
 {
 
+    /**
+     * easy access method for rendering markdown in phtml files
+     * usage:
+     * echo Mage::helper('markdown')->render($_product->getDescription())
+     *
+     * @param string $text
+     *
+     * @return string
+     */
+    public function render($text)
+    {
+        return Mage::getSingleton('markdown/markdown_render')->renderMarkdown($text, TRUE);
+    }
 }

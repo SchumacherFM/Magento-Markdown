@@ -39,6 +39,7 @@
             <cms_page_render>
                 <observers>
                     <markdown_renderer>
+                        <type>singleton</type>
                         <class>markdown/markdown_render</class>
                         <method>renderPageObserver</method>
                     </markdown_renderer>
@@ -48,6 +49,7 @@
             <core_block_abstract_to_html_after>
                 <observers>
                     <markdown_renderer>
+                        <type>singleton</type>
                         <class>markdown/markdown_render</class>
                         <method>renderBlockObserver</method>
                     </markdown_renderer>
