@@ -12,19 +12,7 @@
     var TEXT_PREFIX = '<div class="markdown">';
     var TEXT_SUFFIX = '</div>';
 
-    var actionUrl = '', htmlId = '';
-
-    var _processFailure = function (e) {
-        console.log('Markdown Failure:', e);
-    }
-
-    var _processResult = function (transport) {
-        if (transport.responseText && transport.responseText !== '') {
-            showPreview(transport.responseText);
-        } else {
-            console.log('Markdown Failure in rendering process!');
-        }
-    }
+    var htmlId = '';
 
     var showPreview = function (responseText) {
 
@@ -55,31 +43,24 @@
         }
     }
 
-    var _renderPhp = function () {
-        new Ajax.Request(actionUrl, {
-            method: 'post',
-            parameters: $(FORM_ID).serialize(),
-            onComplete: _processResult.bind(this),
-            onFailure: _processFailure.bind(this)
-        });
-    }
-
     var _renderJs = function () {
-        var transport = {
-            responseText: marked($(htmlId).value)
-        };
-        _processResult(transport);
+        showPreview(marked($(htmlId).value));
     }
 
-    var renderMarkdown = function (urlAction, Idhtml) {
-        actionUrl = urlAction;
+    var renderMarkdown = function (Idhtml) {
         htmlId = Idhtml;
         _renderJs();
         return;
 
     }
 
+    var markdownSyntax = function (url, Idhtml) {
+        htmlId = Idhtml;
+        window.open(url);
+    }
+
     this.renderMarkdown = renderMarkdown;
+    this.markdownSyntax = markdownSyntax;
 
 }).call(function () {
         return this || (typeof window !== 'undefined' ? window : global);

@@ -55,17 +55,17 @@
             </core_block_abstract_to_html_after>
         </events>
     </frontend>
-    <admin>
-        <routers>
-            <adminhtml>
-                <args>
-                    <modules>
-                        <markdown before="Mage_Adminhtml">SchumacherFM_Markdown_Adminhtml</markdown>
-                    </modules>
-                </args>
-            </adminhtml>
-        </routers>
-    </admin>
+    <!--<admin>-->
+        <!--<routers>-->
+            <!--<adminhtml>-->
+                <!--<args>-->
+                    <!--<modules>-->
+                        <!--<markdown before="Mage_Adminhtml">SchumacherFM_Markdown_Adminhtml</markdown>-->
+                    <!--</modules>-->
+                <!--</args>-->
+            <!--</adminhtml>-->
+        <!--</routers>-->
+    <!--</admin>-->
 
     <adminhtml>
         <layout>
