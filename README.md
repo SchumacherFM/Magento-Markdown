@@ -1,7 +1,7 @@
 Magento Markdown Module
 =======================
 
-![image](//raw.github.com/SchumacherFM/Magento-Markdown/master/logo/magento-markdown.png)
+![image](https://raw.github.com/SchumacherFM/Magento-Markdown/master/logo/magento-markdown.png)
 
 Markdown is a text-to-HTML conversion tool for web writers. Markdown
 allows you to write using an easy-to-read, easy-to-write plain text
