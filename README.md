@@ -16,6 +16,15 @@ Rendering of catalog description fields have to be implemented in the phtml file
 
 Preview in the backend. No live preview available maybe later.
 
+Bugs
+----
+
+Won't parse Magento own variables like
+
+```
+{{config path="trans_email/ident_general/email"}}
+```
+
 Why do I need this?
 -------------------
 
