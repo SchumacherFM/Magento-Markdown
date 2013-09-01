@@ -57,17 +57,6 @@
             </core_block_abstract_to_html_after>
         </events>
     </frontend>
-    <!--<admin>-->
-    <!--<routers>-->
-    <!--<adminhtml>-->
-    <!--<args>-->
-    <!--<modules>-->
-    <!--<markdown before="Mage_Adminhtml">SchumacherFM_Markdown_Adminhtml</markdown>-->
-    <!--</modules>-->
-    <!--</args>-->
-    <!--</adminhtml>-->
-    <!--</routers>-->
-    <!--</admin>-->
 
     <adminhtml>
         <layout>
@@ -98,15 +87,29 @@
             <adminhtml_block_html_before>
                 <observers>
                     <markdown_adminhtml_block_html_before>
-                        <type>singleton</type>
                         <class>markdown/observer_adminhtmlBlock</class>
                         <method>alterTextareaBlockTemplate</method>
                     </markdown_adminhtml_block_html_before>
                 </observers>
             </adminhtml_block_html_before>
-
+            <core_config_data_save_after>
+                <observers>
+                    <markdown_core_config_data>
+                        <class>markdown/editor_observer</class>
+                        <method>enableDisableWysiwyg</method>
+                    </markdown_core_config_data>
+                </observers>
+            </core_config_data_save_after>
         </events>
     </adminhtml>
+    <default>
+        <schumacherfm>
+            <markdown>
+                <enable>1</enable>
+                <md_extra>0</md_extra>
+            </markdown>
+        </schumacherfm>
+    </default>
     <phpunit>
         <suite>
             <modules>

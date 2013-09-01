@@ -21,4 +21,24 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     {
         return Mage::getSingleton('markdown/markdown_render')->renderMarkdown($text, TRUE);
     }
+
+    /**
+     * check if MD is enabled ... per store view
+     *
+     * @return bool
+     */
+    public function isDisabled()
+    {
+        return !(boolean)Mage::getStoreConfig('schumacherfm/markdown/enable');
+    }
+
+    /**
+     * check if md extra is enabled ... per store view
+     *
+     * @return bool
+     */
+    public function isMarkdownExtra()
+    {
+        return (boolean)Mage::getStoreConfig('schumacherfm/markdown/md_extra');
+    }
 }

@@ -7,19 +7,11 @@
  */
 class SchumacherFM_Markdown_Model_Markdown_Render
 {
-    /**
-     * @param  string $text
-     * @param bool    $force
-     *
-     * @return string
-     */
-    protected function _renderMarkdown($text, $force = FALSE)
+    protected $_isDisabled = FALSE;
+
+    public function __construct()
     {
-        if (!$this->_isMarkdown($text) && $force === FALSE) {
-            return $text;
-        }
-        $renderer = Mage::getModel('markdown/michelf_markdown');
-        return $renderer->defaultTransform($text);
+        $this->_isDisabled = Mage::helper('markdown')->isDisabled();
     }
 
     /**
@@ -30,7 +22,9 @@ class SchumacherFM_Markdown_Model_Markdown_Render
      */
     public function renderMarkdown($text, $force = FALSE)
     {
-        return $this->_renderMarkdown($text, $force);
+        return $this->_isDisabled
+            ? $text
+            : $this->_renderMarkdown($text, $force);
     }
 
     /**
@@ -40,6 +34,10 @@ class SchumacherFM_Markdown_Model_Markdown_Render
      */
     public function renderPageObserver(Varien_Event_Observer $observer)
     {
+        if ($this->_isDisabled) {
+            return null;
+        }
+
         /** @var Mage_Cms_Model_Page $page */
         $page = $observer->getEvent()->getPage();
 
@@ -60,6 +58,10 @@ class SchumacherFM_Markdown_Model_Markdown_Render
      */
     public function renderBlockObserver(Varien_Event_Observer $observer)
     {
+        if ($this->_isDisabled) {
+            return null;
+        }
+
         /** @var Mage_Cms_Model_Page $page */
         $block = $observer->getEvent()->getBlock();
 
@@ -77,6 +79,21 @@ class SchumacherFM_Markdown_Model_Markdown_Render
 
         }
         return $this;
+    }
+
+    /**
+     * @param  string $text
+     * @param bool    $force
+     *
+     * @return string
+     */
+    protected function _renderMarkdown($text, $force = FALSE)
+    {
+        if (!$this->_isMarkdown($text) && $force === FALSE) {
+            return $text;
+        }
+        $renderer = Mage::getModel('markdown/michelf_markdown');
+        return $renderer->defaultTransform($text);
     }
 
     /**

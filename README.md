@@ -85,14 +85,20 @@ Magento Markdown Implementation
 Copyright (c) 2013 Cyrill (at) Schumacher dot fm
 All rights reserved.
 
-PHP Markdown Lib
+#### PHP Markdown Lib
+
 Copyright (c) 2004-2013 Michel Fortin
-<http://michelf.ca/>
+
+<http://michelf.ca/> <https://github.com/michelf/php-markdown/>
+
 All rights reserved.
 
-Based on Markdown
+####  Based on Markdown
+
 Copyright (c) 2003-2005 John Gruber
+
 <http://daringfireball.net/>
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
