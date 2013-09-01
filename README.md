@@ -46,13 +46,16 @@ CMS pages and nearly every blocks will be rendered automatically ... but only if
 Configuration
 -------------
 
-None!
+- Enable or disable Markdown parser per store view
+- Enable or disable Markdown extra parser per store view
+- Set Markdown detection tag per store view
+
+Every field which contains Markdown syntax must contain that detection tag otherwise it will not be parsed.
 
 Todo
 ----
 
  * Better usability in the backend
- * Tiny markdown documentation
  * Live edit
 
 Installation Instructions
