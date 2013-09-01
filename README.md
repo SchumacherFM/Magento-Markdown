@@ -25,6 +25,8 @@ Won't parse Magento own variables like
 {{config path="trans_email/ident_general/email"}}
 ```
 
+Only Markdown Extra will parse the Magento custom tags!
+
 Why do I need this?
 -------------------
 
