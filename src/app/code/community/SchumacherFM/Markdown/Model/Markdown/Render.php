@@ -10,6 +10,11 @@ class SchumacherFM_Markdown_Model_Markdown_Render
     private $_tag = '';
     private $_isDisabled = FALSE;
 
+    /**
+     * @var SchumacherFM_Markdown_Model_Michelf_Markdown
+     */
+    private $_renderer = null;
+
     public function __construct()
     {
         /**
@@ -17,6 +22,17 @@ class SchumacherFM_Markdown_Model_Markdown_Render
          */
         $this->_tag        = Mage::helper('markdown')->getDetectionTag();
         $this->_isDisabled = Mage::helper('markdown')->isDisabled();
+
+        $isExtra         = Mage::helper('markdown')->isMarkdownExtra() ? '_extra' : '';
+        $this->_renderer = Mage::getModel('markdown/michelf_markdown' . $isExtra);
+    }
+
+    /**
+     * @return SchumacherFM_Markdown_Model_Michelf_Markdown
+     */
+    public function getRenderer()
+    {
+        return $this->_renderer;
     }
 
     /**
@@ -97,9 +113,7 @@ class SchumacherFM_Markdown_Model_Markdown_Render
         if (!$this->_isMarkdown($text) && $force === FALSE) {
             return $text;
         }
-        $isExtra  = Mage::helper('markdown')->isMarkdownExtra() ? '_extra' : '';
-        $renderer = Mage::getModel('markdown/michelf_markdown' . $isExtra);
-        return $renderer->defaultTransform(str_replace($this->_tag, '', $text));
+        return $this->getRenderer()->defaultTransform(str_replace($this->_tag, '', $text));
     }
 
     /**
@@ -112,7 +126,7 @@ class SchumacherFM_Markdown_Model_Markdown_Render
     protected function _isMarkdown(&$text)
     {
         $flag = !empty($text);
-        return $flag === TRUE && strpos($text,$this->_tag) !== FALSE;
+        return $flag === TRUE && strpos($text, $this->_tag) !== FALSE;
     }
 
     /**

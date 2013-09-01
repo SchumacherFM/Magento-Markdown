@@ -46,7 +46,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
 
     /**
      * @todo if backend check for current selected store view / website
-     * check if md extra is enabled ... per store view
+     *       check if md extra is enabled ... per store view
      *
      * @return bool
      */

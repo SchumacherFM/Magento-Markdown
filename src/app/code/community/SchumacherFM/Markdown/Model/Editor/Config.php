@@ -27,10 +27,25 @@ class SchumacherFM_Markdown_Model_Editor_Config
         );
         $variableWysiwygPlugin = array(
             array(
+                'name'    => 'markdownToggle',
+                'src'     => '',
+                'options' => array(
+                    'title'   => Mage::helper('adminhtml')->__('MD enable'),
+                    'url'     => '',
+                    'onclick' => array(
+                        'search'  => array('html_id'),
+                        'subject' => 'toggleMarkdown(\''.
+                            rawurlencode(Mage::helper('markdown')->getDetectionTag())
+                        .'\',\'{{html_id}}\');'
+                    ),
+                    'class'   => 'plugin'
+                )
+            ),
+            array(
                 'name'    => 'markdown',
                 'src'     => '',
                 'options' => array(
-                    'title'   => Mage::helper('adminhtml')->__('Preview Markdown'),
+                    'title'   => Mage::helper('adminhtml')->__('MD Preview'),
                     'url'     => '',
                     'onclick' => $onclickParts,
                     'class'   => 'plugin'

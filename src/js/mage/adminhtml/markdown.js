@@ -59,8 +59,18 @@
         window.open(url);
     }
 
+    var toggleMarkdown = function (detectionTag, Idhtml) {
+        detectionTag = unescape(detectionTag);
+
+        if ($(Idhtml).value.indexOf(detectionTag) === -1) {
+            $(Idhtml).value = detectionTag + "\n" + $(Idhtml).value;
+        }
+        alert('Markdown enabled with tag: "' + detectionTag+'"');
+    }
+
     this.renderMarkdown = renderMarkdown;
     this.markdownSyntax = markdownSyntax;
+    this.toggleMarkdown = toggleMarkdown;
 
 }).call(function () {
         return this || (typeof window !== 'undefined' ? window : global);
