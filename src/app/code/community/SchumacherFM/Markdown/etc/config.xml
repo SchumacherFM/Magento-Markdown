@@ -107,6 +107,7 @@
             <markdown>
                 <enable>1</enable>
                 <md_extra>0</md_extra>
+                <detection_tag>!#markdown</detection_tag>
             </markdown>
         </schumacherfm>
     </default>

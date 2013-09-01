@@ -7,10 +7,15 @@
  */
 class SchumacherFM_Markdown_Model_Markdown_Render
 {
-    protected $_isDisabled = FALSE;
+    private $_tag = '';
+    private $_isDisabled = FALSE;
 
     public function __construct()
     {
+        /**
+         * due to some weired parsings ... every text field which should contain MD must start with this tag
+         */
+        $this->_tag        = Mage::helper('markdown')->getDetectionTag();
         $this->_isDisabled = Mage::helper('markdown')->isDisabled();
     }
 
@@ -92,8 +97,9 @@ class SchumacherFM_Markdown_Model_Markdown_Render
         if (!$this->_isMarkdown($text) && $force === FALSE) {
             return $text;
         }
-        $renderer = Mage::getModel('markdown/michelf_markdown');
-        return $renderer->defaultTransform($text);
+        $isExtra  = Mage::helper('markdown')->isMarkdownExtra() ? '_extra' : '';
+        $renderer = Mage::getModel('markdown/michelf_markdown' . $isExtra);
+        return $renderer->defaultTransform(str_replace($this->_tag, '', $text));
     }
 
     /**
@@ -103,10 +109,10 @@ class SchumacherFM_Markdown_Model_Markdown_Render
      *
      * @return bool
      */
-    protected function _isMarkdown($text)
+    protected function _isMarkdown(&$text)
     {
         $flag = !empty($text);
-        return $flag === TRUE && !preg_match('~<(div|span|h1|h2|h3|p|hr|em|strong|a|img|ul|ol|li|table|input|form)~i', $text);
+        return $flag === TRUE && strpos($text,$this->_tag) !== FALSE;
     }
 
     /**

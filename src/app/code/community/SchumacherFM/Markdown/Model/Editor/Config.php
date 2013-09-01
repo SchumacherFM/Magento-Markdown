@@ -16,16 +16,16 @@ class SchumacherFM_Markdown_Model_Editor_Config
      */
     public function getWysiwygPluginSettings($config)
     {
-        $variableConfig            = array();
-        $onclickParts              = array(
+        $variableConfig        = array();
+        $onclickParts          = array(
             'search'  => array('html_id'),
             'subject' => 'renderMarkdown(\'{{html_id}}\');'
         );
-        $onclickPartsSyntax        = array(
+        $onclickPartsSyntax    = array(
             'search'  => array('html_id'),
             'subject' => 'markdownSyntax(\'http://daringfireball.net/projects/markdown/syntax\',\'{{html_id}}\');'
         );
-        $variableWysiwygPlugin     = array(
+        $variableWysiwygPlugin = array(
             array(
                 'name'    => 'markdown',
                 'src'     => '',
@@ -40,13 +40,30 @@ class SchumacherFM_Markdown_Model_Editor_Config
                 'name'    => 'markdownsyntax',
                 'src'     => '',
                 'options' => array(
-                    'title'   => Mage::helper('adminhtml')->__('Markdown Syntax'),
+                    'title'   => Mage::helper('adminhtml')->__('MD Syntax'),
                     'url'     => '',
                     'onclick' => $onclickPartsSyntax,
                     'class'   => 'plugin'
                 )
             ),
         );
+
+        if (Mage::helper('markdown')->isMarkdownExtra()) {
+            $variableWysiwygPlugin[] = array(
+                'name'    => 'markdownextrasyntax',
+                'src'     => '',
+                'options' => array(
+                    'title'   => Mage::helper('adminhtml')->__('MD Extra Syntax'),
+                    'url'     => '',
+                    'onclick' => array(
+                        'search'  => array('html_id'),
+                        'subject' => 'markdownSyntax(\'http://michelf.ca/projects/php-markdown/extra/\',\'{{html_id}}\');'
+                    ),
+                    'class'   => 'plugin'
+                )
+            );
+        }
+
         $configPlugins             = $config->getData('plugins');
         $variableConfig['plugins'] = array_merge($configPlugins, $variableWysiwygPlugin);
         return $variableConfig;
