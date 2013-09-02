@@ -14,12 +14,15 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      * echo Mage::helper('markdown')->render($_product->getDescription())
      *
      * @param string $text
+     * @param array $options
      *
      * @return string
      */
-    public function render($text)
+    public function render($text,array $options = null)
     {
-        return Mage::getSingleton('markdown/markdown_render')->renderMarkdown($text, TRUE);
+        return Mage::getSingleton('markdown/markdown_render')
+            ->setOptions($options)
+            ->renderMarkdown($text, TRUE);
     }
 
     /**

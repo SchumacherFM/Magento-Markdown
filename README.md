@@ -19,13 +19,7 @@ Preview in the backend. No live preview available maybe later.
 Bugs
 ----
 
-Won't parse Magento own variables like
-
-```
-{{config path="trans_email/ident_general/email"}}
-```
-
-Only Markdown Extra will parse the Magento custom tags!
+Bug free, afaik.
 
 Why do I need this?
 -------------------
@@ -44,6 +38,25 @@ Anywhere in a .phtml file you can access the renderer via:
 Catalog product and category description fields have already enabled the markdown feature in the backend.
 
 CMS pages and nearly every blocks will be rendered automatically ... but only if no html tag is detected.
+
+Magento Widgets and Variables will be automatically preserved:
+```
+{{(widget|config|media) ... }}
+```
+
+#### Configuring the Markdown parser for custom usage
+
+```
+$instance = Mage::getModel('markdown/markdown_render');
+$renderer = $instance=>getRenderer();
+$renderer->empty_element_suffix = '>';
+$renderer->tab_width = 5;
+$instance->setOptions(array(
+    'force'          => FALSE, // force rendering even if not markdown
+    'protectMagento' => TRUE, // protect Magento widgets/variables ...
+));
+echo $instance->renderMarkdown('text goes here');
+```
 
 Configuration
 -------------

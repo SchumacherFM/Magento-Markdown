@@ -11,9 +11,18 @@ class SchumacherFM_Markdown_Model_Markdown_Render
     private $_isDisabled = FALSE;
 
     /**
+     * @var string
+     */
+    private $_currentRenderedText = '';
+
+    private $_preserveContainer = array();
+
+    /**
      * @var SchumacherFM_Markdown_Model_Michelf_Markdown
      */
     private $_renderer = null;
+
+    protected $_options = array();
 
     public function __construct()
     {
@@ -36,16 +45,26 @@ class SchumacherFM_Markdown_Model_Markdown_Render
     }
 
     /**
-     * @param string $text
-     * @param bool   $force
+     * @param array $options
+     *
+     * @return $this
+     */
+    public function setOptions(array $options)
+    {
+        $this->_options = $options;
+        return $this;
+    }
+
+    /**
+     * @param       string $text
      *
      * @return string
      */
-    public function renderMarkdown($text, $force = FALSE)
+    public function renderMarkdown($text)
     {
         return $this->_isDisabled
             ? $text
-            : $this->_renderMarkdown($text, $force);
+            : $this->_renderMarkdown($text);
     }
 
     /**
@@ -63,6 +82,10 @@ class SchumacherFM_Markdown_Model_Markdown_Render
         $page = $observer->getEvent()->getPage();
 
         if ($page instanceof Mage_Cms_Model_Page) {
+            $this->setOptions(array(
+                'force'          => FALSE,
+                'protectMagento' => TRUE,
+            ));
             $content = $this->_renderMarkdown($page->getContent());
             $page->setContent($content);
         }
@@ -95,8 +118,12 @@ class SchumacherFM_Markdown_Model_Markdown_Render
              * then the block will get rendered as markdown even if it contains html
              */
             $isMarkdown = (boolean)$block->getIsMarkdown();
-            $html       = $transport->getHtml();
-            $transport->setHtml($this->_renderMarkdown($html, $isMarkdown));
+            $this->setOptions(array(
+                'force'          => $isMarkdown,
+                'protectMagento' => FALSE,
+            ));
+            $html = $transport->getHtml();
+            $transport->setHtml($this->_renderMarkdown($html));
 
         }
         return $this;
@@ -104,29 +131,83 @@ class SchumacherFM_Markdown_Model_Markdown_Render
 
     /**
      * @param  string $text
-     * @param bool    $force
      *
      * @return string
      */
-    protected function _renderMarkdown($text, $force = FALSE)
+    protected function _renderMarkdown($text)
     {
-        if (!$this->_isMarkdown($text) && $force === FALSE) {
-            return $text;
+        $force                      = isset($this->_options['force']) && $this->_options['force'] === TRUE;
+        $protectMagento             = isset($this->_options['protectMagento']) && $this->_options['protectMagento'] === TRUE;
+        $this->_currentRenderedText = $text;
+        if (!$this->_isMarkdown() && $force === FALSE) {
+            return $this->_currentRenderedText;
         }
-        return $this->getRenderer()->defaultTransform(str_replace($this->_tag, '', $text));
+
+        $this->_removeMarkdownTag();
+        if ($protectMagento) {
+            $this->_preserveMagentoVariablesEncode();
+        }
+        $this->_currentRenderedText = $this->getRenderer()->defaultTransform($this->_currentRenderedText);
+        if ($protectMagento) {
+            $this->_preserveMagentoVariablesDecode();
+        }
+        return $this->_currentRenderedText;
+    }
+
+    /**
+     * removes the markdown detection tag
+     *
+     * @return $this
+     */
+    protected function _removeMarkdownTag()
+    {
+        $this->_currentRenderedText = str_replace($this->_tag, '', $this->_currentRenderedText);
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    protected function _preserveMagentoVariablesEncode()
+    {
+        $matches = array();
+        preg_match_all('~(\{\{(widget|media|config).+\}\})~ismU', $this->_currentRenderedText, $matches, PREG_SET_ORDER);
+        if (count($matches) > 0) {
+            foreach ($matches as $match) {
+                $key                            = md5($match[0]);
+                $this->_preserveContainer[$key] = $match[0];
+            }
+            $this->_currentRenderedText = str_replace(
+                $this->_preserveContainer, array_keys($this->_preserveContainer), $this->_currentRenderedText
+            );
+        }
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    protected function _preserveMagentoVariablesDecode()
+    {
+        if (count($this->_preserveContainer) === 0) {
+            return $this;
+        }
+        $this->_currentRenderedText = str_replace(
+            array_keys($this->_preserveContainer), $this->_preserveContainer, $this->_currentRenderedText
+        );
+        $this->_preserveContainer   = array();
+        return $this;
     }
 
     /**
      * checks if text contains no html ... if so considered as markdown ... not a nice way...
      *
-     * @param string $text
-     *
      * @return bool
      */
-    protected function _isMarkdown(&$text)
+    protected function _isMarkdown()
     {
-        $flag = !empty($text);
-        return $flag === TRUE && strpos($text, $this->_tag) !== FALSE;
+        $flag = !empty($this->_currentRenderedText);
+        return $flag === TRUE && strpos($this->_currentRenderedText, $this->_tag) !== FALSE;
     }
 
     /**
