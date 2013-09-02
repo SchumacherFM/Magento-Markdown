@@ -30,7 +30,7 @@ class SchumacherFM_Markdown_Model_Editor_Config
                 'name'    => 'markdownToggle',
                 'src'     => '',
                 'options' => array(
-                    'title'   => Mage::helper('adminhtml')->__('MD enable'),
+                    'title'   => Mage::helper('markdown')->__('MD enable'),
                     'url'     => '',
                     'onclick' => array(
                         'search'  => array('html_id'),
@@ -45,7 +45,7 @@ class SchumacherFM_Markdown_Model_Editor_Config
                 'name'    => 'markdown',
                 'src'     => '',
                 'options' => array(
-                    'title'   => Mage::helper('adminhtml')->__('MD Preview'),
+                    'title'   => Mage::helper('markdown')->__('MD Preview'),
                     'url'     => '',
                     'onclick' => $onclickParts,
                     'class'   => 'plugin'
@@ -55,7 +55,7 @@ class SchumacherFM_Markdown_Model_Editor_Config
                 'name'    => 'markdownsyntax',
                 'src'     => '',
                 'options' => array(
-                    'title'   => Mage::helper('adminhtml')->__('MD Syntax'),
+                    'title'   => Mage::helper('markdown')->__('MD Syntax'),
                     'url'     => '',
                     'onclick' => $onclickPartsSyntax,
                     'class'   => 'plugin'
@@ -68,7 +68,7 @@ class SchumacherFM_Markdown_Model_Editor_Config
                 'name'    => 'markdownextrasyntax',
                 'src'     => '',
                 'options' => array(
-                    'title'   => Mage::helper('adminhtml')->__('MD Extra Syntax'),
+                    'title'   => Mage::helper('markdown')->__('MD Extra Syntax'),
                     'url'     => '',
                     'onclick' => array(
                         'search'  => array('html_id'),

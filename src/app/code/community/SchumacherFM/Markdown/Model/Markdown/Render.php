@@ -49,7 +49,7 @@ class SchumacherFM_Markdown_Model_Markdown_Render
      *
      * @return $this
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options = null)
     {
         $this->_options = $options;
         return $this;

@@ -32,7 +32,7 @@ Developer Usage
 Anywhere in a .phtml file you can access the renderer via:
 
 ```
-<?php echo Mage::helper('markdown')->render($_description); ?>
+<?php echo Mage::helper('markdown')->render($_description, [array $options] ); ?>
 ```
 
 Catalog product and category description fields have already enabled the markdown feature in the backend.

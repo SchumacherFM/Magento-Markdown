@@ -53,6 +53,16 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 
         $html .= Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
+                'label'   => Mage::helper('markdown')->__('MD enable'),
+                'type'    => 'button',
+                'class'   => 'btn-wysiwyg',
+                'onclick' => 'toggleMarkdown(\'' .
+                rawurlencode(Mage::helper('markdown')->getDetectionTag())
+                . '\',\'' . $element->getHtmlId() . '\');'
+            ))->toHtml().' ';
+
+        $html .= Mage::getSingleton('core/layout')
+            ->createBlock('adminhtml/widget_button', '', array(
                 'label'   => Mage::helper('catalog')->__('Preview Markdown'),
                 'type'    => 'button',
                 'class'   => 'btn-wysiwyg',
