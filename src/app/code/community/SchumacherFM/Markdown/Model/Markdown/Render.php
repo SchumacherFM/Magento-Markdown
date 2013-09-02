@@ -171,7 +171,7 @@ class SchumacherFM_Markdown_Model_Markdown_Render
     protected function _preserveMagentoVariablesEncode()
     {
         $matches = array();
-        preg_match_all('~(\{\{(widget|media|config).+\}\})~ismU', $this->_currentRenderedText, $matches, PREG_SET_ORDER);
+        preg_match_all('~(\{\{[a-z]+.+\}\})~ismU', $this->_currentRenderedText, $matches, PREG_SET_ORDER);
         if (count($matches) > 0) {
             foreach ($matches as $match) {
                 $key                            = md5($match[0]);
