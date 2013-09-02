@@ -40,8 +40,8 @@
                 <observers>
                     <markdown_renderer>
                         <type>singleton</type>
-                        <class>markdown/markdown_render</class>
-                        <method>renderPageObserver</method>
+                        <class>markdown/markdown_observer</class>
+                        <method>renderPage</method>
                     </markdown_renderer>
                 </observers>
             </cms_page_render>
@@ -50,11 +50,20 @@
                 <observers>
                     <markdown_renderer>
                         <type>singleton</type>
-                        <class>markdown/markdown_render</class>
-                        <method>renderBlockObserver</method>
+                        <class>markdown/markdown_observer</class>
+                        <method>renderBlock</method>
                     </markdown_renderer>
                 </observers>
             </core_block_abstract_to_html_after>
+
+            <core_abstract_load_after>
+                <observers>
+                    <markdown_core_email_template>
+                        <class>markdown/markdown_observer</class>
+                        <method>renderEmailTemplate</method>
+                    </markdown_core_email_template>
+                </observers>
+            </core_abstract_load_after>
         </events>
     </frontend>
 
