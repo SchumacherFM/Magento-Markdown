@@ -83,7 +83,7 @@ Installation Instructions
 About
 -----
 - Key: SchumacherFM_Markdown
-- Current Version 1.0.0
+- Current Version 1.1.0
 - [Download tarball](https://github.com/SchumacherFM/Magento-Markdown/tags)
 
 Compatibility
