@@ -1,0 +1,116 @@
+<_>
+   <form_key>WL3b2QKkQwmQ0J6y</form_key>
+   <name>markdown</name>
+   <channel>community</channel>
+   <version_ids>
+      <version_ids>2</version_ids>
+      <version_ids>1</version_ids>
+   </version_ids>
+   <summary>Markdown as module for Magento! Replaces the TinyMCE editor. Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML).</summary>
+   <description>Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML).
+
+Full documentation of Markdown&apos;s syntax is available on John&apos;s Markdown page: http://daringfireball.net/projects/markdown/
+
+Full support of Markdown Extra: http://michelf.ca/projects/php-markdown/extra/
+
+This module renders all CMS pages and every block which extends Mage_Core_Block_Abstract.
+
+Rendering of catalog description fields have to be implemented in the phtml files by yourself.
+
+Preview in the backend. No live preview available maybe later.</description>
+   <license>Custom</license>
+   <license_uri>https://github.com/SchumacherFM/Magento-Markdown</license_uri>
+   <version>1.1.0</version>
+   <stability>stable</stability>
+   <notes>https://github.com/SchumacherFM/Magento-Markdown</notes>
+   <authors>
+      <name>
+         <name>Cyrill Schumacher</name>
+      </name>
+      <user>
+         <user>cyrills</user>
+      </user>
+      <email>
+         <email>cyrill@schumacher.fm</email>
+      </email>
+   </authors>
+   <depends_php_min>5.2.0</depends_php_min>
+   <depends_php_max>6.0.0</depends_php_max>
+   <depends>
+      <package>
+         <name>
+            <name/>
+         </name>
+         <channel>
+            <channel/>
+         </channel>
+         <min>
+            <min/>
+         </min>
+         <max>
+            <max/>
+         </max>
+         <files>
+            <files>                            </files>
+         </files>
+      </package>
+      <extension>
+         <name>
+            <name>Core</name>
+         </name>
+         <min>
+            <min/>
+         </min>
+         <max>
+            <max/>
+         </max>
+      </extension>
+   </depends>
+   <contents>
+      <target>
+         <target>magelocal</target>
+         <target>magecommunity</target>
+         <target>magedesign</target>
+         <target>mageetc</target>
+         <target>magelocale</target>
+         <target>mage</target>
+         <target>mageskin</target>
+      </target>
+      <path>
+         <path/>
+         <path>SchumacherFM/Markdown/</path>
+         <path>adminhtml/default/default/layout/markdown.xml</path>
+         <path>modules/SchumacherFM_Markdown.xml</path>
+         <path/>
+         <path>js/mage/adminhtml/</path>
+         <path>adminhtml/default/default/markdown.css</path>
+      </path>
+      <type>
+         <type>file</type>
+         <type>dir</type>
+         <type>file</type>
+         <type>file</type>
+         <type>dir</type>
+         <type>dir</type>
+         <type>file</type>
+      </type>
+      <include>
+         <include/>
+         <include/>
+         <include/>
+         <include/>
+         <include>#SchumacherFM_Markdown.csv#</include>
+         <include>#mark.+\.js#</include>
+         <include/>
+      </include>
+      <ignore>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+      </ignore>
+   </contents>
+</_>
