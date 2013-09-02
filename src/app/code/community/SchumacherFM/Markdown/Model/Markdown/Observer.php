@@ -10,7 +10,7 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
 
     public function renderEmailTemplate(Varien_Event_Observer $observer)
     {
-        if ($this->_isDisabled) {
+        if ($this->_isDisabled) { // @todo enable/disable only for emails ...
             return null;
         }
 
