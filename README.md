@@ -10,6 +10,8 @@ format, then convert it to structurally valid XHTML (or HTML).
 Full documentation of Markdown's syntax is available on John's
 Markdown page: <http://daringfireball.net/projects/markdown/>
 
+Full support of Markdown Extra: <http://michelf.ca/projects/php-markdown/extra/>
+
 This module renders all CMS pages and every block which extends Mage_Core_Block_Abstract.
 
 Rendering of catalog description fields have to be implemented in the phtml files by yourself.
@@ -99,8 +101,10 @@ Report a bug using the issue tracker or send us a pull request.
 Licence
 -------
 
-Magento Markdown Implementation
+#### Magento Markdown Implementation
+
 Copyright (c) 2013 Cyrill (at) Schumacher dot fm
+
 All rights reserved.
 
 #### PHP Markdown Lib
