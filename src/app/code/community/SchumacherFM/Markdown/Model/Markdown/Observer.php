@@ -20,7 +20,7 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
         }
 
         $object = $observer->getEvent()->getObject();
-        if (!($object instanceof Mage_Core_Model_Email_Template)) {
+        if (!$object instanceof Mage_Core_Model_Email_Template) {
             return null;
         }
 
@@ -35,7 +35,7 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
     /**
      * @param Varien_Event_Observer $observer
      *
-     * @return $this
+     * @return null
      */
     public function renderPage(Varien_Event_Observer $observer)
     {
@@ -45,13 +45,11 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
 
         /** @var Mage_Cms_Model_Page $page */
         $page = $observer->getEvent()->getPage();
-
-        if ($page instanceof Mage_Cms_Model_Page) {
-            $content = $this->_renderMarkdown($page->getContent());
-            $page->setContent($content);
+        if (!$page instanceof Mage_Cms_Model_Page) {
+            return null;
         }
-
-        return $this;
+        $content = $this->_renderMarkdown($page->getContent());
+        $page->setContent($content);
     }
 
     /**
@@ -59,7 +57,7 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
      *
      * @param Varien_Event_Observer $observer
      *
-     * @return $this
+     * @return null
      */
     public function renderBlock(Varien_Event_Observer $observer)
     {
@@ -67,27 +65,38 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
             return null;
         }
 
-        /** @var Mage_Cms_Model_Page $page */
+        /** @var Mage_Cms_Block_Block $page */
         $block = $observer->getEvent()->getBlock();
 
-        if ($this->_isAllowedBlock($block)) {
-            /** @var Varien_Object $transport */
-            $transport = $observer->getEvent()->getTransport();
-
-            /**
-             * you can set on any block the property ->setData('is_markdown',true)
-             * then the block will get rendered as markdown even if it contains html
-             */
-            $isMarkdown = (boolean)$block->getIsMarkdown();
-            $this->setOptions(array(
-                'force'          => $isMarkdown,
-                'protectMagento' => FALSE,
-            ));
-            $html = $transport->getHtml();
-            $transport->setHtml($this->_renderMarkdown($html));
-
+        if (!$this->_isAllowedBlock($block)) {
+            return null;
         }
-        return $this;
+
+        /** @var Varien_Object $transport */
+        $transport = $observer->getEvent()->getTransport();
+
+        /**
+         * you can set on any block the property ->setData('is_markdown',true)
+         * then the block will get rendered as markdown even if it contains html
+         */
+        $isMarkdown = (boolean)$block->getIsMarkdown();
+        $this->setOptions(array(
+            'force'          => $isMarkdown,
+            'protectMagento' => FALSE,
+        ));
+        $html = $transport->getHtml();
+        $transport->setHtml($this->_renderMarkdown($html));
+
+    }
+
+    /**
+     * @param Varien_Object $block
+     *
+     * @return bool
+     */
+    protected function _isAllowedBlock(Varien_Object $block)
+    {
+        return $block instanceof Mage_Cms_Block_Block || $block instanceof Mage_Cms_Block_Widget_Block;
     }
 
 }

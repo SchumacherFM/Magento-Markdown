@@ -163,14 +163,4 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
         return strpos($text, $this->_tag) !== FALSE;
     }
 
-    /**
-     * @param Mage_Core_Block_Abstract $block
-     *
-     * @return bool
-     */
-    protected function _isAllowedBlock($block)
-    {
-        return $block instanceof Mage_Core_Block_Abstract;
-    }
-
 }

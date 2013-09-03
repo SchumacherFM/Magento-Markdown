@@ -66,7 +66,8 @@ Anywhere in a .phtml file you can access the renderer via:
 
 Catalog product and category description fields have already enabled the markdown feature in the backend.
 
-CMS pages and nearly every blocks will be rendered automatically ... but only if no html tag is detected.
+CMS pages (instance of Mage_Cms_Model_Page) and blocks (instance of Mage_Cms_Block_Block and
+Mage_Cms_Block_Widget_Block) will be rendered automatically ... but only if the detection tag is present.
 
 Magento Widgets and Variables will be automatically preserved:
 
@@ -98,6 +99,8 @@ Configuration
 
 Every field which contains Markdown syntax must contain that detection tag otherwise it will not be parsed.
 
+Demo Content: [http://daringfireball.net/projects/markdown/syntax.text](http://daringfireball.net/projects/markdown/syntax.text)
+
 Todo
 ----
 
@@ -124,6 +127,10 @@ About
 
 History
 -------
+
+#### 1.3.0
+
+- Backend Preview for Markdown Extra via Ajax loading
 
 #### 1.2.0
 
