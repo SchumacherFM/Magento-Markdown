@@ -7,6 +7,8 @@
  */
 class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
 {
+    const URL_MD_SYNTAX       = 'http://daringfireball.net/projects/markdown/syntax';
+    const URL_MD_EXTRA_SYNTAX = 'http://michelf.ca/projects/php-markdown/extra/';
 
     /**
      * easy access method for rendering markdown in phtml files
@@ -14,11 +16,11 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      * echo Mage::helper('markdown')->render($_product->getDescription())
      *
      * @param string $text
-     * @param array $options
+     * @param array  $options
      *
      * @return string
      */
-    public function render($text,array $options = null)
+    public function render($text, array $options = null)
     {
         return Mage::getSingleton('markdown/markdown_render')
             ->setOptions($options)
@@ -56,5 +58,26 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     public function isMarkdownExtra()
     {
         return (boolean)Mage::getStoreConfig('schumacherfm/markdown/md_extra');
+    }
+
+    /**
+     * loads CSS files and minifies it
+     *
+     * @todo if backend check for current selected store view / website
+     *       check if md extra is enabled ... per store view
+     *
+     * @return string
+     */
+    public function getTransactionalEmailCSS()
+    {
+        $file = Mage::getStoreConfig('schumacherfm/markdown/te_markdown_css');
+        if (empty($file)) {
+            return '';
+        }
+        $content = implode('', @file(Mage::getBaseDir() . DS . $file));
+        $content = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $content); // comments
+        $content = preg_replace('~\s+~', ' ', $content); // all whitespaces
+        $content = preg_replace('~\s*(:|\{|\}|,|;)\s*~', '\\1', $content); // all other whitespaces
+        return $content;
     }
 }

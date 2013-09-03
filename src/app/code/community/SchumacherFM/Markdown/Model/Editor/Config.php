@@ -23,7 +23,7 @@ class SchumacherFM_Markdown_Model_Editor_Config
         );
         $onclickPartsSyntax    = array(
             'search'  => array('html_id'),
-            'subject' => 'markdownSyntax(\'http://daringfireball.net/projects/markdown/syntax\',\'{{html_id}}\');'
+            'subject' => 'markdownSyntax(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_SYNTAX . '\',\'{{html_id}}\');'
         );
         $variableWysiwygPlugin = array(
             array(
@@ -34,9 +34,9 @@ class SchumacherFM_Markdown_Model_Editor_Config
                     'url'     => '',
                     'onclick' => array(
                         'search'  => array('html_id'),
-                        'subject' => 'toggleMarkdown(\''.
-                            rawurlencode(Mage::helper('markdown')->getDetectionTag())
-                        .'\',\'{{html_id}}\');'
+                        'subject' => 'toggleMarkdown(\'' .
+                        rawurlencode(Mage::helper('markdown')->getDetectionTag())
+                        . '\',\'{{html_id}}\');'
                     ),
                     'class'   => 'plugin'
                 )
@@ -72,7 +72,7 @@ class SchumacherFM_Markdown_Model_Editor_Config
                     'url'     => '',
                     'onclick' => array(
                         'search'  => array('html_id'),
-                        'subject' => 'markdownSyntax(\'http://michelf.ca/projects/php-markdown/extra/\',\'{{html_id}}\');'
+                        'subject' => 'markdownSyntax(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_EXTRA_SYNTAX . '\',\'{{html_id}}\');'
                     ),
                     'class'   => 'plugin'
                 )

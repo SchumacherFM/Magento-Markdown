@@ -10,7 +10,7 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
 
     public function renderEmailTemplate(Varien_Event_Observer $observer)
     {
-        if ($this->_isDisabled) { // @todo enable/disable only for emails ...
+        if ($this->_isDisabled) {
             return null;
         }
 
@@ -19,8 +19,11 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
             return null;
         }
 
-        Zend_Debug::dump($object->getData());
-        exit;
+        $template = $object->getData('template_text');
+        $object->setData('template_text', $this->_renderMarkdown($template));
+
+        $css = Mage::helper('markdown')->getTransactionalEmailCSS();
+        $object->setData('template_styles', $css);
     }
 
     /**
@@ -38,10 +41,6 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
         $page = $observer->getEvent()->getPage();
 
         if ($page instanceof Mage_Cms_Model_Page) {
-            $this->setOptions(array(
-                'force'          => FALSE,
-                'protectMagento' => TRUE,
-            ));
             $content = $this->_renderMarkdown($page->getContent());
             $page->setContent($content);
         }

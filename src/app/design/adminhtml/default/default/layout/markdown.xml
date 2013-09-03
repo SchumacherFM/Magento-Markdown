@@ -1,10 +1,16 @@
 <?xml version="1.0"?>
 <layout>
-    <editor>
+    <MARKDOWN_HEADER>
         <reference name="head">
             <action method="addJs"><script>mage/adminhtml/markdown.js</script></action>
             <action method="addJs"><script>mage/adminhtml/marked.js</script></action>
             <action method="addCss"><name>markdown.css</name></action>
         </reference>
+    </MARKDOWN_HEADER>
+    <editor>
+        <update handle="MARKDOWN_HEADER"/>
     </editor>
+    <adminhtml_system_email_template_edit>
+        <update handle="MARKDOWN_HEADER"/>
+    </adminhtml_system_email_template_edit>
 </layout>

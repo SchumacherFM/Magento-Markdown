@@ -22,7 +22,10 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
      */
     protected $_renderer = null;
 
-    protected $_options = array();
+    protected $_options = array(
+        'force'          => FALSE,
+        'protectMagento' => TRUE,
+    );
 
     public function __construct()
     {
@@ -76,7 +79,7 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
     {
         $force                      = isset($this->_options['force']) && $this->_options['force'] === TRUE;
         $protectMagento             = isset($this->_options['protectMagento']) && $this->_options['protectMagento'] === TRUE;
-        $this->_currentRenderedText = $text;
+        $this->_currentRenderedText = $text; // @todo optimize
         if (!$this->_isMarkdown() && $force === FALSE) {
             return $this->_currentRenderedText;
         }

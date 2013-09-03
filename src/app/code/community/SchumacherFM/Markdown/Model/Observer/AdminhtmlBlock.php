@@ -11,6 +11,8 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
      * adminhtml_block_html_before
      *
      * @param Varien_Event_Observer $observer
+     *
+     * @return null
      */
     public function alterTextareaBlockTemplate(Varien_Event_Observer $observer)
     {
@@ -21,12 +23,19 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         /** @var $block Mage_Adminhtml_Block_Template */
         $block = $observer->getEvent()->getBlock();
 
-        if ($block instanceof Mage_Adminhtml_Block_Catalog_Form_Renderer_Fieldset_Element) {
-            /** @var $block Mage_Adminhtml_Block_Catalog_Form_Renderer_Fieldset_Element */
+        if ($block instanceof Mage_Adminhtml_Block_Widget_Form_Renderer_Fieldset_Element) {
+            /** @var Varien_Data_Form_Element_Abstract $element */
+            $element = $block->getElement();
+            if ($this->_isEmailTemplateElementAllowed($element)) {
+                $element->setData('after_element_html', ' ');
+                $this->_getMarkdownButtons($element, 'template_text');
+            }
+        }
 
+        if ($block instanceof Mage_Adminhtml_Block_Catalog_Form_Renderer_Fieldset_Element) {
             /** @var Mage_Adminhtml_Block_Catalog_Helper_Form_Wysiwyg $element */
             $element = $block->getElement();
-            if ($this->_isElementAllowed($element)) {
+            if ($this->_isCatalogElementAllowed($element)) {
                 $this->_getMarkdownButtons($element);
             }
         }
@@ -37,7 +46,19 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
      *
      * @return bool
      */
-    protected function _isElementAllowed(Varien_Data_Form_Element_Abstract $element)
+    protected function _isEmailTemplateElementAllowed(Varien_Data_Form_Element_Abstract $element)
+    {
+        $trueOne = $element instanceof Varien_Data_Form_Element_Note;
+        $trueTwo = stristr($element->getHtmlId(), 'insert_variable') !== FALSE;
+        return $trueOne && $trueTwo;
+    }
+
+    /**
+     * @param Varien_Data_Form_Element_Abstract $element
+     *
+     * @return bool
+     */
+    protected function _isCatalogElementAllowed(Varien_Data_Form_Element_Abstract $element)
     {
         $isTextarea    = $element instanceof Mage_Adminhtml_Block_Catalog_Helper_Form_Wysiwyg;
         $isDescription = stristr($element->getName(), 'description') !== FALSE && stristr($element->getName(), 'meta') === FALSE;
@@ -46,30 +67,51 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 
     /**
      * @param Varien_Data_Form_Element_Abstract $element
+     * @param string|null                       $htmlId
      */
-    protected function _getMarkdownButtons(Varien_Data_Form_Element_Abstract $element)
+    protected function _getMarkdownButtons(Varien_Data_Form_Element_Abstract $element, $htmlId = null)
     {
-        $html = $element->getData('after_element_html');
+        $html   = array($element->getData('after_element_html'));
+        $htmlId = empty($htmlId) ? $element->getHtmlId() : $htmlId;
 
-        $html .= Mage::getSingleton('core/layout')
+        $html[] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
                 'label'   => Mage::helper('markdown')->__('MD enable'),
                 'type'    => 'button',
                 'class'   => 'btn-wysiwyg',
                 'onclick' => 'toggleMarkdown(\'' .
                 rawurlencode(Mage::helper('markdown')->getDetectionTag())
-                . '\',\'' . $element->getHtmlId() . '\');'
-            ))->toHtml().' ';
-
-        $html .= Mage::getSingleton('core/layout')
-            ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => Mage::helper('catalog')->__('Preview Markdown'),
-                'type'    => 'button',
-                'class'   => 'btn-wysiwyg',
-                'onclick' => 'renderMarkdown(\'' . $element->getHtmlId() . '\')'
+                . '\',\'' . $htmlId . '\');'
             ))->toHtml();
 
-        $element->setData('after_element_html', $html);
+        $html[] = Mage::getSingleton('core/layout')
+            ->createBlock('adminhtml/widget_button', '', array(
+                'label'   => Mage::helper('markdown')->__('Preview Markdown'),
+                'type'    => 'button',
+                'class'   => 'btn-wysiwyg',
+                'onclick' => 'renderMarkdown(\'' . $htmlId . '\')'
+            ))->toHtml();
+
+        $html[] = Mage::getSingleton('core/layout')
+            ->createBlock('adminhtml/widget_button', '', array(
+                'label'   => Mage::helper('markdown')->__('MD Syntax'),
+                'type'    => 'button',
+                'class'   => 'btn-wysiwyg',
+                'onclick' => 'markdownSyntax(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_SYNTAX . '\');'
+            ))->toHtml();
+
+        if (Mage::helper('markdown')->isMarkdownExtra()) {
+
+            $html[] = Mage::getSingleton('core/layout')
+                ->createBlock('adminhtml/widget_button', '', array(
+                    'label'   => Mage::helper('markdown')->__('MD Extra Syntax'),
+                    'type'    => 'button',
+                    'class'   => 'btn-wysiwyg',
+                    'onclick' => 'markdownSyntax(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_EXTRA_SYNTAX . '\');'
+                ))->toHtml();
+        }
+
+        $element->setData('after_element_html', implode(' ', $html));
     }
 
 }

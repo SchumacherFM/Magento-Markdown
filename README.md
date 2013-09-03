@@ -14,6 +14,8 @@ Full support of Markdown Extra: <http://michelf.ca/projects/php-markdown/extra/>
 
 This module renders all CMS pages and every block which extends Mage_Core_Block_Abstract.
 
+Renders every transactional email as Markdown when the email templates includes a special tag.
+
 Rendering of catalog description fields have to be implemented in the phtml files by yourself.
 
 Preview in the backend. No live preview available maybe later.
@@ -21,12 +23,35 @@ Preview in the backend. No live preview available maybe later.
 Bugs
 ----
 
-Bug free, afaik.
+CSS is included in the transactional emails in their style tag. Maybe some mail providers removes that
+or cannot render it. So maybe there has to be some transformation that the CSS will be added
+into each html tag attribute: style.
+
+```
+	<h1 style="font-size..."></h1>
+```
 
 Why do I need this?
 -------------------
 
 Because you want to get rid of the TinyMCE and force your customer to use easy and limited syntax.
+
+You can edit your text with external editors:
+
+#### Mac OS X
+
+- [Mou The missing Markdown editor for web developers](http://mouapp.com/)
+
+#### All platforms
+
+- PhpStorm
+- Sublime Text
+
+#### Windows
+
+- [MarkdownPad is a full-featured Markdown editor for Windows](http://markdownpad.com/)
+
+### Mashable: [78 Tools for Writing and Previewing Markdown](http://mashable.com/2013/06/24/markdown-tools/)
 
 Developer Usage
 ---------------
@@ -42,8 +67,9 @@ Catalog product and category description fields have already enabled the markdow
 CMS pages and nearly every blocks will be rendered automatically ... but only if no html tag is detected.
 
 Magento Widgets and Variables will be automatically preserved:
+
 ```
-{{(widget|config|media) ... }}
+	{{(widget|config|media) ... }}
 ```
 
 #### Configuring the Markdown parser for custom usage
@@ -66,6 +92,7 @@ Configuration
 - Enable or disable Markdown parser per store view
 - Enable or disable Markdown extra parser per store view
 - Set Markdown detection tag per store view
+- Add path to css file if using in transactional emails per store view
 
 Every field which contains Markdown syntax must contain that detection tag otherwise it will not be parsed.
 
@@ -82,11 +109,32 @@ Installation Instructions
 3. `modman init`
 4. `modman clone git://github.com/SchumacherFM/Magento-Markdown.git`
 
+Composer …
+
+
 About
 -----
 - Key: SchumacherFM_Markdown
-- Current Version 1.1.0
+- Current Version 1.2.0
 - [Download tarball](https://github.com/SchumacherFM/Magento-Markdown/tags)
+
+History
+-------
+
+#### 1.2.0
+
+- Use Markdown in transactional emails
+- Bug fixes
+
+#### 1.1.0
+
+- Update Markdown parser
+- Implemented Markdown extra
+
+#### 1.0.0
+
+- Initial Release
+
 
 Compatibility
 -------------
