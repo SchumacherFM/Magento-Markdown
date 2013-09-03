@@ -8,6 +8,11 @@
 class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdown_Model_Markdown_Abstract
 {
 
+    /**
+     * @param Varien_Event_Observer $observer
+     *
+     * @return null
+     */
     public function renderEmailTemplate(Varien_Event_Observer $observer)
     {
         if ($this->_isDisabled) {
@@ -20,10 +25,11 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
         }
 
         $template = $object->getData('template_text');
-        $object->setData('template_text', $this->_renderMarkdown($template));
-
-        $css = Mage::helper('markdown')->getTransactionalEmailCSS();
-        $object->setData('template_styles', $css);
+        if ($this->isMarkdown($template)) {
+            $object->setData('template_text', $this->_renderMarkdown($template));
+            $css = Mage::helper('markdown')->getTransactionalEmailCSS();
+            $object->setData('template_styles', $css);
+        }
     }
 
     /**

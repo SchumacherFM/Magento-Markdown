@@ -85,11 +85,13 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
         }
 
         $this->_removeMarkdownTag();
-        if ($protectMagento) {
+        if ($protectMagento === TRUE) {
             $this->_preserveMagentoVariablesEncode();
         }
+
         $this->_currentRenderedText = $this->getRenderer()->defaultTransform($this->_currentRenderedText);
-        if ($protectMagento) {
+
+        if ($protectMagento === TRUE) {
             $this->_preserveMagentoVariablesDecode();
         }
         return $this->_currentRenderedText;
@@ -145,10 +147,20 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
      *
      * @return bool
      */
-    protected function _isMarkdown()
+    private function _isMarkdown()
     {
         $flag = !empty($this->_currentRenderedText);
         return $flag === TRUE && strpos($this->_currentRenderedText, $this->_tag) !== FALSE;
+    }
+
+    /**
+     * @param string reference $text
+     *
+     * @return bool
+     */
+    public function isMarkdown(&$text)
+    {
+        return strpos($text, $this->_tag) !== FALSE;
     }
 
     /**
