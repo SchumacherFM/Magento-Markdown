@@ -74,7 +74,10 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
         if (empty($file)) {
             return '';
         }
-        $content = implode('', @file(Mage::getBaseDir() . DS . $file));
+        $content = trim(implode('', @file(Mage::getBaseDir() . DS . $file)));
+        if (empty($content)) {
+            Mage::log('Markdown CSS file [' . $file . '] is empty!');
+        }
         $content = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $content); // comments
         $content = preg_replace('~\s+~', ' ', $content); // all whitespaces
         $content = preg_replace('~\s*(:|\{|\}|,|;)\s*~', '\\1', $content); // all other whitespaces
