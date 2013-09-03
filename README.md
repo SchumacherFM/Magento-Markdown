@@ -69,7 +69,7 @@ CMS pages and nearly every blocks will be rendered automatically ... but only if
 Magento Widgets and Variables will be automatically preserved:
 
 ```
-	{{(widget|config|media) ... }}
+{{(widget|config|media|...) ... }}
 ```
 
 #### Configuring the Markdown parser for custom usage
