@@ -23,6 +23,8 @@ Preview in the backend. No live preview available maybe later.
 Bugs
 ----
 
+#### CSS
+
 CSS is included in the transactional emails in their style tag. Maybe some mail providers removes that
 or cannot render it. So maybe there has to be some transformation that the CSS will be added
 into each html tag attribute: style.
@@ -101,6 +103,8 @@ Todo
 
  * Better usability in the backend
  * Live edit
+ * Backend Preview: Only Markdown itself is supported, no Markdown Extra.
+ * Maybe: Use custom Markdown parser even written in other languages
 
 Installation Instructions
 -------------------------
