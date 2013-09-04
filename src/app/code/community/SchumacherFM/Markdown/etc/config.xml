@@ -67,6 +67,18 @@
         </events>
     </frontend>
 
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <markdown before="Mage_Adminhtml">SchumacherFM_Markdown_Adminhtml</markdown>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+
     <adminhtml>
         <layout>
             <updates>

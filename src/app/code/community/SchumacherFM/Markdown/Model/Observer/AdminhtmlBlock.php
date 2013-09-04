@@ -86,10 +86,10 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 
         $html[] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => Mage::helper('markdown')->__('Preview Markdown'),
+                'label'   => Mage::helper('markdown')->__('MD Preview'),
                 'type'    => 'button',
                 'class'   => 'btn-wysiwyg',
-                'onclick' => 'renderMarkdown(\'' . $htmlId . '\')'
+                'onclick' => Mage::helper('markdown')->getRenderMarkdownJs($htmlId)
             ))->toHtml();
 
         $html[] = Mage::getSingleton('core/layout')

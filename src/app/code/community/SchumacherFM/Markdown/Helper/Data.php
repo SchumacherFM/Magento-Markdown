@@ -24,7 +24,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     {
         return Mage::getSingleton('markdown/markdown_render')
             ->setOptions($options)
-            ->renderMarkdown($text, TRUE);
+            ->renderMarkdown($text);
     }
 
     /**
@@ -82,5 +82,27 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
         $content = preg_replace('~\s+~', ' ', $content); // all whitespaces
         $content = preg_replace('~\s*(:|\{|\}|,|;)\s*~', '\\1', $content); // all other whitespaces
         return $content;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdminRenderUrl()
+    {
+        return Mage::helper("adminhtml")->getUrl('*/markdown/render');
+    }
+
+    /**
+     * @param string $htmlId
+     *
+     * @return string
+     */
+    public function getRenderMarkdownJs($htmlId)
+    {
+        $args = array('\'' . $htmlId . '\'');
+        if ($this->isMarkdownExtra()) {
+            $args[] = '\'' . $this->getAdminRenderUrl() . '\'';
+        }
+        return 'renderMarkdown(' . implode(',', $args) . ');';
     }
 }

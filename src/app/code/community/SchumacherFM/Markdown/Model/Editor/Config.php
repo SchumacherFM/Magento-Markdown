@@ -19,7 +19,7 @@ class SchumacherFM_Markdown_Model_Editor_Config
         $variableConfig        = array();
         $onclickParts          = array(
             'search'  => array('html_id'),
-            'subject' => 'renderMarkdown(\'{{html_id}}\');'
+            'subject' => Mage::helper('markdown')->getRenderMarkdownJs('{{html_id}}'),
         );
         $onclickPartsSyntax    = array(
             'search'  => array('html_id'),
