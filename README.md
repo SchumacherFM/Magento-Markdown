@@ -1,5 +1,5 @@
-Magento Markdown Module
-=======================
+Magento: Mage Markdown Module [M↓]
+==================================
 
 ![image](https://raw.github.com/SchumacherFM/Magento-Markdown/master/logo/magento-markdown.png)
 
@@ -128,9 +128,15 @@ About
 History
 -------
 
+#### 1.x.x
+
+- Update readme
+- Add modified markdown logo from [https://github.com/dcurtis/markdown-mark](https://github.com/dcurtis/markdown-mark)
+- Tiny rename to Mage Markdown due to Magento Connect guidelines
+
 #### 1.3.0
 
-- Backend Preview for Markdown Extra via Ajax loading
+- Backend preview for Markdown Extra via ajax loading
 
 #### 1.2.0
 
