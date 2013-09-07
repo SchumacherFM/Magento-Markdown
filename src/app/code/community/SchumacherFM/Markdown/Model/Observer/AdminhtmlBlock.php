@@ -26,9 +26,14 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         if ($block instanceof Mage_Adminhtml_Block_Widget_Form_Renderer_Fieldset_Element) {
             /** @var Varien_Data_Form_Element_Abstract $element */
             $element = $block->getElement();
+
             if ($this->_isEmailTemplateElementAllowed($element)) {
                 $element->setData('after_element_html', ' ');
                 $this->_getMarkdownButtons($element, 'template_text');
+            }
+
+            if ($this->_isElementEditor($element)) {
+                $this->_addLivePreviewToEditor($element);
             }
         }
 
@@ -112,6 +117,36 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         }
 
         $element->setData('after_element_html', implode(' ', $html));
+    }
+
+    /**
+     * Live preview only available for non markdown extra mode.
+     * otherwise the ajax request and php markdown rendering would kill the users patience
+     *
+     * @param Varien_Data_Form_Element_Abstract $element
+     *
+     * @return bool
+     */
+    protected function _isElementEditor(Varien_Data_Form_Element_Abstract $element)
+    {
+        return !Mage::helper('markdown')->isMarkdownExtra() && $element instanceof Varien_Data_Form_Element_Editor;
+    }
+
+    /**
+     * @param Varien_Data_Form_Element_Editor $element
+     *
+     * @return $this
+     */
+    protected function _addLivePreviewToEditor(Varien_Data_Form_Element_Editor $element)
+    {
+        $previewHtml = '<div id="markdown_live_preview"
+        style="overflow:scroll; height:25em;"
+        data-mddetector="' . rawurlencode(Mage::helper('markdown')->getDetectionTag()) . '"
+        data-elementid="' . $element->getHtmlId() . '" class="buttons-set markdown">' .
+            Mage::helper('markdown')->__('[M↓] Live Preview enabled ...')
+            . '</div>';
+        $element->setData('after_element_html', $previewHtml);
+        return $this;
     }
 
 }

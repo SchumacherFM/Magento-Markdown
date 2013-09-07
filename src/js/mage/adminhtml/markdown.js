@@ -81,11 +81,58 @@
                 $(Idhtml).value = detectionTag + "\n" + $(Idhtml).value;
             }
             alert('Markdown enabled with tag: "' + detectionTag + '"');
+        },
+        _scrollPreviewBox = function () {
+            this.selectionStart = 0;
+            this.textLength = 0;
+            this.text = '';
+        },
+        _livePreview = function ($markdownLivePreview) {
+            var editorId = $markdownLivePreview.readAttribute('data-elementid'),
+                $editorId = $(editorId),
+                mddetector = unescape($markdownLivePreview.readAttribute('data-mddetector')),
+                scrollObject = new _scrollPreviewBox();
+
+            $editorId.observe('keyup', function (e) {
+//                console.log(e.target.selectionStart, e.target.selectionEnd, e.target.textLength);
+                var mdText = e.target.value;
+                if (mdText.indexOf(mddetector) !== -1) {
+                    mdText = mdText.replace(mddetector, '');
+                    $markdownLivePreview.innerHTML = marked(mdText);
+                    if (e.target.selectionStart === e.target.selectionEnd) {
+                        scrollObject.selectionStart = e.target.selectionStart;
+                        scrollObject.textLength = e.target.textLength;
+                        scrollObject.text = mdText;
+                        scrollObject.scroll();
+                    }
+                } else {
+                    $markdownLivePreview.innerHTML = 'Offline ...';
+                }
+            });
         };
+
+    _scrollPreviewBox.prototype = {
+        _getTotalTextHeight: function () {
+            return this.text.split("\n").length;
+        },
+        _getCurrentTextHeight: function () {
+
+        },
+        scroll: function () {
+            console.log(this.selectionStart, this.textLength, this._getTotalTextHeight());
+        }
+    }
 
     this.renderMarkdown = renderMarkdown;
     this.markdownSyntax = markdownSyntax;
     this.toggleMarkdown = toggleMarkdown;
+
+    document.observe('dom:loaded', function () {
+        var markdownLivePreview = $('markdown_live_preview');
+        if (markdownLivePreview) {
+            _livePreview(markdownLivePreview);
+        }
+    });
 
 }).call(function () {
         return this || (typeof window !== 'undefined' ? window : global);
