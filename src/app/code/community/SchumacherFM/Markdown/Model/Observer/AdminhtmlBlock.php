@@ -76,7 +76,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 
         $html[] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => Mage::helper('markdown')->__('MD enable'),
+                'label'   => Mage::helper('markdown')->__('[M↓] enable'),
                 'type'    => 'button',
                 'class'   => 'btn-wysiwyg',
                 'onclick' => 'toggleMarkdown(\'' .
@@ -86,7 +86,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 
         $html[] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => Mage::helper('markdown')->__('MD Preview'),
+                'label'   => Mage::helper('markdown')->__('[M↓] Preview'),
                 'type'    => 'button',
                 'class'   => 'btn-wysiwyg',
                 'onclick' => Mage::helper('markdown')->getRenderMarkdownJs($htmlId)
@@ -94,7 +94,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 
         $html[] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => Mage::helper('markdown')->__('MD Syntax'),
+                'label'   => Mage::helper('markdown')->__('[M↓] Syntax'),
                 'type'    => 'button',
                 'class'   => 'btn-wysiwyg',
                 'onclick' => 'markdownSyntax(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_SYNTAX . '\');'
@@ -104,7 +104,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 
             $html[] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
-                    'label'   => Mage::helper('markdown')->__('MD Extra Syntax'),
+                    'label'   => Mage::helper('markdown')->__('[M↓] Extra Syntax'),
                     'type'    => 'button',
                     'class'   => 'btn-wysiwyg',
                     'onclick' => 'markdownSyntax(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_EXTRA_SYNTAX . '\');'
