@@ -13,7 +13,7 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
     /**
      * @var string
      */
-    protected $_currentRenderedText = '';
+    private $_currentRenderedText = '';
 
     protected $_preserveContainer = array();
 
@@ -34,9 +34,6 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
          */
         $this->_tag        = Mage::helper('markdown')->getDetectionTag();
         $this->_isDisabled = Mage::helper('markdown')->isDisabled();
-
-        $isExtra         = Mage::helper('markdown')->isMarkdownExtra() ? '_extra' : '';
-        $this->_renderer = Mage::getModel('markdown/michelf_markdown' . $isExtra);
     }
 
     /**
@@ -44,6 +41,11 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
      */
     public function getRenderer()
     {
+        if ($this->_renderer !== null) {
+            return $this->_renderer;
+        }
+        $isExtra         = Mage::helper('markdown')->isMarkdownExtra() ? '_extra' : '';
+        $this->_renderer = Mage::getModel('markdown/michelf_markdown' . $isExtra);
         return $this->_renderer;
     }
 
@@ -80,6 +82,7 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
         $force                      = isset($this->_options['force']) && $this->_options['force'] === TRUE;
         $protectMagento             = isset($this->_options['protectMagento']) && $this->_options['protectMagento'] === TRUE;
         $this->_currentRenderedText = $text; // @todo optimize
+
         if (!$this->_isMarkdown() && $force === FALSE) {
             return $this->_currentRenderedText;
         }

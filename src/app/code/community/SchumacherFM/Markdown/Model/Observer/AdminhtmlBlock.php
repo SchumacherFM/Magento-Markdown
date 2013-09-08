@@ -84,9 +84,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                 'label'   => Mage::helper('markdown')->__('[M↓] enable'),
                 'type'    => 'button',
                 'class'   => 'btn-wysiwyg',
-                'onclick' => 'toggleMarkdown(\'' .
-                rawurlencode(Mage::helper('markdown')->getDetectionTag())
-                . '\',\'' . $htmlId . '\');'
+                'onclick' => 'toggleMarkdown(\'' . Mage::helper('markdown')->getDetectionTag(TRUE) . '\',\'' . $htmlId . '\');'
             ))->toHtml();
 
         $html[] = Mage::getSingleton('core/layout')
@@ -94,7 +92,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                 'label'   => Mage::helper('markdown')->__('[M↓] Preview'),
                 'type'    => 'button',
                 'class'   => 'btn-wysiwyg',
-                'onclick' => Mage::helper('markdown')->getRenderMarkdownJs($htmlId)
+                'onclick' => Mage::helper('markdown')->getRenderMarkdownJs($htmlId),
             ))->toHtml();
 
         $html[] = Mage::getSingleton('core/layout')
@@ -102,7 +100,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                 'label'   => Mage::helper('markdown')->__('[M↓] Syntax'),
                 'type'    => 'button',
                 'class'   => 'btn-wysiwyg',
-                'onclick' => 'markdownSyntax(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_SYNTAX . '\');'
+                'onclick' => 'mdExternalUrl(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_SYNTAX . '\');'
             ))->toHtml();
 
         if (Mage::helper('markdown')->isMarkdownExtra()) {
@@ -112,7 +110,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                     'label'   => Mage::helper('markdown')->__('[M↓] Extra Syntax'),
                     'type'    => 'button',
                     'class'   => 'btn-wysiwyg',
-                    'onclick' => 'markdownSyntax(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_EXTRA_SYNTAX . '\');'
+                    'onclick' => 'mdExternalUrl(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_EXTRA_SYNTAX . '\');'
                 ))->toHtml();
         }
 
@@ -141,10 +139,10 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
     {
         $previewHtml = '<div id="markdown_live_preview"
         style="overflow:scroll; height:25em;"
-        data-mddetector="' . rawurlencode(Mage::helper('markdown')->getDetectionTag()) . '"
-        data-elementid="' . $element->getHtmlId() . '" class="buttons-set markdown">' .
+        data-mddetector="' . Mage::helper('markdown')->getDetectionTag(TRUE) . '"
+        data-elementid="' . $element->getHtmlId() . '" class="buttons-set"><div class="markdown">' .
             Mage::helper('markdown')->__('[M↓] Live Preview enabled ...')
-            . '</div>';
+            . '</div></div>';
         $element->setData('after_element_html', $previewHtml);
         return $this;
     }

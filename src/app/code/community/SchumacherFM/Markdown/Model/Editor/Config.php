@@ -17,13 +17,13 @@ class SchumacherFM_Markdown_Model_Editor_Config
     public function getWysiwygPluginSettings($config)
     {
         $variableConfig        = array();
-        $onclickParts          = array(
+        $onclickPreview        = array(
             'search'  => array('html_id'),
             'subject' => Mage::helper('markdown')->getRenderMarkdownJs('{{html_id}}'),
         );
-        $onclickPartsSyntax    = array(
+        $onclickSyntax         = array(
             'search'  => array('html_id'),
-            'subject' => 'markdownSyntax(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_SYNTAX . '\',\'{{html_id}}\');'
+            'subject' => 'mdExternalUrl(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_SYNTAX . '\',\'{{html_id}}\');'
         );
         $variableWysiwygPlugin = array(
             array(
@@ -34,9 +34,7 @@ class SchumacherFM_Markdown_Model_Editor_Config
                     'url'     => '',
                     'onclick' => array(
                         'search'  => array('html_id'),
-                        'subject' => 'toggleMarkdown(\'' .
-                        rawurlencode(Mage::helper('markdown')->getDetectionTag())
-                        . '\',\'{{html_id}}\');'
+                        'subject' => 'toggleMarkdown(\'' . Mage::helper('markdown')->getDetectionTag(TRUE) . '\',\'{{html_id}}\');'
                     ),
                     'class'   => 'plugin'
                 )
@@ -47,17 +45,17 @@ class SchumacherFM_Markdown_Model_Editor_Config
                 'options' => array(
                     'title'   => Mage::helper('markdown')->__('[M↓] Preview'),
                     'url'     => '',
-                    'onclick' => $onclickParts,
+                    'onclick' => $onclickPreview,
                     'class'   => 'plugin'
                 )
             ),
             array(
-                'name'    => 'markdownsyntax',
+                'name'    => 'mdExternalUrl',
                 'src'     => '',
                 'options' => array(
                     'title'   => Mage::helper('markdown')->__('[M↓] Syntax'),
                     'url'     => '',
-                    'onclick' => $onclickPartsSyntax,
+                    'onclick' => $onclickSyntax,
                     'class'   => 'plugin'
                 )
             ),
@@ -72,7 +70,7 @@ class SchumacherFM_Markdown_Model_Editor_Config
                     'url'     => '',
                     'onclick' => array(
                         'search'  => array('html_id'),
-                        'subject' => 'markdownSyntax(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_EXTRA_SYNTAX . '\',\'{{html_id}}\');'
+                        'subject' => 'mdExternalUrl(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_EXTRA_SYNTAX . '\',\'{{html_id}}\');'
                     ),
                     'class'   => 'plugin'
                 )

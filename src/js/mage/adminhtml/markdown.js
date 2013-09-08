@@ -6,8 +6,7 @@
  */
 ;
 (function () {
-    var FORM_ID = 'edit_form',
-        dialogWindow,
+    var dialogWindow,
         dialogWindowId = 'markdown-preview',
         TEXT_PREFIX = '<div class="markdown">',
         TEXT_SUFFIX = '</div>',
@@ -43,8 +42,9 @@
             }
         },
 
-        _renderMarkdownJs = function () {
-            showPreview(marked($(htmlId).value));
+        _renderMarkdownJs = function (mdDetector) {
+            mdDetector = unescape(mdDetector);
+            showPreview(marked($(htmlId).value.replace(mdDetector, '')));
         },
 
         _renderMarkdownAjax = function (url) {
@@ -58,18 +58,18 @@
 
         },
 
-        renderMarkdown = function (Idhtml, renderUrl) {
+        renderMarkdown = function (Idhtml, mdDetector, renderUrl) {
             htmlId = Idhtml;
             if (renderUrl && typeof renderUrl === 'string') {
                 _renderMarkdownAjax(renderUrl);
             } else {
-                _renderMarkdownJs();
+                _renderMarkdownJs(mdDetector);
             }
             return;
 
         },
 
-        markdownSyntax = function (url, Idhtml) {
+        mdExternalUrl = function (url, Idhtml) {
             htmlId = Idhtml;
             window.open(url);
         },
@@ -82,49 +82,54 @@
             }
             alert('Markdown enabled with tag: "' + detectionTag + '"');
         },
-        _scrollPreviewBox = function () {
-            this.selectionStart = 0;
-            this.textLength = 0;
-            this.text = '';
-        },
+
         _livePreview = function ($markdownLivePreview) {
             var editorId = $markdownLivePreview.readAttribute('data-elementid'),
                 $editorId = $(editorId),
-                mddetector = unescape($markdownLivePreview.readAttribute('data-mddetector')),
-                scrollObject = new _scrollPreviewBox();
+                _mdHandling = new _mdHandler();
+
+            _mdHandling.setMdDetector($markdownLivePreview);
+
+            var _originalHeight = $markdownLivePreview.getStyle('height'), _clicked = false;
+            $markdownLivePreview.observe('click', function (e) {
+                var css = {height: ''};
+                if (_clicked) {
+                    css['height'] = _originalHeight;
+                    _clicked = false;
+                } else {
+                    _clicked = true;
+                }
+                $markdownLivePreview.setStyle(css);
+            });
 
             $editorId.observe('keyup', function (e) {
-//                console.log(e.target.selectionStart, e.target.selectionEnd, e.target.textLength);
-                var mdText = e.target.value;
-                if (mdText.indexOf(mddetector) !== -1) {
-                    mdText = mdText.replace(mddetector, '');
-                    $markdownLivePreview.innerHTML = marked(mdText);
-                    if (e.target.selectionStart === e.target.selectionEnd) {
-                        scrollObject.selectionStart = e.target.selectionStart;
-                        scrollObject.textLength = e.target.textLength;
-                        scrollObject.text = mdText;
-                        scrollObject.scroll();
-                    }
-                } else {
-                    $markdownLivePreview.innerHTML = 'Offline ...';
-                }
+                _mdHandling.text = e.target.value;
+                $markdownLivePreview.innerHTML = _mdHandling.hasMarkdown()
+                    ? _mdHandling.getRenderedMarkdown()
+                    : 'Offline ...';
             });
+        },
+
+        _mdHandler = function () {
+            this.text = '';
+            this._mdDetector = '';
         };
 
-    _scrollPreviewBox.prototype = {
-        _getTotalTextHeight: function () {
-            return this.text.split("\n").length;
+    _mdHandler.prototype = {
+        setMdDetector: function ($markdownLivePreview) {
+            this._mdDetector = unescape($markdownLivePreview.readAttribute('data-mddetector') || '~~~@#$#@!');
+            return this;
         },
-        _getCurrentTextHeight: function () {
-
+        getRenderedMarkdown: function () {
+            return  TEXT_PREFIX + marked(this.text.replace(this._mdDetector, '')) + TEXT_SUFFIX;
         },
-        scroll: function () {
-            console.log(this.selectionStart, this.textLength, this._getTotalTextHeight());
+        hasMarkdown: function () {
+            return this.text.indexOf(this._mdDetector) !== -1;
         }
     }
 
     this.renderMarkdown = renderMarkdown;
-    this.markdownSyntax = markdownSyntax;
+    this.mdExternalUrl = mdExternalUrl;
     this.toggleMarkdown = toggleMarkdown;
 
     document.observe('dom:loaded', function () {
