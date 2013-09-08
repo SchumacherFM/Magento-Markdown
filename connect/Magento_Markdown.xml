@@ -1,26 +1,28 @@
 <_>
-   <form_key>WL3b2QKkQwmQ0J6y</form_key>
-   <name>markdown</name>
+   <form_key>1AZXnbxQkBrn6Mof</form_key>
+   <name>Markdown</name>
    <channel>community</channel>
    <version_ids>
       <version_ids>2</version_ids>
       <version_ids>1</version_ids>
    </version_ids>
-   <summary>Markdown as module for Magento! Replaces the TinyMCE editor. Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML).</summary>
-   <description>Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML).
+   <summary>Mage Markdown as module for Magento! Replaces the TinyMCE editor. Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML).</summary>
+   <description>Mage Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML).
 
 Full documentation of Markdown&apos;s syntax is available on John&apos;s Markdown page: http://daringfireball.net/projects/markdown/
 
 Full support of Markdown Extra: http://michelf.ca/projects/php-markdown/extra/
 
-This module renders all CMS pages and every block which extends Mage_Core_Block_Abstract.
+This module renders all CMS pages and CMS blocks.
 
 Rendering of catalog description fields have to be implemented in the phtml files by yourself.
 
-Preview in the backend. No live preview available maybe later.</description>
+Preview in the backend. Live preview available in CMS Pages.
+
+For further information please see the github repository: https://github.com/SchumacherFM/Magento-Markdown</description>
    <license>Custom</license>
    <license_uri>https://github.com/SchumacherFM/Magento-Markdown</license_uri>
-   <version>1.1.0</version>
+   <version>1.4.0</version>
    <stability>stable</stability>
    <notes>https://github.com/SchumacherFM/Magento-Markdown</notes>
    <authors>
@@ -51,7 +53,7 @@ Preview in the backend. No live preview available maybe later.</description>
             <max/>
          </max>
          <files>
-            <files>                            </files>
+            <files>                                     </files>
          </files>
       </package>
       <extension>
