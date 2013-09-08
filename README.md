@@ -12,13 +12,13 @@ Markdown page: <http://daringfireball.net/projects/markdown/>
 
 Full support of Markdown Extra: <http://michelf.ca/projects/php-markdown/extra/>
 
-This module renders all CMS pages and every block which extends Mage_Core_Block_Abstract.
+This module renders all CMS pages and all CMS blocks (Mage_Cms_Block_Block and Mage_Cms_Block_Widget_Block).
 
-Renders every transactional email as Markdown when the email templates includes a special tag.
+Renders every transactional email as Markdown (or MD Extra) when the email templates includes a special tag.
 
 Rendering of catalog description fields have to be implemented in the phtml files by yourself.
 
-Preview in the backend. No live preview available maybe later.
+Preview in the backend. CMS pages have a live preview.
 
 Bugs
 ----
@@ -105,9 +105,6 @@ Todo
 ----
 
  * Better usability in the backend
- * Live edit
- * Backend Preview: Only Markdown itself is supported, no Markdown Extra.
- * Maybe: Use custom Markdown parser even written in other languages
 
 Installation Instructions
 -------------------------
@@ -127,6 +124,11 @@ About
 
 History
 -------
+
+#### 1.4.1
+
+- Fix readme
+- Magento Connect
 
 #### 1.4.0
 
