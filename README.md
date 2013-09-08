@@ -128,11 +128,14 @@ About
 History
 -------
 
-#### 1.x.x
+#### 1.4.0
 
 - Update readme
 - Add modified markdown logo from [https://github.com/dcurtis/markdown-mark](https://github.com/dcurtis/markdown-mark)
 - Tiny rename to Mage Markdown due to Magento Connect guidelines
+- Live preview in CMS Editor fields (not for Markdown Extra)
+- Email Templates can have Markdown Extra mode while the default config is "normal" Markdown mode
+- Implementing your own renderer must implement SchumacherFM_Markdown_Model_Markdown_Interface
 
 #### 1.3.0
 

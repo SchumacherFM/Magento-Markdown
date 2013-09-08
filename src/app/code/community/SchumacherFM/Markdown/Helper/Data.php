@@ -51,14 +51,13 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * @todo if backend check for current selected store view / website
-     *       check if md extra is enabled ... per store view
+     * @param string $type enum email|page|block ... last two not supported, maybe later.
      *
      * @return bool
      */
-    public function isMarkdownExtra()
+    public function isMarkdownExtra($type = null)
     {
-        return (boolean)Mage::getStoreConfig('schumacherfm/markdown/md_extra');
+        return (boolean)Mage::getStoreConfig('schumacherfm/markdown/md_extra' . (!empty($type) ? '_' . $type : ''));
     }
 
     /**
@@ -71,7 +70,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getTransactionalEmailCSS()
     {
-        $file = Mage::getStoreConfig('schumacherfm/markdown/te_markdown_css');
+        $file = Mage::getStoreConfig('schumacherfm/markdown/te_md_css');
         if (empty($file)) {
             return '';
         }

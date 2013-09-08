@@ -56,7 +56,16 @@
                             Only transactional emails which have the detection tag somewhere integrated will be rendered with markdown.
                             </comment>
                         </detection_tag>
-                        <te_markdown_css translate="label">
+                        <md_extra_email translate="label">
+                            <label>Transactional email: Use Markdown Extra</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </md_extra_email>
+                        <te_md_css translate="label">
                             <label>Transactional email: Path to CSS file</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>150</sort_order>
@@ -65,7 +74,7 @@
                             <show_in_store>1</show_in_store>
                             <comment><![CDATA[Relative path to the CSS to include in a transactional email. Mage::getBaseDir() is prefixed.
                             Will be included in the &lt;style&gt; tag in each email.]]></comment>
-                        </te_markdown_css>
+                        </te_md_css>
                     </fields>
                 </markdown>
             </groups>

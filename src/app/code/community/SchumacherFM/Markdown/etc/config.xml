@@ -128,6 +128,7 @@
             <markdown>
                 <enable>1</enable>
                 <md_extra>0</md_extra>
+                <md_extra_email>0</md_extra_email>
                 <detection_tag>!#markdown</detection_tag>
             </markdown>
         </schumacherfm>

@@ -15,6 +15,9 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
      */
     private $_currentRenderedText = '';
 
+    /**
+     * @var array
+     */
     protected $_preserveContainer = array();
 
     /**
@@ -39,14 +42,37 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
     /**
      * @return SchumacherFM_Markdown_Model_Michelf_Markdown
      */
-    public function getRenderer()
+    public final function getRenderer()
     {
         if ($this->_renderer !== null) {
             return $this->_renderer;
         }
-        $isExtra         = Mage::helper('markdown')->isMarkdownExtra() ? '_extra' : '';
-        $this->_renderer = Mage::getModel('markdown/michelf_markdown' . $isExtra);
+
+        $_isExtra        = $this->_getIsExtraRenderer();
+        $this->_renderer = Mage::getModel($this->_getRendererModelName($_isExtra));
         return $this->_renderer;
+    }
+
+    /**
+     * for overloading please use this method to enable or disable the extra renderer
+     *
+     * @return boolean
+     */
+    protected function _getIsExtraRenderer()
+    {
+        return Mage::helper('markdown')->isMarkdownExtra();
+    }
+
+    /**
+     * for overloading and using of your own markdown renderer use this method
+     *
+     * @param bool $_isExtra
+     *
+     * @return string
+     */
+    protected function _getRendererModelName($_isExtra = FALSE)
+    {
+        return 'markdown/michelf_markdown' . ($_isExtra === TRUE ? '_extra' : '');
     }
 
     /**

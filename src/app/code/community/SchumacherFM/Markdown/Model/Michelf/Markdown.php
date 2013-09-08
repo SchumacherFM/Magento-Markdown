@@ -13,7 +13,7 @@
 # Markdown Parser Class
 #
 
-class SchumacherFM_Markdown_Model_Michelf_Markdown
+class SchumacherFM_Markdown_Model_Michelf_Markdown implements SchumacherFM_Markdown_Model_Markdown_Interface
 {
 
     ### Version ###
