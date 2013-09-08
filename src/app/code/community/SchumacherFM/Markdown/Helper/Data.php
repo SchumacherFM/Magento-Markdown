@@ -28,13 +28,14 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * @todo if backend check for current selected store view / website
+     * @param bool $encoded
      *
-     * @return bool
+     * @return mixed|string
      */
-    public function getDetectionTag()
+    public function getDetectionTag($encoded = FALSE)
     {
-        return Mage::getStoreConfig('schumacherfm/markdown/detection_tag');
+        $tag = Mage::getStoreConfig('schumacherfm/markdown/detection_tag');
+        return $encoded ? rawurlencode($tag) : $tag;
     }
 
     /**
@@ -50,14 +51,13 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * @todo if backend check for current selected store view / website
-     *       check if md extra is enabled ... per store view
+     * @param string $type enum email|page|block ... last two not supported, maybe later.
      *
      * @return bool
      */
-    public function isMarkdownExtra()
+    public function isMarkdownExtra($type = null)
     {
-        return (boolean)Mage::getStoreConfig('schumacherfm/markdown/md_extra');
+        return (boolean)Mage::getStoreConfig('schumacherfm/markdown/md_extra' . (!empty($type) ? '_' . $type : ''));
     }
 
     /**
@@ -70,7 +70,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getTransactionalEmailCSS()
     {
-        $file = Mage::getStoreConfig('schumacherfm/markdown/te_markdown_css');
+        $file = Mage::getStoreConfig('schumacherfm/markdown/te_md_css');
         if (empty($file)) {
             return '';
         }
@@ -99,7 +99,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getRenderMarkdownJs($htmlId)
     {
-        $args = array('\'' . $htmlId . '\'');
+        $args = array('\'' . $htmlId . '\'', '\'' . Mage::helper('markdown')->getDetectionTag(TRUE) . '\'');
         if ($this->isMarkdownExtra()) {
             $args[] = '\'' . $this->getAdminRenderUrl() . '\'';
         }

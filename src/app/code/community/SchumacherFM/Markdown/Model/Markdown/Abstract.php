@@ -13,8 +13,11 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
     /**
      * @var string
      */
-    protected $_currentRenderedText = '';
+    private $_currentRenderedText = '';
 
+    /**
+     * @var array
+     */
     protected $_preserveContainer = array();
 
     /**
@@ -34,17 +37,42 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
          */
         $this->_tag        = Mage::helper('markdown')->getDetectionTag();
         $this->_isDisabled = Mage::helper('markdown')->isDisabled();
-
-        $isExtra         = Mage::helper('markdown')->isMarkdownExtra() ? '_extra' : '';
-        $this->_renderer = Mage::getModel('markdown/michelf_markdown' . $isExtra);
     }
 
     /**
      * @return SchumacherFM_Markdown_Model_Michelf_Markdown
      */
-    public function getRenderer()
+    public final function getRenderer()
     {
+        if ($this->_renderer !== null) {
+            return $this->_renderer;
+        }
+
+        $_isExtra        = $this->_getIsExtraRenderer();
+        $this->_renderer = Mage::getModel($this->_getRendererModelName($_isExtra));
         return $this->_renderer;
+    }
+
+    /**
+     * for overloading please use this method to enable or disable the extra renderer
+     *
+     * @return boolean
+     */
+    protected function _getIsExtraRenderer()
+    {
+        return Mage::helper('markdown')->isMarkdownExtra();
+    }
+
+    /**
+     * for overloading and using of your own markdown renderer use this method
+     *
+     * @param bool $_isExtra
+     *
+     * @return string
+     */
+    protected function _getRendererModelName($_isExtra = FALSE)
+    {
+        return 'markdown/michelf_markdown' . ($_isExtra === TRUE ? '_extra' : '');
     }
 
     /**
@@ -80,6 +108,7 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
         $force                      = isset($this->_options['force']) && $this->_options['force'] === TRUE;
         $protectMagento             = isset($this->_options['protectMagento']) && $this->_options['protectMagento'] === TRUE;
         $this->_currentRenderedText = $text; // @todo optimize
+
         if (!$this->_isMarkdown() && $force === FALSE) {
             return $this->_currentRenderedText;
         }

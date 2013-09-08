@@ -6,8 +6,7 @@
  */
 ;
 (function () {
-    var FORM_ID = 'edit_form',
-        dialogWindow,
+    var dialogWindow,
         dialogWindowId = 'markdown-preview',
         TEXT_PREFIX = '<div class="markdown">',
         TEXT_SUFFIX = '</div>',
@@ -43,8 +42,9 @@
             }
         },
 
-        _renderMarkdownJs = function () {
-            showPreview(marked($(htmlId).value));
+        _renderMarkdownJs = function (mdDetector) {
+            mdDetector = unescape(mdDetector);
+            showPreview(marked($(htmlId).value.replace(mdDetector, '')));
         },
 
         _renderMarkdownAjax = function (url) {
@@ -58,18 +58,18 @@
 
         },
 
-        renderMarkdown = function (Idhtml, renderUrl) {
+        renderMarkdown = function (Idhtml, mdDetector, renderUrl) {
             htmlId = Idhtml;
             if (renderUrl && typeof renderUrl === 'string') {
                 _renderMarkdownAjax(renderUrl);
             } else {
-                _renderMarkdownJs();
+                _renderMarkdownJs(mdDetector);
             }
             return;
 
         },
 
-        markdownSyntax = function (url, Idhtml) {
+        mdExternalUrl = function (url, Idhtml) {
             htmlId = Idhtml;
             window.open(url);
         },
@@ -81,11 +81,63 @@
                 $(Idhtml).value = detectionTag + "\n" + $(Idhtml).value;
             }
             alert('Markdown enabled with tag: "' + detectionTag + '"');
+        },
+
+        _livePreview = function ($markdownLivePreview) {
+            var editorId = $markdownLivePreview.readAttribute('data-elementid'),
+                $editorId = $(editorId),
+                _mdHandling = new _mdHandler();
+
+            _mdHandling.setMdDetector($markdownLivePreview);
+
+            var _originalHeight = $markdownLivePreview.getStyle('height'), _clicked = false;
+            $markdownLivePreview.observe('click', function (e) {
+                var css = {height: ''};
+                if (_clicked) {
+                    css['height'] = _originalHeight;
+                    _clicked = false;
+                } else {
+                    _clicked = true;
+                }
+                $markdownLivePreview.setStyle(css);
+            });
+
+            $editorId.observe('keyup', function (e) {
+                _mdHandling.text = e.target.value;
+                $markdownLivePreview.innerHTML = _mdHandling.hasMarkdown()
+                    ? _mdHandling.getRenderedMarkdown()
+                    : 'Offline ...';
+            });
+        },
+
+        _mdHandler = function () {
+            this.text = '';
+            this._mdDetector = '';
         };
 
+    _mdHandler.prototype = {
+        setMdDetector: function ($markdownLivePreview) {
+            this._mdDetector = unescape($markdownLivePreview.readAttribute('data-mddetector') || '~~~@#$#@!');
+            return this;
+        },
+        getRenderedMarkdown: function () {
+            return  TEXT_PREFIX + marked(this.text.replace(this._mdDetector, '')) + TEXT_SUFFIX;
+        },
+        hasMarkdown: function () {
+            return this.text.indexOf(this._mdDetector) !== -1;
+        }
+    }
+
     this.renderMarkdown = renderMarkdown;
-    this.markdownSyntax = markdownSyntax;
+    this.mdExternalUrl = mdExternalUrl;
     this.toggleMarkdown = toggleMarkdown;
+
+    document.observe('dom:loaded', function () {
+        var markdownLivePreview = $('markdown_live_preview');
+        if (markdownLivePreview) {
+            _livePreview(markdownLivePreview);
+        }
+    });
 
 }).call(function () {
         return this || (typeof window !== 'undefined' ? window : global);

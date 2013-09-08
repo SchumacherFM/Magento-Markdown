@@ -7,6 +7,44 @@
  */
 class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdown_Model_Markdown_Abstract
 {
+    /**
+     * @var null
+     */
+    protected $_currentObserverMethod = null;
+
+    /**
+     * @var array
+     */
+    protected $_mdExtraUsage = array(
+        // observer method => config value
+        'renderEmailTemplate' => 'email',
+    );
+
+    /**
+     * @return null|bool null = use global
+     */
+    protected function _isObserverMdExtraUsage()
+    {
+        $isset = isset($this->_mdExtraUsage[$this->_currentObserverMethod]);
+        if (!$isset) {
+            return null;
+        }
+
+        return Mage::helper('markdown')->isMarkdownExtra($this->_mdExtraUsage[$this->_currentObserverMethod]);
+    }
+
+    /**
+     * @return bool
+     */
+    protected function _getIsExtraRenderer()
+    {
+        $globalExtra           = parent::_getIsExtraRenderer();
+        $_observerMdExtraUsage = $this->_isObserverMdExtraUsage();
+        if ($_observerMdExtraUsage === null) {
+            return $globalExtra;
+        }
+        return $_observerMdExtraUsage;
+    }
 
     /**
      * @param Varien_Event_Observer $observer
@@ -15,6 +53,7 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
      */
     public function renderEmailTemplate(Varien_Event_Observer $observer)
     {
+        $this->_currentObserverMethod = __FUNCTION__;
         if ($this->_isDisabled) {
             return null;
         }
@@ -25,6 +64,7 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
         }
 
         $template = $object->getData('template_text');
+
         if ($this->isMarkdown($template)) {
             $object->setData('template_text', $this->_renderMarkdown($template));
             $css = Mage::helper('markdown')->getTransactionalEmailCSS();
@@ -39,6 +79,7 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
      */
     public function renderPage(Varien_Event_Observer $observer)
     {
+        $this->_currentObserverMethod = __FUNCTION__;
         if ($this->_isDisabled) {
             return null;
         }
@@ -61,6 +102,7 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
      */
     public function renderBlock(Varien_Event_Observer $observer)
     {
+        $this->_currentObserverMethod = __FUNCTION__;
         if ($this->_isDisabled) {
             return null;
         }
@@ -82,7 +124,7 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
         $isMarkdown = (boolean)$block->getIsMarkdown();
         $this->setOptions(array(
             'force'          => $isMarkdown,
-            'protectMagento' => FALSE,
+            'protectMagento' => TRUE,
         ));
         $html = $transport->getHtml();
         $transport->setHtml($this->_renderMarkdown($html));
