@@ -105,9 +105,6 @@ Todo
 ----
 
  * Better usability in the backend
- * Live edit
- * Backend Preview: Only Markdown itself is supported, no Markdown Extra.
- * Maybe: Use custom Markdown parser even written in other languages
 
 Installation Instructions
 -------------------------
