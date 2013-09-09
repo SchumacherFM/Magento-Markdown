@@ -119,7 +119,7 @@ Composer …
 About
 -----
 - Key: SchumacherFM_Markdown
-- Current Version 1.2.0
+- Current Version: see History section
 - [Download tarball](https://github.com/SchumacherFM/Magento-Markdown/tags)
 
 History
