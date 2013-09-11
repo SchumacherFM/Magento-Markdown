@@ -125,6 +125,11 @@ About
 History
 -------
 
+#### 1.4.2
+
+- Magento Connect
+- Compatibility Magento >= 1.5
+
 #### 1.4.1
 
 - Fix readme
@@ -160,8 +165,11 @@ History
 
 Compatibility
 -------------
-- Magento >= 1.4
+
+- Magento >= 1.5
 - php >= 5.2.0
+
+There is the possibility that this extension may work with pre-1.5 Magento versions.
 
 Support / Contribution
 ----------------------
