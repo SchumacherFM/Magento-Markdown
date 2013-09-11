@@ -1,10 +1,9 @@
 <_>
    <form_key>1AZXnbxQkBrn6Mof</form_key>
-   <name>Markdown</name>
+   <name>markdown</name>
    <channel>community</channel>
    <version_ids>
       <version_ids>2</version_ids>
-      <version_ids>1</version_ids>
    </version_ids>
    <summary>Mage Markdown as module for Magento! Replaces the TinyMCE editor. Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML).</summary>
    <description>Mage Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML).
@@ -22,7 +21,7 @@ Preview in the backend. Live preview available in CMS Pages.
 For further information please see the github repository: https://github.com/SchumacherFM/Magento-Markdown</description>
    <license>Custom</license>
    <license_uri>https://github.com/SchumacherFM/Magento-Markdown</license_uri>
-   <version>1.4.0</version>
+   <version>1.4.2</version>
    <stability>stable</stability>
    <notes>https://github.com/SchumacherFM/Magento-Markdown</notes>
    <authors>
@@ -53,7 +52,7 @@ For further information please see the github repository: https://github.com/Sch
             <max/>
          </max>
          <files>
-            <files>                                     </files>
+            <files>                                         </files>
          </files>
       </package>
       <extension>
