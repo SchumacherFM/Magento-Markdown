@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
-    <name>Markdown</name>
-    <version>1.4.0</version>
+    <name>markdown</name>
+    <version>1.4.2</version>
     <stability>stable</stability>
     <license uri="https://github.com/SchumacherFM/Magento-Markdown">Custom</license>
     <channel>community</channel>
@@ -22,8 +22,8 @@ Preview in the backend. Live preview available in CMS Pages.&#xD;
 For further information please see the github repository: https://github.com/SchumacherFM/Magento-Markdown</description>
     <notes>https://github.com/SchumacherFM/Magento-Markdown</notes>
     <authors><author><name>Cyrill Schumacher</name><user>cyrills</user><email>cyrill@schumacher.fm</email></author></authors>
-    <date>2013-09-08</date>
-    <time>10:12:10</time>
+    <date>2013-09-11</date>
+    <time>09:03:12</time>
     <contents><target name="magecommunity"><dir name="SchumacherFM"><dir name="Markdown"><dir><dir name="Helper"><file name="Data.php" hash="35789036d57008a39effa53ed597d737"/></dir><dir name="Model"><dir name="Editor"><file name="Config.php" hash="44c6244ec440e8150778079cd184e5de"/><file name="Observer.php" hash="ad29b486cbe198b89e04db266d10c16b"/></dir><dir name="Markdown"><file name="Abstract.php" hash="496f33e550c20301a8a4c62c5cbf35a2"/><file name="Interface.php" hash="05df0ecf7a7c6bc09481f213cdc98255"/><file name="Observer.php" hash="e357583f380bcc925cc663d44f6120da"/><file name="Render.php" hash="df0addc5cfbd8d805c0b8a1661bbd496"/></dir><dir name="Michelf"><dir name="Markdown"><file name="Extra.php" hash="aaee7a66298007f8c003ba96d53deab9"/><file name="TmpImpl.php" hash="5ec68c28519d8ecb4a43324f5f197a80"/></dir><file name="Markdown.php" hash="76219ba32f37cad14755c8613b390c83"/></dir><dir name="Observer"><file name="AdminhtmlBlock.php" hash="50f7c3f848f847ef7b35206f7f48914f"/></dir></dir><dir name="controllers"><dir name="Adminhtml"><file name="MarkdownController.php" hash="9a7e8a64624159af49a18ad135d721ae"/></dir></dir><dir name="etc"><file name="adminhtml.xml" hash="1f4034751ea0e0eece21d0015ee95e1a"/><file name="config.xml" hash="e398afbbb64dc97de74baf605ebc64fc"/><file name="system.xml" hash="0cee296bcf061251c7eab51dfefe224f"/></dir><dir name="sql"><dir name="markdown_setup"><file name="install-1.0.0.php" hash="0fe5a9650dd224f691caf585a34c52e6"/></dir></dir></dir><file name=".DS_Store" hash="29236c1e2932a8a54035bfbe9e734f49"/></dir></dir></target><target name="magedesign"><dir name="adminhtml"><dir name="default"><dir name="default"><dir name="layout"><file name="markdown.xml" hash="ceece632ae2ebda2c33f7a7a37f9d7d2"/></dir></dir></dir></dir></target><target name="mageetc"><dir name="modules"><file name="SchumacherFM_Markdown.xml" hash="db8742448ef30a5af1bd60865f429c26"/></dir></target><target name="magelocale"><dir><dir name="de_DE"><file name="SchumacherFM_Markdown.csv" hash="d41d8cd98f00b204e9800998ecf8427e"/></dir><dir name="en_US"><file name="SchumacherFM_Markdown.csv" hash="d41d8cd98f00b204e9800998ecf8427e"/></dir></dir></target><target name="mage"><dir name="js"><dir name="mage"><dir name="adminhtml"><file name="markdown.js" hash="62a8ef8105db7defd76fa9f8bca6bfce"/><file name="marked.js" hash="5dbb480da6528c11cd99f3d17cc6aad5"/></dir></dir></dir></target><target name="mageskin"><dir name="adminhtml"><dir name="default"><dir name="default"><file name="markdown.css" hash="68699f62ea8666484819346ff143ee88"/></dir></dir></dir></target></contents>
     <compatible/>
     <dependencies><required><php><min>5.2.0</min><max>6.0.0</max></php></required></dependencies>
