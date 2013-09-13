@@ -20,7 +20,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function render($text, array $options = null)
+    public function render($text, array $options = NULL)
     {
         return Mage::getSingleton('markdown/markdown_render')
             ->setOptions($options)
@@ -55,7 +55,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return bool
      */
-    public function isMarkdownExtra($type = null)
+    public function isMarkdownExtra($type = NULL)
     {
         return (boolean)Mage::getStoreConfig('schumacherfm/markdown/md_extra' . (!empty($type) ? '_' . $type : ''));
     }
@@ -104,5 +104,13 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
             $args[] = '\'' . $this->getAdminRenderUrl() . '\'';
         }
         return 'renderMarkdown(' . implode(',', $args) . ');';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCodeMirrorEnabled()
+    {
+        return (boolean)Mage::getStoreConfig('schumacherfm/markdown/codemirror_enable');
     }
 }

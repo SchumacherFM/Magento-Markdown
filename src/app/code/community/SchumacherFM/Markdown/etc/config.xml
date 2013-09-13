@@ -130,6 +130,7 @@
                 <md_extra>0</md_extra>
                 <md_extra_email>0</md_extra_email>
                 <detection_tag>!#markdown</detection_tag>
+                <codemirror_enable>0</codemirror_enable>
             </markdown>
         </schumacherfm>
     </default>
