@@ -35,6 +35,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
             if ($this->_isElementEditor($element)) {
 
                 // @todo handle md extra ...
+                // @todo nothing is working in CMS pages
 //                if (!Mage::helper('markdown')->isMarkdownExtra()) {
 //
 //                }

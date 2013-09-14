@@ -32,9 +32,9 @@
             if (instance.is('loaded')) {
                 // some ridiculous copying due to strange code in EpicEditor when unload is called :-(
                 // https://github.com/OscarGodson/EpicEditor/issues/289
-                var currentText = $(textareaId).value;
+//                var currentText = $(textareaId).value;
                 instance.unload();
-                $(textareaId).value = currentText;
+//                $(textareaId).value = currentText;
                 $(textareaId).removeClassName('no-display');
             } else {
                 $(textareaId).addClassName('no-display');
@@ -80,7 +80,11 @@
                     toggleEdit: 'Toggle Edit Mode',
                     toggleFullscreen: 'Enter Fullscreen'
                 },
-                autogrow: true
+                autogrow: {
+                    minHeight: 400,
+                    maxHeight: 700,
+                    scroll: true
+                }
             };
 
             // going into the callback hell ... for loading multiple instances on one page
@@ -88,25 +92,25 @@
                 var $form = $(formId);
                 if ($form) {
                     $form.select('.initEpicEditor').forEach(function (divEpic) {
+
                         var
                             epicHtmlId = divEpic.id,
-                            userConfig = unescape(divEpic.readAttribute('data-config') || '{}').evalJSON(true),
                             htmlIdSplit = epicHtmlId.split('_EE_'),
                             textAreaId = htmlIdSplit[1] || '';
 
-                        Object.extend(editorOptions, userConfig);
-
-                        editorOptions.container = epicHtmlId;
-                        editorOptions.textarea = textAreaId;
-
-                        epicEditorInstances[textAreaId] = new window.EpicEditor(editorOptions).load();
-
+                        if (!epicEditorInstances[textAreaId]) {
+                            var userConfig = unescape(divEpic.readAttribute('data-config') || '{}').evalJSON(true);
+                            Object.extend(editorOptions, userConfig);
+                            editorOptions.container = epicHtmlId;
+                            editorOptions.textarea = textAreaId;
+                            epicEditorInstances[textAreaId] = new window.EpicEditor(editorOptions).load();
+                        }
                     });
-
                 }
             });
-
-
+        },
+        _documentHasTabs = function () {
+            return $$('ul.tabs').length === 1;
         };
 
     this.mdExternalUrl = mdExternalUrl;
@@ -114,7 +118,25 @@
     this.toggleEpicEditor = toggleEpicEditor;
 
     document.observe('dom:loaded', function () {
-        _loadEpicEditor();
+
+        // editor can't load properly due to the late initialized tabs ... therefore thanks there are events!
+        if (_documentHasTabs()) {
+
+            var allowedTabs = {
+                'page_tabs_content_section': true,  // cms page
+                'product_info_tabs_group_34': true  // product edit
+            };
+
+            varienGlobalEvents.attachEventHandler('showTab', function (e) {
+                if (allowedTabs[e.tab.id]) {
+                    _loadEpicEditor();
+                }
+            });
+
+        } else {
+            _loadEpicEditor();
+        }
+
     });
 
 }).call(function () {
