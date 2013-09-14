@@ -109,8 +109,9 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * @return bool
      */
-    public function isCodeMirrorEnabled()
+    public function isEpicEditorEnabled()
     {
-        return (boolean)Mage::getStoreConfig('schumacherfm/markdown/codemirror_enable');
+        return (boolean)Mage::getStoreConfig('schumacherfm/markdown/epiceditor_enable');
     }
+
 }

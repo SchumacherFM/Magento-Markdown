@@ -113,6 +113,50 @@
         _mdHandler = function () {
             this.text = '';
             this._mdDetector = '';
+        },
+        _loadEpicEditor = function () {
+
+            if (!window.EpicEditor) {
+                return false;
+            }
+            var opts = {
+                container: 'epiceditor',
+                textarea: 'block_content',
+                basePath: '/skin/adminhtml/default/default/epiceditor',
+                clientSideStorage: true,
+                localStorageName: 'epiceditor',
+                useNativeFullscreen: true,
+                file: {
+                    name: 'epiceditor',
+                    defaultContent: '',
+                    autoSave: 100
+                },
+                theme: {
+                    base: '/themes/base/epiceditor.css',
+                    preview: '/themes/preview/github.css',
+                    editor: '/themes/editor/epic-light.css'
+                },
+                button: {
+                    preview: true,
+                    fullscreen: true,
+                    bar: "auto"
+                },
+                focusOnLoad: false,
+                shortcut: {
+                    modifier: 18,
+                    fullscreen: 70,
+                    preview: 80
+                },
+                string: {
+                    togglePreview: 'Toggle Preview Mode',
+                    toggleEdit: 'Toggle Edit Mode',
+                    toggleFullscreen: 'Enter Fullscreen'
+                },
+                autogrow: true
+            };
+
+            var editor = new window.EpicEditor(opts).load();
+
         };
 
     _mdHandler.prototype = {
@@ -137,6 +181,7 @@
         if (markdownLivePreview) {
             _livePreview(markdownLivePreview);
         }
+        _loadEpicEditor();
     });
 
 }).call(function () {

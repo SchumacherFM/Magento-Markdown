@@ -107,10 +107,14 @@
             </cms_wysiwyg_config_prepare>
             <adminhtml_block_html_before>
                 <observers>
-                    <markdown_adminhtml_block_html_before>
+                    <markdown_adminhtml_block_html_before_textarea>
                         <class>markdown/observer_adminhtmlBlock</class>
                         <method>alterTextareaBlockTemplate</method>
-                    </markdown_adminhtml_block_html_before>
+                    </markdown_adminhtml_block_html_before_textarea>
+                    <markdown_adminhtml_block_html_before_page>
+                        <class>markdown/observer_adminhtmlEpicEditor</class>
+                        <method>injectEpicEditor</method>
+                    </markdown_adminhtml_block_html_before_page>
                 </observers>
             </adminhtml_block_html_before>
             <core_config_data_save_after>
@@ -130,7 +134,7 @@
                 <md_extra>0</md_extra>
                 <md_extra_email>0</md_extra_email>
                 <detection_tag>!#markdown</detection_tag>
-                <codemirror_enable>0</codemirror_enable>
+                <epiceditor_enable>0</epiceditor_enable>
             </markdown>
         </schumacherfm>
     </default>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @category    SchumacherFM_Markdown
- * @package     Helper
+ * @package     Observer
  * @author      Cyrill at Schumacher dot fm / @SchumacherFM
  * @copyright   Copyright (c)
  */
@@ -17,7 +17,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
     public function alterTextareaBlockTemplate(Varien_Event_Observer $observer)
     {
         if (Mage::helper('markdown')->isDisabled()) {
-            return null;
+            return NULL;
         }
 
         /** @var $block Mage_Adminhtml_Block_Template */
@@ -33,7 +33,11 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
             }
 
             if ($this->_isElementEditor($element)) {
-                $this->_addLivePreviewToEditor($element);
+
+                if (!Mage::helper('markdown')->isMarkdownExtra()) {
+                    $this->_addLivePreviewToEditor($element);
+                }
+                $this->_addEpicEditorHtml($element);
             }
         }
 
@@ -44,6 +48,22 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                 $this->_getMarkdownButtons($element);
             }
         }
+    }
+
+    /**
+     * @param Varien_Data_Form_Element_Abstract $element
+     */
+    protected function _addEpicEditorHtml(Varien_Data_Form_Element_Abstract $element)
+    {
+
+        $element->setClass('no-display');
+
+        $html = array(
+            $element->getData('after_element_html'),
+            '<div id="epiceditor"></div>'
+        );
+
+        $element->setData('after_element_html', implode('', $html));
     }
 
     /**
@@ -74,7 +94,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
      * @param Varien_Data_Form_Element_Abstract $element
      * @param string|null                       $htmlId
      */
-    protected function _getMarkdownButtons(Varien_Data_Form_Element_Abstract $element, $htmlId = null)
+    protected function _getMarkdownButtons(Varien_Data_Form_Element_Abstract $element, $htmlId = NULL)
     {
         $html   = array($element->getData('after_element_html'));
         $htmlId = empty($htmlId) ? $element->getHtmlId() : $htmlId;
@@ -118,16 +138,13 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
     }
 
     /**
-     * Live preview only available for non markdown extra mode.
-     * otherwise the ajax request and php markdown rendering would kill the users patience
-     *
      * @param Varien_Data_Form_Element_Abstract $element
      *
      * @return bool
      */
     protected function _isElementEditor(Varien_Data_Form_Element_Abstract $element)
     {
-        return !Mage::helper('markdown')->isMarkdownExtra() && $element instanceof Varien_Data_Form_Element_Editor;
+        return $element instanceof Varien_Data_Form_Element_Editor;
     }
 
     /**
@@ -146,5 +163,4 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         $element->setData('after_element_html', $previewHtml);
         return $this;
     }
-
 }
