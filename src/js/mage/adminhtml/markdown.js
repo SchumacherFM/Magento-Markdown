@@ -6,68 +6,9 @@
  */
 ;
 (function () {
-    var dialogWindow,
-        dialogWindowId = 'markdown-preview',
-        TEXT_PREFIX = '<div class="markdown">',
-        TEXT_SUFFIX = '</div>',
-
+    var
+        epicEditorInstances = {},
         htmlId = '',
-
-        showPreview = function (responseText) {
-
-            dialogWindow = Dialog.info(TEXT_PREFIX + responseText + TEXT_SUFFIX, {
-                draggable: true,
-                resizable: true,
-                closable: true,
-                className: "magento",
-                windowClassName: "popup-window",
-                title: 'Markdown Preview',
-                width: 800,
-                height: 480,
-                zIndex: 1000,
-                recenterAuto: false,
-                hideEffect: Element.hide,
-                showEffect: Element.show,
-                id: dialogWindowId,
-                onClose: closeDialogWindow.bind(this)
-            });
-        },
-
-        closeDialogWindow = function (window) {
-            if (!window) {
-                window = dialogWindow;
-            }
-            if (window) {
-                window.close();
-            }
-        },
-
-        _renderMarkdownJs = function (mdDetector) {
-            mdDetector = unescape(mdDetector);
-            showPreview(marked($(htmlId).value.replace(mdDetector, '')));
-        },
-
-        _renderMarkdownAjax = function (url) {
-            new Ajax.Request(url, {
-                method: 'post',
-                parameters: {"content": $(htmlId).value},
-                onComplete: function (data) {
-                    showPreview((data && data.responseText) ? data.responseText : 'Ajax Error');
-                }
-            });
-
-        },
-
-        renderMarkdown = function (Idhtml, mdDetector, renderUrl) {
-            htmlId = Idhtml;
-            if (renderUrl && typeof renderUrl === 'string') {
-                _renderMarkdownAjax(renderUrl);
-            } else {
-                _renderMarkdownJs(mdDetector);
-            }
-            return;
-
-        },
 
         mdExternalUrl = function (url, Idhtml) {
             htmlId = Idhtml;
@@ -82,47 +23,34 @@
             }
             alert('Markdown enabled with tag: "' + detectionTag + '"');
         },
+        toggleEpicEditor = function (textareaId) {
+            if (!epicEditorInstances[textareaId]) {
+                return false;
+            }
 
-        _livePreview = function ($markdownLivePreview) {
-            var editorId = $markdownLivePreview.readAttribute('data-elementid'),
-                $editorId = $(editorId),
-                _mdHandling = new _mdHandler();
+            var instance = epicEditorInstances[textareaId];
+            if (instance.is('loaded')) {
+                // some ridiculous copying due to strange code in EpicEditor when unload is called :-(
+                // https://github.com/OscarGodson/EpicEditor/issues/289
+                var currentText = $(textareaId).value;
+                instance.unload();
+                $(textareaId).value = currentText;
+                $(textareaId).removeClassName('no-display');
+            } else {
+                $(textareaId).addClassName('no-display');
+                instance.load();
+            }
 
-            _mdHandling.setMdDetector($markdownLivePreview);
-
-            var _originalHeight = $markdownLivePreview.getStyle('height'), _clicked = false;
-            $markdownLivePreview.observe('click', function (e) {
-                var css = {height: ''};
-                if (_clicked) {
-                    css['height'] = _originalHeight;
-                    _clicked = false;
-                } else {
-                    _clicked = true;
-                }
-                $markdownLivePreview.setStyle(css);
-            });
-
-            $editorId.observe('keyup', function (e) {
-                _mdHandling.text = e.target.value;
-                $markdownLivePreview.innerHTML = _mdHandling.hasMarkdown()
-                    ? _mdHandling.getRenderedMarkdown()
-                    : 'Offline ...';
-            });
-        },
-
-        _mdHandler = function () {
-            this.text = '';
-            this._mdDetector = '';
         },
         _loadEpicEditor = function () {
 
             if (!window.EpicEditor) {
                 return false;
             }
-            var opts = {
-                container: 'epiceditor',
-                textarea: 'block_content',
-                basePath: '/skin/adminhtml/default/default/epiceditor',
+            var editorOptions = {
+                container: null,
+                textarea: null,
+                basePath: '/skin/adminhtml/default/default/epiceditor/',
                 clientSideStorage: true,
                 localStorageName: 'epiceditor',
                 useNativeFullscreen: true,
@@ -132,14 +60,14 @@
                     autoSave: 100
                 },
                 theme: {
-                    base: '/themes/base/epiceditor.css',
-                    preview: '/themes/preview/github.css',
-                    editor: '/themes/editor/epic-light.css'
+                    base: 'themes/base/epiceditor.css',
+                    preview: 'themes/preview/github.css',
+                    editor: 'themes/editor/epic-light.css'
                 },
                 button: {
                     preview: true,
                     fullscreen: true,
-                    bar: "auto"
+                    bar: "show"
                 },
                 focusOnLoad: false,
                 shortcut: {
@@ -155,32 +83,37 @@
                 autogrow: true
             };
 
-            var editor = new window.EpicEditor(opts).load();
+            // going into the callback hell ... for loading multiple instances on one page
+            ['product_edit_form', 'category_edit_form', 'edit_form'].forEach(function (formId) {
+                var $form = $(formId);
+                if ($form) {
+                    $form.select('.initEpicEditor').forEach(function (divEpic) {
+                        var
+                            epicHtmlId = divEpic.id,
+                            userConfig = unescape(divEpic.readAttribute('data-config') || '{}').evalJSON(true),
+                            htmlIdSplit = epicHtmlId.split('_EE_'),
+                            textAreaId = htmlIdSplit[1] || '';
+
+                        Object.extend(editorOptions, userConfig);
+
+                        editorOptions.container = epicHtmlId;
+                        editorOptions.textarea = textAreaId;
+
+                        epicEditorInstances[textAreaId] = new window.EpicEditor(editorOptions).load();
+
+                    });
+
+                }
+            });
+
 
         };
 
-    _mdHandler.prototype = {
-        setMdDetector: function ($markdownLivePreview) {
-            this._mdDetector = unescape($markdownLivePreview.readAttribute('data-mddetector') || '~~~@#$#@!');
-            return this;
-        },
-        getRenderedMarkdown: function () {
-            return  TEXT_PREFIX + marked(this.text.replace(this._mdDetector, '')) + TEXT_SUFFIX;
-        },
-        hasMarkdown: function () {
-            return this.text.indexOf(this._mdDetector) !== -1;
-        }
-    }
-
-    this.renderMarkdown = renderMarkdown;
     this.mdExternalUrl = mdExternalUrl;
     this.toggleMarkdown = toggleMarkdown;
+    this.toggleEpicEditor = toggleEpicEditor;
 
     document.observe('dom:loaded', function () {
-        var markdownLivePreview = $('markdown_live_preview');
-        if (markdownLivePreview) {
-            _livePreview(markdownLivePreview);
-        }
         _loadEpicEditor();
     });
 

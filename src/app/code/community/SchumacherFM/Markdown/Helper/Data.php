@@ -93,20 +93,6 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * @param string $htmlId
-     *
-     * @return string
-     */
-    public function getRenderMarkdownJs($htmlId)
-    {
-        $args = array('\'' . $htmlId . '\'', '\'' . Mage::helper('markdown')->getDetectionTag(TRUE) . '\'');
-        if ($this->isMarkdownExtra()) {
-            $args[] = '\'' . $this->getAdminRenderUrl() . '\'';
-        }
-        return 'renderMarkdown(' . implode(',', $args) . ');';
-    }
-
-    /**
      * @return bool
      */
     public function isEpicEditorEnabled()
@@ -114,4 +100,18 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
         return (boolean)Mage::getStoreConfig('schumacherfm/markdown/epiceditor_enable');
     }
 
+    /**
+     * if json is invalid returns false
+     *
+     * @return string|boolean
+     */
+    public function getEpicEditorConfig()
+    {
+        $config = trim(Mage::getStoreConfig('schumacherfm/markdown/epiceditor_config'));
+        if (empty($config)) {
+            return FALSE;
+        }
+        $decoded = json_decode($config);
+        return $decoded instanceof stdClass ? rawurlencode($config) : FALSE;
+    }
 }

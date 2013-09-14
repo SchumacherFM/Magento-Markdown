@@ -3,8 +3,6 @@
     <MARKDOWN_HEADER>
         <reference name="head">
             <action method="addJs"><script>mage/adminhtml/markdown.js</script></action>
-            <action method="addJs"><script>mage/adminhtml/marked.js</script></action>
-            <action method="addCss"><name>markdown.css</name></action>
         </reference>
     </MARKDOWN_HEADER>
     <editor>

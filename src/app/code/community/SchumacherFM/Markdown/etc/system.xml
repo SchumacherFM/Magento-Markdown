@@ -85,6 +85,15 @@
                             <show_in_store>1</show_in_store>
                             <comment><![CDATA[Enables the awesome Markdown <a href="http://epiceditor.com" target="_blank">EpicEditor</a>.]]></comment>
                         </epiceditor_enable>
+                        <epiceditor_config translate="label">
+                            <label>EpicEditor Config</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>210</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Expert Mode: A valid JSON object. Will be merged into the EpicEditor config.</comment>
+                        </epiceditor_config>
                     </fields>
                 </markdown>
             </groups>

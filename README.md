@@ -18,7 +18,8 @@ Renders every transactional email as Markdown (or MD Extra) when the email templ
 
 Rendering of catalog description fields have to be implemented in the phtml files by yourself.
 
-Preview in the backend. CMS pages have a live preview.
+Integrates the awesome [EpicEditor](http://epiceditor.com): split fullscreen editing,
+live previewing, automatic draft saving and offline support.
 
 Bugs
 ----
@@ -124,6 +125,16 @@ About
 
 History
 -------
+
+#### 1.5.0
+
+- Remove live preview
+- Remove library marked.js and markdown.css
+- Remove support for <= IE8
+- Add [EpicEditor](http://epiceditor.com) with built in marked.js, split fullscreen editing,
+    live previewing, automatic draft saving and offline support.
+    Down side: when inserting Magento widgets, images or variables you have to turn of the editor insert that item
+    and then turn it on. (Missing bi-directional synchronization between textarea and editor)
 
 #### 1.4.2
 

@@ -17,10 +17,6 @@ class SchumacherFM_Markdown_Model_Editor_Config
     public function getWysiwygPluginSettings($config)
     {
         $variableConfig        = array();
-        $onclickPreview        = array(
-            'search'  => array('html_id'),
-            'subject' => Mage::helper('markdown')->getRenderMarkdownJs('{{html_id}}'),
-        );
         $onclickSyntax         = array(
             'search'  => array('html_id'),
             'subject' => 'mdExternalUrl(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_SYNTAX . '\',\'{{html_id}}\');'
@@ -36,16 +32,6 @@ class SchumacherFM_Markdown_Model_Editor_Config
                         'search'  => array('html_id'),
                         'subject' => 'toggleMarkdown(\'' . Mage::helper('markdown')->getDetectionTag(TRUE) . '\',\'{{html_id}}\');'
                     ),
-                    'class'   => 'plugin'
-                )
-            ),
-            array(
-                'name'    => 'markdown',
-                'src'     => '',
-                'options' => array(
-                    'title'   => Mage::helper('markdown')->__('[M↓] Preview'),
-                    'url'     => '',
-                    'onclick' => $onclickPreview,
                     'class'   => 'plugin'
                 )
             ),
@@ -76,10 +62,24 @@ class SchumacherFM_Markdown_Model_Editor_Config
                 )
             );
         }
+        if (Mage::helper('markdown')->isEpicEditorEnabled()) {
+            $variableWysiwygPlugin[] = array(
+                'name'    => 'epiceditor',
+                'src'     => '',
+                'options' => array(
+                    'title'   => Mage::helper('markdown')->__('EpicEditor on/off'),
+                    'url'     => '',
+                    'onclick' => array(
+                        'search'  => array('html_id'),
+                        'subject' => 'toggleEpicEditor(\'{{html_id}}\');'
+                    ),
+                    'class'   => 'plugin'
+                )
+            );
+        }
 
         $configPlugins             = $config->getData('plugins');
         $variableConfig['plugins'] = array_merge($configPlugins, $variableWysiwygPlugin);
         return $variableConfig;
     }
-
 }

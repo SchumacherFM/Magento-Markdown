@@ -34,9 +34,10 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 
             if ($this->_isElementEditor($element)) {
 
-                if (!Mage::helper('markdown')->isMarkdownExtra()) {
-                    $this->_addLivePreviewToEditor($element);
-                }
+                // @todo handle md extra ...
+//                if (!Mage::helper('markdown')->isMarkdownExtra()) {
+//
+//                }
                 $this->_addEpicEditorHtml($element);
             }
         }
@@ -57,13 +58,26 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
     {
 
         $element->setClass('no-display');
-
+        $id   = $element->getHtmlId();
         $html = array(
             $element->getData('after_element_html'),
-            '<div id="epiceditor"></div>'
+            '<div class="initEpicEditor" id="epiceditor_EE_' . $id . '"' . $this->_getEpicEditorHtmlConfig() . '></div>'
         );
 
         $element->setData('after_element_html', implode('', $html));
+    }
+
+    /**
+     * @return string
+     */
+    private function _getEpicEditorHtmlConfig()
+    {
+        $config     = Mage::helper('markdown')->getEpicEditorConfig();
+        $dataConfig = '';
+        if ($config) {
+            $dataConfig = ' data-config="' . $config . '"';
+        }
+        return $dataConfig;
     }
 
     /**
@@ -109,14 +123,6 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 
         $html[] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => Mage::helper('markdown')->__('[M↓] Preview'),
-                'type'    => 'button',
-                'class'   => 'btn-wysiwyg',
-                'onclick' => Mage::helper('markdown')->getRenderMarkdownJs($htmlId),
-            ))->toHtml();
-
-        $html[] = Mage::getSingleton('core/layout')
-            ->createBlock('adminhtml/widget_button', '', array(
                 'label'   => Mage::helper('markdown')->__('[M↓] Syntax'),
                 'type'    => 'button',
                 'class'   => 'btn-wysiwyg',
@@ -145,22 +151,5 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
     protected function _isElementEditor(Varien_Data_Form_Element_Abstract $element)
     {
         return $element instanceof Varien_Data_Form_Element_Editor;
-    }
-
-    /**
-     * @param Varien_Data_Form_Element_Editor $element
-     *
-     * @return $this
-     */
-    protected function _addLivePreviewToEditor(Varien_Data_Form_Element_Editor $element)
-    {
-        $previewHtml = '<div id="markdown_live_preview"
-        style="overflow:scroll; height:25em;"
-        data-mddetector="' . Mage::helper('markdown')->getDetectionTag(TRUE) . '"
-        data-elementid="' . $element->getHtmlId() . '" class="buttons-set"><div class="markdown">' .
-            Mage::helper('markdown')->__('[M↓] Live Preview enabled ...')
-            . '</div></div>';
-        $element->setData('after_element_html', $previewHtml);
-        return $this;
     }
 }
