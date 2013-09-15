@@ -130,7 +130,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                 'label'   => Mage::helper('markdown')->__('[M↓] Syntax'),
                 'type'    => 'button',
                 'class'   => 'btn-wysiwyg',
-                'onclick' => 'mdExternalUrl(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_SYNTAX . '\');'
+                'onclick' => 'mdExternalUrl(\'' . Mage::helper('markdown')->getCheatSheetUrl() . '\');'
             ))->toHtml();
 
         if (Mage::helper('markdown')->isMarkdownExtra()) {

@@ -133,6 +133,7 @@
                 <enable>1</enable>
                 <md_extra>0</md_extra>
                 <md_extra_email>0</md_extra_email>
+                <cheatsheet>https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet</cheatsheet>
                 <detection_tag>!#markdown</detection_tag>
                 <epiceditor_enable>0</epiceditor_enable>
             </markdown>

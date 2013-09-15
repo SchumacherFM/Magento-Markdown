@@ -7,8 +7,6 @@
  */
 class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
 {
-    const URL_MD_SYNTAX       = 'http://daringfireball.net/projects/markdown/syntax';
-    // https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet @todo make it configurable
     const URL_MD_EXTRA_SYNTAX = 'http://michelf.ca/projects/php-markdown/extra/';
 
     /**
@@ -26,6 +24,14 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
         return Mage::getSingleton('markdown/markdown_render')
             ->setOptions($options)
             ->renderMarkdown($text);
+    }
+
+    /**
+     * @return mixed|string
+     */
+    public function getCheatSheetUrl()
+    {
+        return Mage::getStoreConfig('schumacherfm/markdown/cheatsheet');
     }
 
     /**

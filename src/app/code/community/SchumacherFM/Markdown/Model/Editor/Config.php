@@ -19,7 +19,7 @@ class SchumacherFM_Markdown_Model_Editor_Config
         $variableConfig        = array();
         $onclickSyntax         = array(
             'search'  => array('html_id'),
-            'subject' => 'mdExternalUrl(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_SYNTAX . '\',\'{{html_id}}\');'
+            'subject' => 'mdExternalUrl(\'' . Mage::helper('markdown')->getCheatSheetUrl() . '\',\'{{html_id}}\');'
         );
         $variableWysiwygPlugin = array(
             array(

@@ -35,6 +35,17 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </enable>
+                        <cheatsheet translate="label">
+                            <label>Markdown Cheat Sheet URL</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>15</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Alternatives http://daringfireball.net/projects/markdown/syntax or
+                                https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet or your own page</comment>
+                        </cheatsheet>
+
                         <md_extra translate="label">
                             <label>Use Markdown Extra</label>
                             <frontend_type>select</frontend_type>
