@@ -8,6 +8,7 @@
 class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
 {
     const URL_MD_SYNTAX       = 'http://daringfireball.net/projects/markdown/syntax';
+    // https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet @todo make it configurable
     const URL_MD_EXTRA_SYNTAX = 'http://michelf.ca/projects/php-markdown/extra/';
 
     /**

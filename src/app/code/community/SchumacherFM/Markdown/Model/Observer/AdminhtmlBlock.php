@@ -48,6 +48,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
             $element = $block->getElement();
             if ($this->_isCatalogElementAllowed($element)) {
                 $this->_getMarkdownButtons($element);
+                $this->_addEpicEditorHtml($element);
             }
         }
     }
@@ -78,6 +79,8 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         if ($config) {
             $dataConfig = ' data-config="' . $config . '"';
         }
+        $tag = Mage::helper('markdown')->getDetectionTag(TRUE);
+        $dataConfig .= ' data-detectiontag="' . $tag . '"';
         return $dataConfig;
     }
 
@@ -100,9 +103,9 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
      */
     protected function _isCatalogElementAllowed(Varien_Data_Form_Element_Abstract $element)
     {
-        $isTextarea    = $element instanceof Mage_Adminhtml_Block_Catalog_Helper_Form_Wysiwyg;
+        $isTextArea    = $element instanceof Mage_Adminhtml_Block_Catalog_Helper_Form_Wysiwyg;
         $isDescription = stristr($element->getName(), 'description') !== FALSE && stristr($element->getName(), 'meta') === FALSE;
-        return $isDescription && $isTextarea;
+        return $isDescription && $isTextArea;
     }
 
     /**
@@ -131,13 +134,22 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
             ))->toHtml();
 
         if (Mage::helper('markdown')->isMarkdownExtra()) {
-
             $html[] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
                     'label'   => Mage::helper('markdown')->__('[M↓] Extra Syntax'),
                     'type'    => 'button',
                     'class'   => 'btn-wysiwyg',
                     'onclick' => 'mdExternalUrl(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_EXTRA_SYNTAX . '\');'
+                ))->toHtml();
+        }
+
+        if (Mage::helper('markdown')->isEpicEditorEnabled()) {
+            $html[] = Mage::getSingleton('core/layout')
+                ->createBlock('adminhtml/widget_button', '', array(
+                    'label'   => Mage::helper('markdown')->__('EpicEditor on/off'),
+                    'type'    => 'button',
+                    'class'   => 'btn-wysiwyg',
+                    'onclick' => 'toggleEpicEditor(\'' . $htmlId . '\');'
                 ))->toHtml();
         }
 

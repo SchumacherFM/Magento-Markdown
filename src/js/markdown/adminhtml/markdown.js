@@ -15,11 +15,17 @@
             window.open(url);
         },
 
-        toggleMarkdown = function (detectionTag, Idhtml) {
+        toggleMarkdown = function (detectionTag, textareaId) {
             detectionTag = unescape(detectionTag);
 
-            if ($(Idhtml).value.indexOf(detectionTag) === -1) {
-                $(Idhtml).value = detectionTag + "\n" + $(Idhtml).value;
+            if ($(textareaId).value.indexOf(detectionTag) === -1) {
+
+                if (epicEditorInstances[textareaId]) {
+                    var instance = epicEditorInstances[textareaId];
+                    instance.getElement('editor').body.innerHTML = detectionTag + "<br>\n" + instance.getElement('editor').body.innerHTML;
+                } else {
+                    $(textareaId).value = detectionTag + "\n" + $(textareaId).value;
+                }
             }
             alert('Markdown enabled with tag: "' + detectionTag + '"');
         },
@@ -30,11 +36,7 @@
 
             var instance = epicEditorInstances[textareaId];
             if (instance.is('loaded')) {
-                // some ridiculous copying due to strange code in EpicEditor when unload is called :-(
-                // https://github.com/OscarGodson/EpicEditor/issues/289
-//                var currentText = $(textareaId).value;
                 instance.unload();
-//                $(textareaId).value = currentText;
                 $(textareaId).removeClassName('no-display');
             } else {
                 $(textareaId).addClassName('no-display');
@@ -42,16 +44,17 @@
             }
 
         },
-        _loadEpicEditor = function () {
-
-            if (!window.EpicEditor) {
-                return false;
-            }
-            var editorOptions = {
+        _epicParser = function (content) {
+            console.log(content);
+            return 'Hallo';
+        },
+        _getDefaultEpicEditorOptions = function () {
+            return {
                 container: null,
                 textarea: null,
                 basePath: '/skin/adminhtml/default/default/epiceditor/',
                 clientSideStorage: true,
+                parser: _epicParser,
                 localStorageName: 'epiceditor',
                 useNativeFullscreen: true,
                 file: {
@@ -86,31 +89,41 @@
                     scroll: true
                 }
             };
+        },
+        _loadEpicEditor = function () {
+
+            if (!window.EpicEditor) {
+                return false;
+            }
 
             // going into the callback hell ... for loading multiple instances on one page
             ['product_edit_form', 'category_edit_form', 'edit_form'].forEach(function (formId) {
                 var $form = $(formId);
                 if ($form) {
-                    $form.select('.initEpicEditor').forEach(function (divEpic) {
-
-                        var
-                            epicHtmlId = divEpic.id,
-                            htmlIdSplit = epicHtmlId.split('_EE_'),
-                            textAreaId = htmlIdSplit[1] || '';
-
-                        if (!epicEditorInstances[textAreaId]) {
-                            var userConfig = unescape(divEpic.readAttribute('data-config') || '{}').evalJSON(true);
-                            Object.extend(editorOptions, userConfig);
-                            editorOptions.container = epicHtmlId;
-                            editorOptions.textarea = textAreaId;
-                            epicEditorInstances[textAreaId] = new window.EpicEditor(editorOptions).load();
-                        }
-                    });
+                    $form.select('.initEpicEditor').forEach(_createEpicEditorInstances);
                 }
             });
         },
+        _createEpicEditorInstances = function (divEpic) {
+            var
+                epicHtmlId = divEpic.id,
+                htmlIdSplit = epicHtmlId.split('_EE_'),
+                textAreaId = htmlIdSplit[1] || '',
+                editorOptions = _getDefaultEpicEditorOptions();
+
+            if (!epicEditorInstances[textAreaId]) {
+                var userConfig = unescape(divEpic.readAttribute('data-config') || '{}').evalJSON(true);
+                Object.extend(editorOptions, userConfig);
+                editorOptions.container = epicHtmlId;
+                editorOptions.textarea = textAreaId;
+                var epicEditorInstance = new window.EpicEditor(editorOptions).load();
+                epicEditorInstances[textAreaId] = epicEditorInstance;
+            }
+        },
         _documentHasTabs = function () {
-            return $$('ul.tabs').length === 1;
+            var isVertical = $$('ul.tabs').length === 1; // isProductOrCms
+            var isHorizontal = $$('ul.tabs-horiz').length === 1; // isCategory
+            return isVertical || isHorizontal;
         };
 
     this.mdExternalUrl = mdExternalUrl;
@@ -124,10 +137,12 @@
 
             var allowedTabs = {
                 'page_tabs_content_section': true,  // cms page
-                'product_info_tabs_group_34': true  // product edit
+                'product_info_tabs_group_34': true,  // product edit
+                'category_info_tabs_group_4': true   // category edit
             };
 
             varienGlobalEvents.attachEventHandler('showTab', function (e) {
+                console.log(e.tab.id);
                 if (allowedTabs[e.tab.id]) {
                     _loadEpicEditor();
                 }

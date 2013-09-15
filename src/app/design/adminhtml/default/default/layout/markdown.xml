@@ -2,7 +2,7 @@
 <layout>
     <MARKDOWN_HEADER>
         <reference name="head">
-            <action method="addJs"><script>mage/adminhtml/markdown.js</script></action>
+            <action method="addJs"><script>markdown/adminhtml/markdown.js</script></action>
         </reference>
     </MARKDOWN_HEADER>
     <editor>

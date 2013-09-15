@@ -26,7 +26,8 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
      */
     protected $_epicEditorFiles = array(
         'js' => array(
-            'mage/adminhtml/epiceditor.min.js'
+            'markdown/adminhtml/epiceditor.min.js',
+//            'markdown/adminhtml/epiceditor.js',
         ),
     );
 
