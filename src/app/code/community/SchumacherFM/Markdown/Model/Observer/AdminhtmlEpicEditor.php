@@ -17,7 +17,8 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
     protected $_allowedEpicEditorPages = array(
         'adminhtml-cms-page-edit',
         'adminhtml-catalog-product-edit',
-        'adminhtml-cms-block-edit'
+        'adminhtml-cms-block-edit',
+        'adminhtml-catalog-category-edit',
     );
 
     /**
@@ -85,5 +86,22 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
         $isPage = $block instanceof Mage_Adminhtml_Block_Page;
 
         return $isPage && $hasClass;
+    }
+
+    /**
+     * @see https://twitter.com/iamdevloper/status/378464078895017984
+     * fired: category_prepare_ajax_response
+     *
+     * @param Varien_Event_Observer $observer
+     */
+    public function injectEpicJsCatalogCategoryEdit(Varien_Event_Observer $observer)
+    {
+        $content = $observer->getEvent()->getResponse()->getContent();
+
+        $js = '<script type="text/javascript">mdLoadEpicEditor(true);</script>';
+
+        $content = str_replace(SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock::CATALOG_CATEGORY_EDIT_JS_REPLACER, $js, $content);
+        $observer->getEvent()->getResponse()->setContent($content);
+        $content = NULL;
     }
 }

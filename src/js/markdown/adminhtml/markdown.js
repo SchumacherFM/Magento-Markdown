@@ -10,6 +10,7 @@
         detectionTag = '',
         epicEditorInstances = {},
         htmlId = '',
+        mdLoadEpicEditorForce = false,
 
         mdExternalUrl = function (url, Idhtml) {
             htmlId = Idhtml;
@@ -30,20 +31,23 @@
             }
             alert('Markdown enabled with tag: "' + detectionTag + '"');
         },
-        toggleEpicEditor = function (textareaId) {
-            if (!epicEditorInstances[textareaId]) {
-                return false;
+        toggleEpicEditor = function (textAreaId) {
+            if (!epicEditorInstances[textAreaId]) {
+                return;
             }
 
-            var instance = epicEditorInstances[textareaId];
+            var instance = epicEditorInstances[textAreaId];
             if (instance.is('loaded')) {
+
+                console.log('wrapper: ', instance.getElement('wrapper') || false);
+
                 instance.unload();
-                $(textareaId).removeClassName('no-display');
+                $(textAreaId).removeClassName('no-display');
             } else {
-                $(textareaId).addClassName('no-display');
+                $(textAreaId).addClassName('no-display');
                 instance.load();
             }
-
+            return;
         },
         _epicParser = function (content) {
             if (detectionTag !== '' && !detectionTag) {
@@ -93,28 +97,37 @@
                 }
             };
         },
-        _loadEpicEditor = function () {
+        mdLoadEpicEditor = function (forceLoading) {
 
             if (!window.EpicEditor) {
                 return false;
             }
+            mdLoadEpicEditorForce = forceLoading || false;
 
             // going into the callback hell ... for loading multiple instances on one page
-            ['product_edit_form', 'category_edit_form', 'edit_form'].forEach(function (formId) {
+            ['product_edit_form' /* , 'category_edit_form'*/, 'edit_form'].forEach(function (formId) {
                 var $form = $(formId);
+
                 if ($form) {
                     $form.select('.initEpicEditor').forEach(_createEpicEditorInstances);
                 }
             });
+
+            if ($('category_info_tabs_group_4_content')) {
+//                console.log($('category_info_tabs_group_4_content').select('.initEpicEditor'));
+                _createEpicEditorInstances($('category_info_tabs_group_4_content').select('.initEpicEditor')[0]);
+            }
+
         },
         _createEpicEditorInstances = function (divEpic) {
+            console.log('divEpic', divEpic.id);
             var
                 epicHtmlId = divEpic.id,
                 htmlIdSplit = epicHtmlId.split('_EE_'),
                 textAreaId = htmlIdSplit[1] || '',
                 editorOptions = _getDefaultEpicEditorOptions();
 
-            if (!epicEditorInstances[textAreaId]) {
+            if (!epicEditorInstances[textAreaId] || true === mdLoadEpicEditorForce) {
                 var userConfig = unescape(divEpic.readAttribute('data-config') || '{}').evalJSON(true);
                 detectionTag = unescape(divEpic.readAttribute('data-detectiontag') || '');
                 Object.extend(editorOptions, userConfig);
@@ -130,30 +143,40 @@
             return isVertical || isHorizontal;
         };
 
+    // polluting env :-) @todo fix that
     this.mdExternalUrl = mdExternalUrl;
     this.toggleMarkdown = toggleMarkdown;
     this.toggleEpicEditor = toggleEpicEditor;
+    this.mdLoadEpicEditor = mdLoadEpicEditor;
 
     document.observe('dom:loaded', function () {
+
+        if ($(document.body).hasClassName('adminhtml-catalog-category-edit') || !window.EpicEditor) {
+            console.log('EpicEditor loading disabled ...');
+            return null;
+        }
 
         // editor can't load properly due to the late initialized tabs ... therefore thanks there are events!
         if (_documentHasTabs()) {
 
             var allowedTabs = {
                 'page_tabs_content_section': true,  // cms page
-                'product_info_tabs_group_34': true,  // product edit
-                'category_info_tabs_group_4': true   // category edit
+                'product_info_tabs_group_34': true  // product edit
+
+                // https://twitter.com/iamdevloper/status/378464078895017984
+                // cannot do that in category edit due to extjs tree and ajax loading :-(
+                // we need the initialization directly in the form ...
+                // 'category_info_tabs_group_4': true   // category edit
             };
 
             varienGlobalEvents.attachEventHandler('showTab', function (e) {
-                console.log(e.tab.id);
                 if (allowedTabs[e.tab.id]) {
-                    _loadEpicEditor();
+                    mdLoadEpicEditor();
                 }
             });
 
         } else {
-            _loadEpicEditor();
+            mdLoadEpicEditor();
         }
 
     });

@@ -7,6 +7,8 @@
  */
 class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 {
+    const CATALOG_CATEGORY_EDIT_JS_REPLACER = '<!--{{catalog_category_edit_js_replacer}}-->';
+
     /**
      * adminhtml_block_html_before
      *
@@ -152,6 +154,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                     'onclick' => 'toggleEpicEditor(\'' . $htmlId . '\');'
                 ))->toHtml();
         }
+        $html[] = self::CATALOG_CATEGORY_EDIT_JS_REPLACER;
 
         $element->setData('after_element_html', implode(' ', $html));
     }

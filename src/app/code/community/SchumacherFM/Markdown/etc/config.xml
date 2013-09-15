@@ -117,6 +117,14 @@
                     </markdown_adminhtml_block_html_before_page>
                 </observers>
             </adminhtml_block_html_before>
+            <category_prepare_ajax_response>
+                <observers>
+                    <markdown_adminhtml_category_prepare_ajax_response>
+                        <class>markdown/observer_adminhtmlEpicEditor</class>
+                        <method>injectEpicJsCatalogCategoryEdit</method>
+                    </markdown_adminhtml_category_prepare_ajax_response>
+                </observers>
+            </category_prepare_ajax_response>
             <core_config_data_save_after>
                 <observers>
                     <markdown_core_config_data>
