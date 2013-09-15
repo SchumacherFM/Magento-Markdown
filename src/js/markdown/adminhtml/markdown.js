@@ -7,6 +7,7 @@
 ;
 (function () {
     var
+        detectionTag = '',
         epicEditorInstances = {},
         htmlId = '',
 
@@ -45,8 +46,10 @@
 
         },
         _epicParser = function (content) {
-            console.log(content);
-            return 'Hallo';
+            if (detectionTag !== '' && !detectionTag) {
+                content = content.replace(detectionTag, '');
+            }
+            return marked(content);
         },
         _getDefaultEpicEditorOptions = function () {
             return {
@@ -113,6 +116,7 @@
 
             if (!epicEditorInstances[textAreaId]) {
                 var userConfig = unescape(divEpic.readAttribute('data-config') || '{}').evalJSON(true);
+                detectionTag = unescape(divEpic.readAttribute('data-detectiontag') || '');
                 Object.extend(editorOptions, userConfig);
                 editorOptions.container = epicHtmlId;
                 editorOptions.textarea = textAreaId;
