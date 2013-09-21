@@ -7,7 +7,8 @@
  */
 class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 {
-    const CATALOG_CATEGORY_EDIT_JS_REPLACER = '<!--{{catalog_category_edit_js_replacer}}-->';
+
+    protected $_afterElementHtml = array();
 
     /**
      * adminhtml_block_html_before
@@ -35,13 +36,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
             }
 
             if ($this->_isElementEditor($element)) {
-
-                // @todo handle md extra ...
-                // @todo nothing is working in CMS pages
-//                if (!Mage::helper('markdown')->isMarkdownExtra()) {
-//
-//                }
-                $this->_addEpicEditorHtml($element);
+                $this->_integrate($element);
             }
         }
 
@@ -49,10 +44,28 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
             /** @var Mage_Adminhtml_Block_Catalog_Helper_Form_Wysiwyg $element */
             $element = $block->getElement();
             if ($this->_isCatalogElementAllowed($element)) {
-                $this->_getMarkdownButtons($element);
-                $this->_addEpicEditorHtml($element);
+                $this->_integrate($element);
             }
         }
+    }
+
+    protected function _integrate(Varien_Data_Form_Element_Abstract $element)
+    {
+        $uniqueEntityId = $this->_getUniqueEntityId($element);
+        $idPrefix       = $element->getForm()->getHtmlIdPrefix();
+        $element->setId(str_replace($idPrefix, '', $element->getHtmlId()) . $uniqueEntityId);
+
+        $this->_getMarkdownButtons($element);
+        $this->_addEpicEditorHtml($element);
+        $this->_mergeAfterElementHtml($element);
+    }
+
+    protected function _mergeAfterElementHtml(Varien_Data_Form_Element_Abstract $element)
+    {
+        $this->_afterElementHtml[90] = $element->getData('after_element_html');
+        ksort($this->_afterElementHtml);
+        $element->setData('after_element_html', implode(' ', $this->_afterElementHtml));
+        $this->_afterElementHtml = array();
     }
 
     /**
@@ -60,21 +73,17 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
      */
     protected function _addEpicEditorHtml(Varien_Data_Form_Element_Abstract $element)
     {
+        $id = $element->getHtmlId();
 
-        $element->setClass('no-display');
-        $id   = $element->getHtmlId();
-        $html = array(
-            $element->getData('after_element_html'),
-            '<div class="initEpicEditor" id="epiceditor_EE_' . $id . '"' . $this->_getEpicEditorHtmlConfig() . '></div>'
-        );
-
-        $element->setData('after_element_html', implode('', $html));
+        $element->setClass('initEpicEditor');
+        $this->_afterElementHtml[100] = '<div id="epiceditor_EE_' . $id . '"' . $this->_getEpicEditorHtmlConfig() . '></div>';
     }
 
     /**
+     *
      * @return string
      */
-    private function _getEpicEditorHtmlConfig()
+    protected function _getEpicEditorHtmlConfig()
     {
         $config     = Mage::helper('markdown')->getEpicEditorConfig();
         $dataConfig = '';
@@ -84,6 +93,36 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         $tag = Mage::helper('markdown')->getDetectionTag(TRUE);
         $dataConfig .= ' data-detectiontag="' . $tag . '"';
         return $dataConfig;
+    }
+
+    /**
+     * this is mainly a work around for the category section because fields will
+     * be there loaded via ajax with the same id each time ... and that confuses me and
+     * Epic Editor 8-)
+     *
+     * @param Varien_Data_Form_Element_Abstract $parentElement
+     *
+     * @return string
+     */
+    protected function _getUniqueEntityId(Varien_Data_Form_Element_Abstract $parentElement)
+    {
+        /** @var Varien_Data_Form_Element_Collection $elements */
+        $elements = $parentElement->getForm()->getElements();
+
+        $idString = '';
+        foreach ($elements as $fieldSet) {
+            /** @var Varien_Data_Form_Element_Fieldset $fieldSet */
+            $sortedElements = $fieldSet->getSortedElements();
+            foreach ($sortedElements as $sortedElement) {
+                /** @var $sortedElement Varien_Data_Form_Element_Abstract */
+                if (stristr($sortedElement->getName(), 'id') !== FALSE) {
+                    $idString .= $sortedElement->getValue();
+                }
+            }
+        }
+
+        // we could also use here md5 but it want to see the values.
+        return preg_replace('~[^a-z0-9_\-]+~i', '', $idString);
     }
 
     /**
@@ -112,14 +151,24 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 
     /**
      * @param Varien_Data_Form_Element_Abstract $element
+     *
+     * @return bool
+     */
+    protected function _isElementEditor(Varien_Data_Form_Element_Abstract $element)
+    {
+        return $element instanceof Varien_Data_Form_Element_Editor;
+    }
+
+    /**
+     * @param Varien_Data_Form_Element_Abstract $element
      * @param string|null                       $htmlId
      */
     protected function _getMarkdownButtons(Varien_Data_Form_Element_Abstract $element, $htmlId = NULL)
     {
-        $html   = array($element->getData('after_element_html'));
+
         $htmlId = empty($htmlId) ? $element->getHtmlId() : $htmlId;
 
-        $html[] = Mage::getSingleton('core/layout')
+        $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
                 'label'   => Mage::helper('markdown')->__('[M↓] enable'),
                 'type'    => 'button',
@@ -127,7 +176,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                 'onclick' => 'toggleMarkdown(\'' . Mage::helper('markdown')->getDetectionTag(TRUE) . '\',\'' . $htmlId . '\');'
             ))->toHtml();
 
-        $html[] = Mage::getSingleton('core/layout')
+        $this->_afterElementHtml[300] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
                 'label'   => Mage::helper('markdown')->__('[M↓] Syntax'),
                 'type'    => 'button',
@@ -136,7 +185,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
             ))->toHtml();
 
         if (Mage::helper('markdown')->isMarkdownExtra()) {
-            $html[] = Mage::getSingleton('core/layout')
+            $this->_afterElementHtml[400] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
                     'label'   => Mage::helper('markdown')->__('[M↓] Extra Syntax'),
                     'type'    => 'button',
@@ -146,7 +195,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         }
 
         if (Mage::helper('markdown')->isEpicEditorEnabled()) {
-            $html[] = Mage::getSingleton('core/layout')
+            $this->_afterElementHtml[500] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
                     'label'   => Mage::helper('markdown')->__('EpicEditor on/off'),
                     'type'    => 'button',
@@ -154,18 +203,5 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                     'onclick' => 'toggleEpicEditor(\'' . $htmlId . '\');'
                 ))->toHtml();
         }
-        $html[] = self::CATALOG_CATEGORY_EDIT_JS_REPLACER;
-
-        $element->setData('after_element_html', implode(' ', $html));
-    }
-
-    /**
-     * @param Varien_Data_Form_Element_Abstract $element
-     *
-     * @return bool
-     */
-    protected function _isElementEditor(Varien_Data_Form_Element_Abstract $element)
-    {
-        return $element instanceof Varien_Data_Form_Element_Editor;
     }
 }

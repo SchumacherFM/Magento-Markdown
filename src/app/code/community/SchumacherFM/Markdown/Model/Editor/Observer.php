@@ -20,9 +20,9 @@ class SchumacherFM_Markdown_Model_Editor_Observer
             return NULL;
         }
 
-        $config   = $observer->getEvent()->getConfig();
-        $settings = Mage::getModel('markdown/editor_config')->getWysiwygPluginSettings($config);
-        $config->addData($settings);
+//        $config   = $observer->getEvent()->getConfig();
+//        $settings = Mage::getModel('markdown/editor_config')->getWysiwygPluginSettings($config);
+//        $config->addData($settings);
         return NULL;
     }
 

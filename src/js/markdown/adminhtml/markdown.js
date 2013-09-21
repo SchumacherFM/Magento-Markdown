@@ -4,182 +4,173 @@
  * @author      Cyrill at Schumacher dot fm / @SchumacherFM
  * @copyright   Copyright (c)
  */
+/*global $,marked,varienGlobalEvents*/
 ;
 (function () {
+    'use strict';
     var
         detectionTag = '',
         epicEditorInstances = {},
         htmlId = '',
-        mdLoadEpicEditorForce = false,
+        EPIC_EDITOR_PREFIX = 'epiceditor_EE_';
 
-        mdExternalUrl = function (url, Idhtml) {
-            htmlId = Idhtml;
-            window.open(url);
-        },
+    function mdExternalUrl(url, Idhtml) {
+        htmlId = Idhtml;
+        window.open(url);
+    }
 
-        toggleMarkdown = function (detectionTag, textareaId) {
-            detectionTag = unescape(detectionTag);
+    function toggleMarkdown(detectionTag, textareaId) {
+        detectionTag = unescape(detectionTag);
 
-            if ($(textareaId).value.indexOf(detectionTag) === -1) {
+        if ($(textareaId).value.indexOf(detectionTag) === -1) {
 
-                if (epicEditorInstances[textareaId]) {
-                    var instance = epicEditorInstances[textareaId];
-                    instance.getElement('editor').body.innerHTML = detectionTag + "<br>\n" + instance.getElement('editor').body.innerHTML;
-                } else {
-                    $(textareaId).value = detectionTag + "\n" + $(textareaId).value;
-                }
-            }
-            alert('Markdown enabled with tag: "' + detectionTag + '"');
-        },
-        toggleEpicEditor = function (textAreaId) {
-            if (!epicEditorInstances[textAreaId]) {
-                return;
-            }
-
-            var instance = epicEditorInstances[textAreaId];
-            if (instance.is('loaded')) {
-
-                console.log('wrapper: ', instance.getElement('wrapper') || false);
-
-                instance.unload();
-                $(textAreaId).removeClassName('no-display');
+            var instance = epicEditorInstances[textareaId] || false;
+            if (instance && instance.is('loaded')) {
+                instance.getElement('editor').body.innerHTML = detectionTag + "<br>\n" + instance.getElement('editor').body.innerHTML;
             } else {
-                $(textAreaId).addClassName('no-display');
-                instance.load();
+                $(textareaId).value = detectionTag + "\n" + $(textareaId).value;
             }
-            return;
-        },
-        _epicParser = function (content) {
-            if (detectionTag !== '' && !detectionTag) {
-                content = content.replace(detectionTag, '');
+        }
+        alert('Markdown enabled with tag: "' + detectionTag + '"');
+    }
+
+    function _epicParser(content) {
+        if (detectionTag && detectionTag !== '') {
+            content = content.replace(detectionTag, '');
+        }
+        return marked(content);
+    }
+
+    function _getDefaultEpicEditorOptions() {
+        return {
+            container: null,
+            textarea: null,
+            basePath: '/skin/adminhtml/default/default/epiceditor/',
+            clientSideStorage: true,
+            parser: _epicParser,
+            localStorageName: 'epiceditor',
+            useNativeFullscreen: true,
+            file: {
+                name: 'epiceditor',
+                defaultContent: '',
+                autoSave: 100
+            },
+            theme: {
+                base: 'themes/base/epiceditor.css',
+                preview: 'themes/preview/github.css',
+                editor: 'themes/editor/epic-light.css'
+            },
+            button: {
+                preview: true,
+                fullscreen: true,
+                bar: "show"
+            },
+            focusOnLoad: false,
+            shortcut: {
+                modifier: 18,
+                fullscreen: 70,
+                preview: 80
+            },
+            string: {
+                togglePreview: 'Toggle Preview Mode',
+                toggleEdit: 'Toggle Edit Mode',
+                toggleFullscreen: 'Enter Fullscreen'
+            },
+            autogrow: {
+                minHeight: 400,
+                maxHeight: 700,
+                scroll: true
             }
-            return marked(content);
-        },
-        _getDefaultEpicEditorOptions = function () {
-            return {
-                container: null,
-                textarea: null,
-                basePath: '/skin/adminhtml/default/default/epiceditor/',
-                clientSideStorage: true,
-                parser: _epicParser,
-                localStorageName: 'epiceditor',
-                useNativeFullscreen: true,
-                file: {
-                    name: 'epiceditor',
-                    defaultContent: '',
-                    autoSave: 100
-                },
-                theme: {
-                    base: 'themes/base/epiceditor.css',
-                    preview: 'themes/preview/github.css',
-                    editor: 'themes/editor/epic-light.css'
-                },
-                button: {
-                    preview: true,
-                    fullscreen: true,
-                    bar: "show"
-                },
-                focusOnLoad: false,
-                shortcut: {
-                    modifier: 18,
-                    fullscreen: 70,
-                    preview: 80
-                },
-                string: {
-                    togglePreview: 'Toggle Preview Mode',
-                    toggleEdit: 'Toggle Edit Mode',
-                    toggleFullscreen: 'Enter Fullscreen'
-                },
-                autogrow: {
-                    minHeight: 400,
-                    maxHeight: 700,
-                    scroll: true
-                }
-            };
-        },
-        mdLoadEpicEditor = function (forceLoading) {
-
-            if (!window.EpicEditor) {
-                return false;
-            }
-            mdLoadEpicEditorForce = forceLoading || false;
-
-            // going into the callback hell ... for loading multiple instances on one page
-            ['product_edit_form' /* , 'category_edit_form'*/, 'edit_form'].forEach(function (formId) {
-                var $form = $(formId);
-
-                if ($form) {
-                    $form.select('.initEpicEditor').forEach(_createEpicEditorInstances);
-                }
-            });
-
-            if ($('category_info_tabs_group_4_content')) {
-//                console.log($('category_info_tabs_group_4_content').select('.initEpicEditor'));
-                _createEpicEditorInstances($('category_info_tabs_group_4_content').select('.initEpicEditor')[0]);
-            }
-
-        },
-        _createEpicEditorInstances = function (divEpic) {
-            console.log('divEpic', divEpic.id);
-            var
-                epicHtmlId = divEpic.id,
-                htmlIdSplit = epicHtmlId.split('_EE_'),
-                textAreaId = htmlIdSplit[1] || '',
-                editorOptions = _getDefaultEpicEditorOptions();
-
-            if (!epicEditorInstances[textAreaId] || true === mdLoadEpicEditorForce) {
-                var userConfig = unescape(divEpic.readAttribute('data-config') || '{}').evalJSON(true);
-                detectionTag = unescape(divEpic.readAttribute('data-detectiontag') || '');
-                Object.extend(editorOptions, userConfig);
-                editorOptions.container = epicHtmlId;
-                editorOptions.textarea = textAreaId;
-                var epicEditorInstance = new window.EpicEditor(editorOptions).load();
-                epicEditorInstances[textAreaId] = epicEditorInstance;
-            }
-        },
-        _documentHasTabs = function () {
-            var isVertical = $$('ul.tabs').length === 1; // isProductOrCms
-            var isHorizontal = $$('ul.tabs-horiz').length === 1; // isCategory
-            return isVertical || isHorizontal;
         };
+    }
 
-    // polluting env :-) @todo fix that
+    function _createEpicEditorInstances(event, element) {
+
+        var
+            epicHtmlId = EPIC_EDITOR_PREFIX + (element.id || ''),
+            $epicHtmlId = $(epicHtmlId),
+            textAreaId = element.id || '',
+            editorOptions = _getDefaultEpicEditorOptions(),
+            instanceId = textAreaId,
+            epicEditorInstance = {},
+            userConfig = {};
+
+        if (!epicEditorInstances[instanceId]) {
+            userConfig = unescape($epicHtmlId.readAttribute('data-config') || '{}').evalJSON(true);
+            detectionTag = unescape($epicHtmlId.readAttribute('data-detectiontag') || '');
+            Object.extend(editorOptions, userConfig);
+            editorOptions.container = epicHtmlId;
+            editorOptions.textarea = textAreaId;
+            editorOptions.localStorageName = textAreaId;
+
+            element.addClassName('no-display');
+            epicEditorInstance = new window.EpicEditor(editorOptions);
+            epicEditorInstance
+                .on('load', function () {
+                    $epicHtmlId.setStyle({
+                        display: 'block',
+                        height: parseInt(editorOptions.autogrow.maxHeight || 700, 10) + 'px'
+                    });
+                    epicEditorInstance.reflow();
+                })
+                .on('unload', function () {
+                    $epicHtmlId.setStyle({
+                        display: 'none'
+                    });
+                });
+            epicEditorInstances[instanceId] = epicEditorInstance.load();
+        }
+    }
+
+    function toggleEpicEditor(textAreaId) {
+
+        var
+            instanceId = textAreaId,
+            instance = epicEditorInstances[instanceId] || false,
+            epicHtmlId = EPIC_EDITOR_PREFIX + textAreaId;
+
+        if (false === instance) {
+            _createEpicEditorInstances(null, $(textAreaId));
+            return;
+        }
+
+        if (instance.is('loaded')) {
+            instance.unload();
+            $(textAreaId).removeClassName('no-display');
+        } else {
+            $(textAreaId).addClassName('no-display');
+            instance.load();
+        }
+        return;
+    }
+
+
+    function mdLoadEpicEditor() {
+
+        if (!window.EpicEditor) {
+            return false;
+        }
+
+        var parentElementIds = ['product_edit_form', 'edit_form', 'category-edit-container'];
+        if (varienGlobalEvents) {
+            varienGlobalEvents.fireEvent('mdLoadEpicEditorForms', parentElementIds);
+        }
+        //  loading multiple instances on one page
+        // only works with event delegation due category edit page ...
+        // fire event for customization varienGlobalEvents.attachEventHandler('showTab', function (e) {...}
+        parentElementIds.forEach(function (elementId) {
+            var $elementId = $(elementId);
+            if ($elementId) {
+                $elementId.on('click', 'textarea.initEpicEditor', _createEpicEditorInstances);
+            }
+        });
+    }
+
     this.mdExternalUrl = mdExternalUrl;
     this.toggleMarkdown = toggleMarkdown;
     this.toggleEpicEditor = toggleEpicEditor;
-    this.mdLoadEpicEditor = mdLoadEpicEditor;
 
-    document.observe('dom:loaded', function () {
-
-        if ($(document.body).hasClassName('adminhtml-catalog-category-edit') || !window.EpicEditor) {
-            console.log('EpicEditor loading disabled ...');
-            return null;
-        }
-
-        // editor can't load properly due to the late initialized tabs ... therefore thanks there are events!
-        if (_documentHasTabs()) {
-
-            var allowedTabs = {
-                'page_tabs_content_section': true,  // cms page
-                'product_info_tabs_group_34': true  // product edit
-
-                // https://twitter.com/iamdevloper/status/378464078895017984
-                // cannot do that in category edit due to extjs tree and ajax loading :-(
-                // we need the initialization directly in the form ...
-                // 'category_info_tabs_group_4': true   // category edit
-            };
-
-            varienGlobalEvents.attachEventHandler('showTab', function (e) {
-                if (allowedTabs[e.tab.id]) {
-                    mdLoadEpicEditor();
-                }
-            });
-
-        } else {
-            mdLoadEpicEditor();
-        }
-
-    });
+    document.observe('dom:loaded', mdLoadEpicEditor);
 
 }).call(function () {
         return this || (typeof window !== 'undefined' ? window : global);
