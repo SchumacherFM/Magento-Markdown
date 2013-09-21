@@ -26,7 +26,10 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         /** @var $block Mage_Adminhtml_Block_Template */
         $block = $observer->getEvent()->getBlock();
 
-        if ($block instanceof Mage_Adminhtml_Block_Widget_Form_Renderer_Fieldset_Element) {
+        $isWidgetElement  = $block instanceof Mage_Adminhtml_Block_Widget_Form_Renderer_Fieldset_Element;
+        $isCatalogElement = $block instanceof Mage_Adminhtml_Block_Catalog_Form_Renderer_Fieldset_Element;
+
+        if ($isWidgetElement || $isCatalogElement) {
             /** @var Varien_Data_Form_Element_Abstract $element */
             $element = $block->getElement();
 
@@ -35,31 +38,32 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                 $this->_getMarkdownButtons($element, 'template_text');
             }
 
-            if ($this->_isElementEditor($element)) {
-                $this->_integrate($element);
-            }
-        }
-
-        if ($block instanceof Mage_Adminhtml_Block_Catalog_Form_Renderer_Fieldset_Element) {
-            /** @var Mage_Adminhtml_Block_Catalog_Helper_Form_Wysiwyg $element */
-            $element = $block->getElement();
-            if ($this->_isCatalogElementAllowed($element)) {
+            if ($this->_isElementEditor($element) || $this->_isCatalogElementAllowed($element)) {
                 $this->_integrate($element);
             }
         }
     }
 
+    /**
+     * @param Varien_Data_Form_Element_Abstract $element
+     */
     protected function _integrate(Varien_Data_Form_Element_Abstract $element)
     {
         $uniqueEntityId = $this->_getUniqueEntityId($element);
         $idPrefix       = $element->getForm()->getHtmlIdPrefix();
         $element->setId(str_replace($idPrefix, '', $element->getHtmlId()) . $uniqueEntityId);
 
-        $this->_getMarkdownButtons($element);
+        if ($this->_isCatalogElementAllowed($element)) {
+            $this->_getMarkdownButtons($element);
+        }
+
         $this->_addEpicEditorHtml($element);
         $this->_mergeAfterElementHtml($element);
     }
 
+    /**
+     * @param Varien_Data_Form_Element_Abstract $element
+     */
     protected function _mergeAfterElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
         $this->_afterElementHtml[90] = $element->getData('after_element_html');

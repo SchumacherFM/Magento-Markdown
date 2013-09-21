@@ -103,7 +103,7 @@
             editorOptions.textarea = textAreaId;
             editorOptions.localStorageName = textAreaId;
 
-            element.addClassName('no-display');
+            element.hide();
             epicEditorInstance = new window.EpicEditor(editorOptions);
             epicEditorInstance
                 .on('load', function () {
@@ -136,9 +136,9 @@
 
         if (instance.is('loaded')) {
             instance.unload();
-            $(textAreaId).removeClassName('no-display');
+            $(textAreaId).show();
         } else {
-            $(textAreaId).addClassName('no-display');
+            $(textAreaId).hide();
             instance.load();
         }
         return;
