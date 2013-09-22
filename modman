@@ -6,5 +6,6 @@ src/app/design/adminhtml/default/default/layout/markdown.xml app/design/adminhtm
 src/js/markdown/adminhtml/markdown.js js/markdown/adminhtml/markdown.js
 src/js/markdown/adminhtml/epiceditor.min.js js/markdown/adminhtml/epiceditor.min.js
 src/js/markdown/adminhtml/epiceditor.js js/markdown/adminhtml/epiceditor.js
+src/js/markdown/adminhtml/highlight.pack.js js/markdown/adminhtml/highlight.pack.js
 src/skin/adminhtml/default/default/markdown.css skin/adminhtml/default/default/markdown.css
 src/skin/adminhtml/default/default/epiceditor skin/adminhtml/default/default/epiceditor

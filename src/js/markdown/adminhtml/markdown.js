@@ -4,7 +4,7 @@
  * @author      Cyrill at Schumacher dot fm / @SchumacherFM
  * @copyright   Copyright (c)
  */
-/*global $,marked,varienGlobalEvents,Ajax*/
+/*global $,marked,varienGlobalEvents,Ajax,hljs*/
 ;
 (function () {
     'use strict';
@@ -72,14 +72,18 @@
 
     /**
      * Shows the generated source html code
-     * @param textAreaId
-     * @returns {boolean}
+     * @param object element
+     * @param string textAreaId
+     * @returns uninteresting
      */
-    function toggleMarkdownSource(textAreaId) {
+    function toggleMarkdownSource(element, textAreaId) {
 
         if (true === isViewMarkdownSourceHtml) {
-            alert('isViewMarkdownSourceHtml ...');
-            return false;
+            isViewMarkdownSourceHtml = false;
+            element.setStyle({
+                color: 'white'
+            });
+            return;
         }
 
         var $textAreaId = $(textAreaId), instance;
@@ -99,6 +103,9 @@
         if (instance && typeof instance === 'object') {
             isViewMarkdownSourceHtml = true;
             instance.preview();
+            element.setStyle({
+                color: 'green'
+            });
         } else {
             alert('Only available via Epic Editor ...');
         }
@@ -155,23 +162,35 @@
      */
     function _epicParser(content, $textArea) {
         var currentActiveInstance = _getEpicEditorActiveInstance(),
-            pContent;
+            pContent = {},
+            htmlSource = '';
 
         if (content.length > 10 && _getMdExtraRenderUrl()) {
             pContent = _mdExtraRender(content);
             pContent.then(function (error, html) {
                 if (currentActiveInstance && currentActiveInstance.is('loaded')) {
-                    currentActiveInstance.getElement('previewer').body.innerHTML = html;
-                    console.log('Promise: isViewMarkdownSourceHtml', isViewMarkdownSourceHtml);
+                    currentActiveInstance.getElement('previewer').body.innerHTML = _highlight(html);
                 } else {
                     $textArea.value = html;
                 }
             });
-            return '<h3>Preview will be available shortly ...</h3>';
+            return _highlight('<h3>Preview will be available shortly ...</h3>');
         }
 
-        console.log('marked: isViewMarkdownSourceHtml', isViewMarkdownSourceHtml);
-        return marked(content.replace(_getDetectionTag(), ''));
+        return _highlight(marked(content.replace(_getDetectionTag(), '')));
+    }
+
+    /**
+     *
+     * @param string htmlString
+     * @returns string
+     * @private
+     */
+    function _highlight(htmlString) {
+        if (true === isViewMarkdownSourceHtml) {
+            htmlString = '<pre class="hljs">' + hljs.highlight('xml', htmlString).value + '</pre>';
+        }
+        return htmlString;
     }
 
     function _getDefaultEpicEditorOptions() {
@@ -190,7 +209,7 @@
             },
             theme: {
                 base: 'themes/base/epiceditor.css',
-                preview: 'themes/preview/github.css',
+                preview: 'themes/preview/githubNxcode.css',
                 editor: 'themes/editor/epic-light.css'
             },
             button: {
@@ -255,7 +274,7 @@
         }
     }
 
-    function toggleEpicEditor(textAreaId) {
+    function toggleEpicEditor(element, textAreaId) {
 
         var
             instanceId = textAreaId,
@@ -263,15 +282,24 @@
 
         if (false === instance) {
             _createEpicEditorInstances(null, $(textAreaId));
+            element.setStyle({
+                color: 'green'
+            });
             return;
         }
 
         if (instance.is('loaded')) {
             instance.unload();
             $(textAreaId).show();
+            element.setStyle({
+                color: 'white'
+            });
         } else {
             $(textAreaId).hide();
             instance.load();
+            element.setStyle({
+                color: 'green'
+            });
         }
         return;
     }
@@ -305,7 +333,8 @@
 
     document.observe('dom:loaded', mdLoadEpicEditor);
 
-}).call(function () {
+}).
+    call(function () {
         return this || (typeof window !== 'undefined' ? window : global);
     }());
 

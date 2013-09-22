@@ -30,6 +30,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
     protected $_epicEditorFiles = array(
         'js' => array(
             'markdown/adminhtml/epiceditor.min.js',
+            'markdown/adminhtml/highlight.pack.js',
 //            'markdown/adminhtml/epiceditor.js',
         ),
     );

@@ -215,7 +215,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                 'label'   => Mage::helper('markdown')->__('[M↓] Source'),
                 'type'    => 'button',
                 'title'   => Mage::helper('markdown')->__('View generated HTML source code'),
-                'onclick' => 'toggleMarkdownSource(\'' . $htmlId . '\');'
+                'onclick' => 'toggleMarkdownSource(this,\'' . $htmlId . '\');'
             ))->toHtml();
 
         $this->_afterElementHtml[300] = Mage::getSingleton('core/layout')
@@ -237,9 +237,9 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         if (Mage::helper('markdown')->isEpicEditorEnabled()) {
             $this->_afterElementHtml[500] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
-                    'label'   => Mage::helper('markdown')->__('EpicEditor on/off'),
+                    'label'   => Mage::helper('markdown')->__('EpicEditor'),
                     'type'    => 'button',
-                    'onclick' => 'toggleEpicEditor(\'' . $htmlId . '\');'
+                    'onclick' => 'toggleEpicEditor(this,\'' . $htmlId . '\');'
                 ))->toHtml();
         }
     }

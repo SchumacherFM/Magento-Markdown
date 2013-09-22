@@ -40,7 +40,7 @@ class SchumacherFM_Markdown_Model_Editor_Config
                     'url'     => '',
                     'onclick' => array(
                         'search'  => array('html_id'),
-                        'subject' => 'toggleMarkdownSource(\'{{html_id}}\');'
+                        'subject' => 'toggleMarkdownSource(this,\'{{html_id}}\');'
                     ),
                     'class'   => 'plugin'
                 )
@@ -80,11 +80,11 @@ class SchumacherFM_Markdown_Model_Editor_Config
                 'name'    => 'epiceditor',
                 'src'     => '',
                 'options' => array(
-                    'title'   => Mage::helper('markdown')->__('EpicEditor on/off'),
+                    'title'   => Mage::helper('markdown')->__('EpicEditor'),
                     'url'     => '',
                     'onclick' => array(
                         'search'  => array('html_id'),
-                        'subject' => 'toggleEpicEditor(\'{{html_id}}\');'
+                        'subject' => 'toggleEpicEditor(this,\'{{html_id}}\');'
                     ),
                     'class'   => 'plugin'
                 )
