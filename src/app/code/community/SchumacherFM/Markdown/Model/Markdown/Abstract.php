@@ -23,10 +23,11 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
     /**
      * @var SchumacherFM_Markdown_Model_Michelf_Markdown
      */
-    protected $_renderer = null;
+    protected $_renderer = NULL;
 
     protected $_options = array(
         'force'          => FALSE,
+        'extra'          => FALSE,
         'protectMagento' => TRUE,
     );
 
@@ -44,7 +45,7 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
      */
     public final function getRenderer()
     {
-        if ($this->_renderer !== null) {
+        if ($this->_renderer !== NULL) {
             return $this->_renderer;
         }
 
@@ -60,7 +61,7 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
      */
     protected function _getIsExtraRenderer()
     {
-        return Mage::helper('markdown')->isMarkdownExtra();
+        return Mage::helper('markdown')->isMarkdownExtra() || $this->_options['extra'] === TRUE;
     }
 
     /**
@@ -80,9 +81,9 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
      *
      * @return $this
      */
-    public function setOptions(array $options = null)
+    public function setOptions(array $options = NULL)
     {
-        $this->_options = $options;
+        $this->_options = array_merge($this->_options, $options);
         return $this;
     }
 
@@ -133,7 +134,7 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
      */
     protected function _removeMarkdownTag()
     {
-        $this->_currentRenderedText = str_replace($this->_tag, '', $this->_currentRenderedText);
+        $this->_currentRenderedText = trim(str_replace($this->_tag, '', $this->_currentRenderedText));
         return $this;
     }
 
@@ -191,5 +192,4 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
     {
         return strpos($text, $this->_tag) !== FALSE;
     }
-
 }

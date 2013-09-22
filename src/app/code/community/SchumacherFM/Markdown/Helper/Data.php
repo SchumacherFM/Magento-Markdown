@@ -92,11 +92,13 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * @param array $params
+     *
      * @return string
      */
-    public function getAdminRenderUrl()
+    public function getAdminRenderUrl(array $params = null)
     {
-        return Mage::helper("adminhtml")->getUrl('*/markdown/render');
+        return Mage::helper('adminhtml')->getUrl('*/markdown/render',$params);
     }
 
     /**

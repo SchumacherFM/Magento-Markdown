@@ -13,14 +13,17 @@ class SchumacherFM_Markdown_Adminhtml_MarkdownController extends Mage_Adminhtml_
      */
     public function renderAction()
     {
-        $content = $this->getRequest()->getParam('content', null);
+        $content       = $this->getRequest()->getParam('content', NULL);
+        $markdownExtra = ((int)$this->getRequest()->getParam('markdownExtra', 0)) === 1;
+
         if (!$this->getRequest()->isPost() || empty($content)) {
-            return $this->_setReturn();
+            return $this->_setReturn('Incorrect Request');
         }
 
-        $md = Mage::helper('markdown')->render($content);
+        $md = Mage::helper('markdown')->render($content, array(
+            'extra' => $markdownExtra
+        ));
         return $this->_setReturn($md);
-
     }
 
     /**
@@ -33,5 +36,4 @@ class SchumacherFM_Markdown_Adminhtml_MarkdownController extends Mage_Adminhtml_
         $this->getResponse()->setBody($string);
         return $this;
     }
-
 }

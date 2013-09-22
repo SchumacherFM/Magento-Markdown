@@ -10,7 +10,7 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
     /**
      * @var null
      */
-    protected $_currentObserverMethod = null;
+    protected $_currentObserverMethod = NULL;
 
     /**
      * @var array
@@ -27,7 +27,7 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
     {
         $isset = isset($this->_mdExtraUsage[$this->_currentObserverMethod]);
         if (!$isset) {
-            return null;
+            return NULL;
         }
 
         return Mage::helper('markdown')->isMarkdownExtra($this->_mdExtraUsage[$this->_currentObserverMethod]);
@@ -40,7 +40,7 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
     {
         $globalExtra           = parent::_getIsExtraRenderer();
         $_observerMdExtraUsage = $this->_isObserverMdExtraUsage();
-        if ($_observerMdExtraUsage === null) {
+        if ($_observerMdExtraUsage === NULL) {
             return $globalExtra;
         }
         return $_observerMdExtraUsage;
@@ -55,17 +55,22 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
     {
         $this->_currentObserverMethod = __FUNCTION__;
         if ($this->_isDisabled) {
-            return null;
+            return NULL;
         }
 
         $object = $observer->getEvent()->getObject();
         if (!$object instanceof Mage_Core_Model_Email_Template) {
-            return null;
+            return NULL;
         }
 
         $template = $object->getData('template_text');
 
         if ($this->isMarkdown($template)) {
+
+            $this->setOptions(array(
+                'extra' => Mage::helper('markdown')->isMarkdownExtra('email')
+            ));
+
             $object->setData('template_text', $this->_renderMarkdown($template));
             $css = Mage::helper('markdown')->getTransactionalEmailCSS();
             $object->setData('template_styles', $css);
@@ -81,13 +86,13 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
     {
         $this->_currentObserverMethod = __FUNCTION__;
         if ($this->_isDisabled) {
-            return null;
+            return NULL;
         }
 
         /** @var Mage_Cms_Model_Page $page */
         $page = $observer->getEvent()->getPage();
         if (!$page instanceof Mage_Cms_Model_Page) {
-            return null;
+            return NULL;
         }
         $content = $this->_renderMarkdown($page->getContent());
         $page->setContent($content);
@@ -104,14 +109,14 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
     {
         $this->_currentObserverMethod = __FUNCTION__;
         if ($this->_isDisabled) {
-            return null;
+            return NULL;
         }
 
         /** @var Mage_Cms_Block_Block $page */
         $block = $observer->getEvent()->getBlock();
 
         if (!$this->_isAllowedBlock($block)) {
-            return null;
+            return NULL;
         }
 
         /** @var Varien_Object $transport */
@@ -128,7 +133,6 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
         ));
         $html = $transport->getHtml();
         $transport->setHtml($this->_renderMarkdown($html));
-
     }
 
     /**
@@ -140,5 +144,4 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
     {
         return $block instanceof Mage_Cms_Block_Block || $block instanceof Mage_Cms_Block_Widget_Block;
     }
-
 }

@@ -86,9 +86,15 @@ $renderer->tab_width = 5;
 $instance->setOptions(array(
     'force'          => FALSE, // force rendering even if not markdown
     'protectMagento' => TRUE, // protect Magento widgets/variables ...
+    'extra'          => FALSE, // force rendering of markdown extra if true
 ));
 echo $instance->renderMarkdown('text goes here');
 ```
+
+#### Tips for parsing transactional emails with Markdown Extra
+
+- Remove body tags
+- Use ```<div markdown="1">``` including markdown=1 in other tags works not always properly
 
 Configuration
 -------------
@@ -97,6 +103,8 @@ Configuration
 - Enable or disable Markdown extra parser per store view
 - Set Markdown detection tag per store view
 - Add path to css file if using in transactional emails per store view
+- Enable or disable Markdown Epic Editor per store view
+- Full configuration for Markdown Epic Editor
 
 Every field which contains Markdown syntax must contain that detection tag otherwise it will not be parsed.
 

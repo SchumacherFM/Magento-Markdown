@@ -88,6 +88,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
     }
 
     /**
+     * @param Varien_Data_Form_Element_Abstract $element
      *
      * @return string
      */
@@ -102,7 +103,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         $dataConfig .= ' data-detectiontag="' . $tag . '"';
 
         if ($this->_isMarkdownExtra($element)) {
-            $url = Mage::helper('markdown')->getAdminRenderUrl();
+            $url = Mage::helper('markdown')->getAdminRenderUrl(array('markdownExtra' => 1));
             $dataConfig .= ' data-mdextrarenderer="' . $url . '"';
         }
 
