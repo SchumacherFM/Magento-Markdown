@@ -33,12 +33,11 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
             /** @var Varien_Data_Form_Element_Abstract $element */
             $element = $block->getElement();
 
-            if ($this->_isEmailTemplateElementAllowed($element)) {
-                $element->setData('after_element_html', ' ');
-                $this->_getMarkdownButtons($element, 'template_text');
-            }
+            $_isElementEditor               = $this->_isElementEditor($element);
+            $_isCatalogElementAllowed       = $this->_isCatalogElementAllowed($element);
+            $_isEmailTemplateElementAllowed = $this->_isEmailTemplateElementAllowed($element);
 
-            if ($this->_isElementEditor($element) || $this->_isCatalogElementAllowed($element)) {
+            if ($_isElementEditor || $_isCatalogElementAllowed || $_isEmailTemplateElementAllowed) {
                 $this->_integrate($element);
             }
         }
@@ -53,7 +52,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         $idPrefix       = $element->getForm()->getHtmlIdPrefix();
         $element->setId(str_replace($idPrefix, '', $element->getHtmlId()) . $uniqueEntityId);
 
-        if ($this->_isCatalogElementAllowed($element)) {
+        if ($this->_isCatalogElementAllowed($element) || $this->_isEmailTemplateElementAllowed($element)) {
             $this->_getMarkdownButtons($element);
         }
 
@@ -77,10 +76,15 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
      */
     protected function _addEpicEditorHtml(Varien_Data_Form_Element_Abstract $element)
     {
+        if (!Mage::helper('markdown')->isEpicEditorEnabled()) {
+            return $this;
+        }
+
         $id = $element->getHtmlId();
 
         $element->setClass('initEpicEditor');
         $this->_afterElementHtml[100] = '<div id="epiceditor_EE_' . $id . '"' . $this->_getEpicEditorHtmlConfig() . '></div>';
+        return $this;
     }
 
     /**
@@ -125,6 +129,9 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
             }
         }
 
+        // if you run into trouble with strange values due to localStorage ... uncomment this or disable localStorage
+        // $idString .= Mage::app()->getRequest()->getControllerName() . '_' . Mage::app()->getRequest()->getActionName();
+
         // we could also use here md5 but it want to see the values.
         return preg_replace('~[^a-z0-9_\-]+~i', '', $idString);
     }
@@ -136,8 +143,8 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
      */
     protected function _isEmailTemplateElementAllowed(Varien_Data_Form_Element_Abstract $element)
     {
-        $trueOne = $element instanceof Varien_Data_Form_Element_Note;
-        $trueTwo = stristr($element->getHtmlId(), 'insert_variable') !== FALSE;
+        $trueOne = $element instanceof Varien_Data_Form_Element_Textarea;
+        $trueTwo = stristr($element->getHtmlId(), 'template_text') !== FALSE;
         return $trueOne && $trueTwo;
     }
 
@@ -165,12 +172,14 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 
     /**
      * @param Varien_Data_Form_Element_Abstract $element
-     * @param string|null                       $htmlId
      */
-    protected function _getMarkdownButtons(Varien_Data_Form_Element_Abstract $element, $htmlId = NULL)
+    protected function _getMarkdownButtons(Varien_Data_Form_Element_Abstract $element)
     {
+        $htmlId                         = $element->getHtmlId();
+        $_isEmailTemplateElementAllowed = $this->_isEmailTemplateElementAllowed($element);
 
-        $htmlId = empty($htmlId) ? $element->getHtmlId() : $htmlId;
+        $enableMarkdownExtraButton = Mage::helper('markdown')->isMarkdownExtra() ||
+            (Mage::helper('markdown')->isMarkdownExtra('email') && $_isEmailTemplateElementAllowed);
 
         $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
@@ -188,7 +197,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                 'onclick' => 'mdExternalUrl(\'' . Mage::helper('markdown')->getCheatSheetUrl() . '\');'
             ))->toHtml();
 
-        if (Mage::helper('markdown')->isMarkdownExtra()) {
+        if ($enableMarkdownExtraButton) {
             $this->_afterElementHtml[400] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
                     'label'   => Mage::helper('markdown')->__('[M↓] Extra Syntax'),

@@ -147,11 +147,11 @@
 
     function mdLoadEpicEditor() {
 
-        if (!window.EpicEditor) {
-            return false;
+        if ('undefined' === typeof window.EpicEditor) {
+            return; // console.log('EpicEditor not loaded');
         }
 
-        var parentElementIds = ['product_edit_form', 'edit_form', 'category-edit-container'];
+        var parentElementIds = ['product_edit_form', 'edit_form', 'category-edit-container', 'email_template_edit_form'];
         if (varienGlobalEvents) {
             varienGlobalEvents.fireEvent('mdLoadEpicEditorForms', parentElementIds);
         }

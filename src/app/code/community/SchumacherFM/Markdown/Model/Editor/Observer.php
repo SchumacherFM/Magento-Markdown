@@ -21,6 +21,10 @@ class SchumacherFM_Markdown_Model_Editor_Observer
         }
 
         $config   = $observer->getEvent()->getConfig();
+
+//        Zend_Debug::dump($config);
+//        exit;
+
         $settings = Mage::getModel('markdown/editor_config')->getWysiwygPluginSettings($config);
         $config->addData($settings);
         return NULL;
