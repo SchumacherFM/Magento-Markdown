@@ -66,6 +66,17 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
     protected function _mergeAfterElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
         $this->_afterElementHtml[90] = $element->getData('after_element_html');
+
+        $tag = Mage::helper('markdown')->getDetectionTag(TRUE);
+        $dataConfig = ' data-detectiontag="' . $tag . '"';
+
+        if ($this->_isMarkdownExtra($element)) {
+            $url = Mage::helper('markdown')->getAdminRenderUrl(array('markdownExtra' => 1));
+            $dataConfig .= ' data-mdextrarenderer="' . $url . '"';
+        }
+
+        $this->_afterElementHtml[1000] = '<div id="markdownGlobalConfig" '.$dataConfig.' style="display:none;"></div>';
+
         ksort($this->_afterElementHtml);
         $element->setData('after_element_html', implode(' ', $this->_afterElementHtml));
         $this->_afterElementHtml = array();
@@ -98,13 +109,6 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         $dataConfig = '';
         if ($config) {
             $dataConfig = ' data-config="' . $config . '"';
-        }
-        $tag = Mage::helper('markdown')->getDetectionTag(TRUE);
-        $dataConfig .= ' data-detectiontag="' . $tag . '"';
-
-        if ($this->_isMarkdownExtra($element)) {
-            $url = Mage::helper('markdown')->getAdminRenderUrl(array('markdownExtra' => 1));
-            $dataConfig .= ' data-mdextrarenderer="' . $url . '"';
         }
 
         return $dataConfig;
@@ -203,15 +207,21 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
             ->createBlock('adminhtml/widget_button', '', array(
                 'label'   => Mage::helper('markdown')->__('[M↓] enable'),
                 'type'    => 'button',
-                'class'   => 'btn-wysiwyg',
-                'onclick' => 'toggleMarkdown(\'' . Mage::helper('markdown')->getDetectionTag(TRUE) . '\',\'' . $htmlId . '\');'
+                'onclick' => 'toggleMarkdown(\'' . $htmlId . '\');'
+            ))->toHtml();
+
+        $this->_afterElementHtml[210] = Mage::getSingleton('core/layout')
+            ->createBlock('adminhtml/widget_button', '', array(
+                'label'   => Mage::helper('markdown')->__('[M↓] Source'),
+                'type'    => 'button',
+                'title'   => Mage::helper('markdown')->__('View generated HTML source code'),
+                'onclick' => 'toggleMarkdownSource(\'' . $htmlId . '\');'
             ))->toHtml();
 
         $this->_afterElementHtml[300] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
                 'label'   => Mage::helper('markdown')->__('[M↓] Syntax'),
                 'type'    => 'button',
-                'class'   => 'btn-wysiwyg',
                 'onclick' => 'mdExternalUrl(\'' . Mage::helper('markdown')->getCheatSheetUrl() . '\');'
             ))->toHtml();
 
@@ -220,7 +230,6 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                 ->createBlock('adminhtml/widget_button', '', array(
                     'label'   => Mage::helper('markdown')->__('[M↓] Extra Syntax'),
                     'type'    => 'button',
-                    'class'   => 'btn-wysiwyg',
                     'onclick' => 'mdExternalUrl(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_EXTRA_SYNTAX . '\');'
                 ))->toHtml();
         }
@@ -230,7 +239,6 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                 ->createBlock('adminhtml/widget_button', '', array(
                     'label'   => Mage::helper('markdown')->__('EpicEditor on/off'),
                     'type'    => 'button',
-                    'class'   => 'btn-wysiwyg',
                     'onclick' => 'toggleEpicEditor(\'' . $htmlId . '\');'
                 ))->toHtml();
         }

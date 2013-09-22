@@ -9,30 +9,100 @@
 (function () {
     'use strict';
     var
-        detectionTag = null,
+        _detectionTag = null,
         epicEditorInstances = {},
-        htmlId = '',
-        mdExtraRenderUrl = null,
-        EPIC_EDITOR_PREFIX = 'epiceditor_EE_';
+        _mdExtraRenderUrl = null,
+        EPIC_EDITOR_PREFIX = 'epiceditor_EE_',
+        isViewMarkdownSourceHtml = false;
 
-    function mdExternalUrl(url, Idhtml) {
-        htmlId = Idhtml;
+    /**
+     *
+     * @returns string|boolean
+     * @private
+     */
+    function _getMdExtraRenderUrl() {
+        if (null !== _mdExtraRenderUrl) {
+            return _mdExtraRenderUrl;
+        }
+        _mdExtraRenderUrl = $('markdownGlobalConfig').readAttribute('data-mdextrarenderer') || '';
+
+        if (_mdExtraRenderUrl.indexOf('http') === -1) {
+            _mdExtraRenderUrl = false;
+        }
+
+        return _mdExtraRenderUrl;
+    }
+
+    /**
+     *
+     * @returns string
+     * @private
+     */
+    function _getDetectionTag() {
+        if (null !== _detectionTag) {
+            return _detectionTag;
+        }
+        _detectionTag = $('markdownGlobalConfig').readAttribute('data-detectiontag') || '';
+        _detectionTag = unescape(_detectionTag);
+        return _detectionTag;
+    }
+
+    function mdExternalUrl(url) {
         window.open(url);
     }
 
-    function toggleMarkdown(detectionTag, textareaId) {
-        detectionTag = unescape(detectionTag);
+    /**
+     *
+     * @param textareaId
+     */
+    function toggleMarkdown(textareaId) {
 
-        if ($(textareaId).value.indexOf(detectionTag) === -1) {
+
+        if ($(textareaId).value.indexOf(_getDetectionTag()) === -1) {
 
             var instance = epicEditorInstances[textareaId] || false;
             if (instance && instance.is('loaded')) {
-                instance.getElement('editor').body.innerHTML = detectionTag + "<br>\n" + instance.getElement('editor').body.innerHTML;
+                instance.getElement('editor').body.innerHTML = _getDetectionTag() + "<br>\n" + instance.getElement('editor').body.innerHTML;
             } else {
-                $(textareaId).value = detectionTag + "\n" + $(textareaId).value;
+                $(textareaId).value = _getDetectionTag() + "\n" + $(textareaId).value;
             }
         }
-        alert('Markdown enabled with tag: "' + detectionTag + '"');
+        alert('Markdown enabled with tag: "' + _getDetectionTag() + '"');
+    }
+
+    /**
+     * Shows the generated source html code
+     * @param textAreaId
+     * @returns {boolean}
+     */
+    function toggleMarkdownSource(textAreaId) {
+
+        if (true === isViewMarkdownSourceHtml) {
+            alert('isViewMarkdownSourceHtml ...');
+            return false;
+        }
+
+        var $textAreaId = $(textAreaId), instance;
+
+        if ($textAreaId.value.indexOf(_getDetectionTag()) === -1) {
+            alert('Markdown not found');
+            return false;
+        }
+
+        instance = epicEditorInstances[textAreaId] || false;
+
+        if (!instance || (false !== instance && instance.is('unloaded'))) {
+            toggleEpicEditor(textAreaId);
+            instance = epicEditorInstances[textAreaId] || false;
+        }
+
+        if (instance && typeof instance === 'object') {
+            isViewMarkdownSourceHtml = true;
+            instance.preview();
+        } else {
+            alert('Only available via Epic Editor ...');
+        }
+
     }
 
     /**
@@ -45,7 +115,7 @@
 
         var
             p = new promise.Promise(),
-            ajaxRequest = new Ajax.Request(mdExtraRenderUrl, {
+            ajaxRequest = new Ajax.Request(_getMdExtraRenderUrl(), {
                 onSuccess: function (response) {
                     p.done(null, response.responseText);
                 },
@@ -76,22 +146,32 @@
         return epicEditorInstances[oneKey];
     }
 
-    function _epicParser(content) {
+    /**
+     *
+     * @param string content
+     * @param object $textArea
+     * @returns string
+     * @private
+     */
+    function _epicParser(content, $textArea) {
         var currentActiveInstance = _getEpicEditorActiveInstance(),
             pContent;
 
-        if (currentActiveInstance && content.length > 10 && mdExtraRenderUrl !== '' && mdExtraRenderUrl.indexOf('http') !== -1) {
+        if (content.length > 10 && _getMdExtraRenderUrl()) {
             pContent = _mdExtraRender(content);
             pContent.then(function (error, html) {
-                currentActiveInstance.getElement('previewer').body.innerHTML = html;
+                if (currentActiveInstance && currentActiveInstance.is('loaded')) {
+                    currentActiveInstance.getElement('previewer').body.innerHTML = html;
+                    console.log('Promise: isViewMarkdownSourceHtml', isViewMarkdownSourceHtml);
+                } else {
+                    $textArea.value = html;
+                }
             });
             return '<h3>Preview will be available shortly ...</h3>';
         }
 
-        if (detectionTag && detectionTag !== '') {
-            content = content.replace(detectionTag, '');
-        }
-        return marked(content);
+        console.log('marked: isViewMarkdownSourceHtml', isViewMarkdownSourceHtml);
+        return marked(content.replace(_getDetectionTag(), ''));
     }
 
     function _getDefaultEpicEditorOptions() {
@@ -150,12 +230,7 @@
 
         if (!epicEditorInstances[instanceId]) {
             userConfig = unescape($epicHtmlId.readAttribute('data-config') || '{}').evalJSON(true);
-            if (null === detectionTag) {
-                detectionTag = unescape($epicHtmlId.readAttribute('data-detectiontag') || '');
-            }
-            if (null === mdExtraRenderUrl) {
-                mdExtraRenderUrl = $epicHtmlId.readAttribute('data-mdextrarenderer') || '';
-            }
+
             Object.extend(editorOptions, userConfig);
             editorOptions.container = epicHtmlId;
             editorOptions.textarea = textAreaId;
@@ -226,6 +301,7 @@
     this.mdExternalUrl = mdExternalUrl;
     this.toggleMarkdown = toggleMarkdown;
     this.toggleEpicEditor = toggleEpicEditor;
+    this.toggleMarkdownSource = toggleMarkdownSource;
 
     document.observe('dom:loaded', mdLoadEpicEditor);
 
