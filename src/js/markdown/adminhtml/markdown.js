@@ -59,8 +59,8 @@
     }
 
     /**
-     * so rendering via markdown extra works only if there is one textarea field on the pages
-     * which creates one instance ... this limitation is due to the promise ... maybe there are better ways
+     * so rendering via markdown extra works only if there is one textarea field on the page
+     * which creates one instance ... this limitation is due to the promise -> then() ... maybe there are better ways
      * fallback is marked()
      * @private
      */
@@ -85,7 +85,7 @@
             pContent.then(function (error, html) {
                 currentActiveInstance.getElement('previewer').body.innerHTML = html;
             });
-            return '<h3>Promise will be resolved shortly ...</h3>';
+            return '<h3>Preview will be available shortly ...</h3>';
         }
 
         if (detectionTag && detectionTag !== '') {
