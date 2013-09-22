@@ -4,7 +4,7 @@
  * @author      Cyrill at Schumacher dot fm / @SchumacherFM
  * @copyright   Copyright (c)
  */
-/*global $,marked,varienGlobalEvents*/
+/*global $,marked,varienGlobalEvents,Ajax*/
 ;
 (function () {
     'use strict';
@@ -35,11 +35,57 @@
         alert('Markdown enabled with tag: "' + detectionTag + '"');
     }
 
-    function _epicParser(content) {
+    /**
+     *
+     * @param string content
+     * @returns {promise.Promise}
+     * @private
+     */
+    function _mdExtraRender(content) {
 
-        if (mdExtraRenderUrl !== '' && mdExtraRenderUrl.indexOf('http') !== -1) {
-            console.log('mdExtraRenderUrl', mdExtraRenderUrl);
-            return content;
+        var
+            p = new promise.Promise(),
+            ajaxRequest = new Ajax.Request(mdExtraRenderUrl, {
+                onSuccess: function (response) {
+                    p.done(null, response.responseText);
+                },
+                method: 'post',
+                parameters: {
+                    'content': content
+                }
+            });
+
+        return p;
+    }
+
+    /**
+     * so rendering via markdown extra works only if there is one textarea field on the pages
+     * which creates one instance ... this limitation is due to the promise ... maybe there are better ways
+     * fallback is marked()
+     * @private
+     */
+    function _getEpicEditorActiveInstance() {
+
+        if (Object.keys(epicEditorInstances).length !== 1) {
+            return false;
+        }
+
+        var keys = Object.keys(epicEditorInstances),
+            oneKey = keys[0];
+
+        return epicEditorInstances[oneKey];
+    }
+
+    function _epicParser(content) {
+        var currentActiveInstance = _getEpicEditorActiveInstance(),
+            pContent;
+
+        if (currentActiveInstance && content.length > 10 && mdExtraRenderUrl !== '' && mdExtraRenderUrl.indexOf('http') !== -1) {
+            pContent = _mdExtraRender(content);
+            pContent.then(function (error, html) {
+                currentActiveInstance.getElement('previewer').body.innerHTML = html;
+            });
+            return '<h3>Promise will be resolved shortly ...</h3>';
         }
 
         if (detectionTag && detectionTag !== '') {
@@ -138,8 +184,7 @@
 
         var
             instanceId = textAreaId,
-            instance = epicEditorInstances[instanceId] || false,
-            epicHtmlId = EPIC_EDITOR_PREFIX + textAreaId;
+            instance = epicEditorInstances[instanceId] || false;
 
         if (false === instance) {
             _createEpicEditorInstances(null, $(textAreaId));
@@ -193,9 +238,11 @@
  *  Licensed under the New BSD License.
  *  https://github.com/stackp/promisejs
  *  https://raw.github.com/stackp/promisejs/master/promise.js
+ *  modified by @SchumacherFM
  */
 
 (function (exports) {
+    'use strict';
 
     function Promise() {
         this._callbacks = [];
@@ -269,124 +316,16 @@
         return p;
     }
 
-    /*
-     * AJAX requests
-     */
-
-    function _encode(data) {
-        var result = "";
-        if (typeof data === "string") {
-            result = data;
-        } else {
-            var e = encodeURIComponent;
-            for (var k in data) {
-                if (data.hasOwnProperty(k)) {
-                    result += '&' + e(k) + '=' + e(data[k]);
-                }
-            }
-        }
-        return result;
-    }
-
-    function new_xhr() {
-        var xhr;
-        if (window.XMLHttpRequest) {
-            xhr = new XMLHttpRequest();
-        } else if (window.ActiveXObject) {
-            try {
-                xhr = new ActiveXObject("Msxml2.XMLHTTP");
-            } catch (e) {
-                xhr = new ActiveXObject("Microsoft.XMLHTTP");
-            }
-        }
-        return xhr;
-    }
-
-
-    function ajax(method, url, data, headers) {
-        var p = new Promise();
-        var xhr, payload;
-        data = data || {};
-        headers = headers || {};
-
-        try {
-            xhr = new_xhr();
-        } catch (e) {
-            p.done(promise.ENOXHR, "");
-            return p;
-        }
-
-        payload = _encode(data);
-        if (method === 'GET' && payload) {
-            url += '?' + payload;
-            payload = null;
-        }
-
-        xhr.open(method, url);
-        xhr.setRequestHeader('Content-type',
-            'application/x-www-form-urlencoded');
-        for (var h in headers) {
-            if (headers.hasOwnProperty(h)) {
-                xhr.setRequestHeader(h, headers[h]);
-            }
-        }
-
-        function onTimeout() {
-            xhr.abort();
-            p.done(promise.ETIMEOUT, "", xhr);
-        }
-
-        var timeout = promise.ajaxTimeout;
-        if (timeout) {
-            var tid = setTimeout(onTimeout, timeout);
-        }
-
-        xhr.onreadystatechange = function () {
-            if (timeout) {
-                clearTimeout(tid);
-            }
-            if (xhr.readyState === 4) {
-                var err = (!xhr.status ||
-                    (xhr.status < 200 || xhr.status >= 300) &&
-                        xhr.status !== 304);
-                p.done(err, xhr.responseText, xhr);
-            }
-        };
-
-        xhr.send(payload);
-        return p;
-    }
-
-    function _ajaxer(method) {
-        return function (url, data, headers) {
-            return ajax(method, url, data, headers);
-        };
-    }
 
     var promise = {
         Promise: Promise,
         join: join,
         chain: chain,
-        ajax: ajax,
-        get: _ajaxer('GET'),
-        post: _ajaxer('POST'),
-        put: _ajaxer('PUT'),
-        del: _ajaxer('DELETE'),
 
         /* Error codes */
         ENOXHR: 1,
-        ETIMEOUT: 2,
+        ETIMEOUT: 2
 
-        /**
-         * Configuration parameter: time in milliseconds after which a
-         * pending AJAX request is considered unresponsive and is
-         * aborted. Useful to deal with bad connectivity (e.g. on a
-         * mobile network). A 0 value disables AJAX timeouts.
-         *
-         * Aborted requests resolve the promise with a ETIMEOUT error
-         * code.
-         */
-        ajaxTimeout: 0
     };
 
     if (typeof define === 'function' && define.amd) {

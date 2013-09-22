@@ -83,7 +83,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         $id = $element->getHtmlId();
 
         $element->setClass('initEpicEditor');
-        $this->_afterElementHtml[100] = '<div id="epiceditor_EE_' . $id . '"' . $this->_getEpicEditorHtmlConfig() . '></div>';
+        $this->_afterElementHtml[100] = '<div id="epiceditor_EE_' . $id . '"' . $this->_getEpicEditorHtmlConfig($element) . '></div>';
         return $this;
     }
 
@@ -91,7 +91,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
      *
      * @return string
      */
-    protected function _getEpicEditorHtmlConfig()
+    protected function _getEpicEditorHtmlConfig(Varien_Data_Form_Element_Abstract $element)
     {
         $config     = Mage::helper('markdown')->getEpicEditorConfig();
         $dataConfig = '';
@@ -100,6 +100,12 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         }
         $tag = Mage::helper('markdown')->getDetectionTag(TRUE);
         $dataConfig .= ' data-detectiontag="' . $tag . '"';
+
+        if ($this->_isMarkdownExtra($element)) {
+            $url = Mage::helper('markdown')->getAdminRenderUrl();
+            $dataConfig .= ' data-mdextrarenderer="' . $url . '"';
+        }
+
         return $dataConfig;
     }
 
@@ -171,15 +177,26 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
     }
 
     /**
+     * checks if md extra is enabled
+     *
+     * @param Varien_Data_Form_Element_Abstract $element
+     *
+     * @return bool
+     */
+    protected function _isMarkdownExtra(Varien_Data_Form_Element_Abstract $element)
+    {
+        $_isEmailTemplateElementAllowed = $this->_isEmailTemplateElementAllowed($element);
+
+        return Mage::helper('markdown')->isMarkdownExtra() ||
+        (Mage::helper('markdown')->isMarkdownExtra('email') && $_isEmailTemplateElementAllowed);
+    }
+
+    /**
      * @param Varien_Data_Form_Element_Abstract $element
      */
     protected function _getMarkdownButtons(Varien_Data_Form_Element_Abstract $element)
     {
-        $htmlId                         = $element->getHtmlId();
-        $_isEmailTemplateElementAllowed = $this->_isEmailTemplateElementAllowed($element);
-
-        $enableMarkdownExtraButton = Mage::helper('markdown')->isMarkdownExtra() ||
-            (Mage::helper('markdown')->isMarkdownExtra('email') && $_isEmailTemplateElementAllowed);
+        $htmlId = $element->getHtmlId();
 
         $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
@@ -197,7 +214,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                 'onclick' => 'mdExternalUrl(\'' . Mage::helper('markdown')->getCheatSheetUrl() . '\');'
             ))->toHtml();
 
-        if ($enableMarkdownExtraButton) {
+        if ($this->_isMarkdownExtra($element)) {
             $this->_afterElementHtml[400] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
                     'label'   => Mage::helper('markdown')->__('[M↓] Extra Syntax'),
