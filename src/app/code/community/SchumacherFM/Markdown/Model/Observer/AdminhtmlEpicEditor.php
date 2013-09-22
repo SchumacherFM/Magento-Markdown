@@ -10,7 +10,8 @@
 class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
 {
     /**
-     * using the body css class ... for better performance
+     * using the body css class ... for better performance ... ?
+     * add additional css body classes here where the editor should be loaded
      *
      * @var array
      */
@@ -19,6 +20,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
         'adminhtml-catalog-product-edit',
         'adminhtml-cms-block-edit',
         'adminhtml-catalog-category-edit',
+        'adminhtml-system-email-template-edit',
     );
 
     /**
@@ -68,15 +70,31 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
     }
 
     /**
+     * dispatches also an event for modifying the css classes
+     *
+     * @return array
+     */
+    protected function _getAllowedEpicEditorPages()
+    {
+        Mage::dispatchEvent('markdown_adminhtml_epiceditor_inject', array('observer' => $this));
+        return $this->_allowedEpicEditorPages;
+    }
+
+    /**
      * @param Mage_Core_Block_Abstract $block
      *
      * @return bool
      */
     protected function _isAllowedPageBlock(Mage_Core_Block_Abstract $block)
     {
-        $class    = $block->getBodyClass();
-        $hasClass = FALSE;
-        foreach ($this->_allowedEpicEditorPages as $pageBodyClass) {
+        $class = $block->getBodyClass();
+        if (empty($class)) {
+            return FALSE;
+        }
+
+        $hasClass                = FALSE;
+        $_allowedEpicEditorPages = $this->_getAllowedEpicEditorPages();
+        foreach ($_allowedEpicEditorPages as $pageBodyClass) {
             if (strpos($class, $pageBodyClass) !== FALSE) {
                 $hasClass = TRUE;
                 break;
@@ -86,5 +104,37 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
         $isPage = $block instanceof Mage_Adminhtml_Block_Page;
 
         return $isPage && $hasClass;
+    }
+
+    /**
+     * @param array $allowedEpicEditorPages
+     */
+    public function setAllowedEpicEditorPages($allowedEpicEditorPages)
+    {
+        $this->_allowedEpicEditorPages = $allowedEpicEditorPages;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllowedEpicEditorPages()
+    {
+        return $this->_allowedEpicEditorPages;
+    }
+
+    /**
+     * @param array $epicEditorFiles
+     */
+    public function setEpicEditorFiles($epicEditorFiles)
+    {
+        $this->_epicEditorFiles = $epicEditorFiles;
+    }
+
+    /**
+     * @return array
+     */
+    public function getEpicEditorFiles()
+    {
+        return $this->_epicEditorFiles;
     }
 }
