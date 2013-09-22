@@ -13,7 +13,9 @@
         epicEditorInstances = {},
         _mdExtraRenderUrl = null,
         EPIC_EDITOR_PREFIX = 'epiceditor_EE_',
-        isViewMarkdownSourceHtml = false;
+        isViewMarkdownSourceHtml = false,
+        COLOR_ON = 'green',
+        COLOR_OFF = 'white';
 
     /**
      *
@@ -81,7 +83,7 @@
         if (true === isViewMarkdownSourceHtml) {
             isViewMarkdownSourceHtml = false;
             element.setStyle({
-                color: 'white'
+                color: COLOR_OFF
             });
             return;
         }
@@ -104,7 +106,7 @@
             isViewMarkdownSourceHtml = true;
             instance.preview();
             element.setStyle({
-                color: 'green'
+                color: COLOR_ON
             });
         } else {
             alert('Only available via Epic Editor ...');
@@ -162,8 +164,7 @@
      */
     function _epicParser(content, $textArea) {
         var currentActiveInstance = _getEpicEditorActiveInstance(),
-            pContent = {},
-            htmlSource = '';
+            pContent = {};
 
         if (content.length > 10 && _getMdExtraRenderUrl()) {
             pContent = _mdExtraRender(content);
@@ -238,6 +239,10 @@
 
     function _createEpicEditorInstances(event, element) {
 
+        if (element === null || element === undefined) {
+            alert('Wysiwyg only bug ...');
+        }
+
         var
             epicHtmlId = EPIC_EDITOR_PREFIX + (element.id || ''),
             $epicHtmlId = $(epicHtmlId),
@@ -283,7 +288,7 @@
         if (false === instance) {
             _createEpicEditorInstances(null, $(textAreaId));
             element.setStyle({
-                color: 'green'
+                color: COLOR_ON
             });
             return;
         }
@@ -292,13 +297,13 @@
             instance.unload();
             $(textAreaId).show();
             element.setStyle({
-                color: 'white'
+                color: COLOR_OFF
             });
         } else {
             $(textAreaId).hide();
             instance.load();
             element.setStyle({
-                color: 'green'
+                color: COLOR_ON
             });
         }
         return;
