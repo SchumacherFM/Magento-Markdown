@@ -105,6 +105,7 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
      */
     protected function _renderMarkdown($text)
     {
+        Varien_Profiler::start('renderMarkdown');
         $force                      = isset($this->_options['force']) && $this->_options['force'] === TRUE;
         $protectMagento             = isset($this->_options['protectMagento']) && $this->_options['protectMagento'] === TRUE;
         $this->_currentRenderedText = $text; // @todo optimize
@@ -123,6 +124,7 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
         if ($protectMagento === TRUE) {
             $this->_preserveMagentoVariablesDecode();
         }
+        Varien_Profiler::stop('renderMarkdown');
         return $this->_currentRenderedText;
     }
 
@@ -133,6 +135,9 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
      */
     protected function _removeMarkdownTag()
     {
+        if (! $this->_tag) {
+            return $this;
+        }
         $this->_currentRenderedText = str_replace($this->_tag, '', $this->_currentRenderedText);
         return $this;
     }
@@ -178,8 +183,16 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
      */
     private function _isMarkdown()
     {
-        $flag = !empty($this->_currentRenderedText);
-        return $flag === TRUE && strpos($this->_currentRenderedText, $this->_tag) !== FALSE;
+        if (!$this->_currentRenderedText) {
+            return false;
+        }
+        if (!$this->_tag) {
+            return true;
+        }
+        if (strpos($this->_currentRenderedText, $this->_tag) === false) {
+            return false;
+        }
+        return true;
     }
 
     /**
