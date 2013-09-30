@@ -97,8 +97,8 @@
 
         instance = epicEditorInstances[textAreaId] || false;
 
-        if (!instance || (false !== instance && instance.is('unloaded'))) {
-            toggleEpicEditor(textAreaId);
+        if (false === instance || (false !== instance && instance.is('unloaded'))) {
+            toggleEpicEditor(element, textAreaId);
             instance = epicEditorInstances[textAreaId] || false;
         }
 
@@ -240,6 +240,7 @@
     function _createEpicEditorInstances(event, element) {
 
         if (element === null || element === undefined) {
+            throw 'Wysiwyg only bug ...';
             alert('Wysiwyg only bug ...');
         }
 
@@ -279,6 +280,11 @@
         }
     }
 
+    /**
+     *
+     * @param element this
+     * @param textAreaId string
+     */
     function toggleEpicEditor(element, textAreaId) {
 
         var
