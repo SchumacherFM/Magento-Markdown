@@ -1,8 +1,4 @@
-<?xml version="1.0"?>
-<!--* @category    SchumacherFM_Markdown-->
-<!--* @package     etc-->
-<!--* @author      Cyrill at Schumacher dot fm / @SchumacherFM-->
-<!--* @copyright   Copyright (c)-->
+<?xml version="1.0"?><!--* @category    SchumacherFM_Markdown--><!--* @package     etc--><!--* @author      Cyrill at Schumacher dot fm / @SchumacherFM--><!--* @copyright   Copyright (c)-->
 <config>
     <modules>
         <SchumacherFM_Markdown>
@@ -128,16 +124,21 @@
         </events>
     </adminhtml>
     <default>
-        <schumacherfm>
+        <markdown>
             <markdown>
                 <enable>1</enable>
-                <md_extra>0</md_extra>
-                <md_extra_email>0</md_extra_email>
                 <cheatsheet>https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet</cheatsheet>
                 <detection_tag>!#markdown</detection_tag>
-                <epiceditor_enable>0</epiceditor_enable>
             </markdown>
-        </schumacherfm>
+            <markdown_extra>
+                <enable>0</enable>
+                <enable_email>0</enable_email>
+            </markdown_extra>
+
+            <epiceditor>
+                <enable>0</enable>
+            </epiceditor>
+        </markdown>
     </default>
     <phpunit>
         <suite>

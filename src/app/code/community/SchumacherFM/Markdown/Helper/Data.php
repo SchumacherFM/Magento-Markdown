@@ -31,7 +31,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getCheatSheetUrl()
     {
-        return Mage::getStoreConfig('schumacherfm/markdown/cheatsheet');
+        return Mage::getStoreConfig('markdown/markdown/cheatsheet');
     }
 
     /**
@@ -41,7 +41,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getDetectionTag($encoded = FALSE)
     {
-        $tag = Mage::getStoreConfig('schumacherfm/markdown/detection_tag');
+        $tag = Mage::getStoreConfig('markdown/markdown/detection_tag');
         return $encoded ? rawurlencode($tag) : $tag;
     }
 
@@ -54,7 +54,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function isDisabled()
     {
-        return !(boolean)Mage::getStoreConfig('schumacherfm/markdown/enable');
+        return !(boolean)Mage::getStoreConfig('markdown/markdown/enable');
     }
 
     /**
@@ -64,7 +64,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function isMarkdownExtra($type = NULL)
     {
-        return (boolean)Mage::getStoreConfig('schumacherfm/markdown/md_extra' . (!empty($type) ? '_' . $type : ''));
+        return (boolean)Mage::getStoreConfig('markdown/markdown_extra/enable' . (!empty($type) ? '_' . $type : ''));
     }
 
     /**
@@ -77,7 +77,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getTransactionalEmailCSS()
     {
-        $file = Mage::getStoreConfig('schumacherfm/markdown/te_md_css');
+        $file = Mage::getStoreConfig('markdown/markdown_extra/te_md_css');
         if (empty($file)) {
             return '';
         }
@@ -96,9 +96,9 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function getAdminRenderUrl(array $params = null)
+    public function getAdminRenderUrl(array $params = NULL)
     {
-        return Mage::helper('adminhtml')->getUrl('*/markdown/render',$params);
+        return Mage::helper('adminhtml')->getUrl('*/markdown/render', $params);
     }
 
     /**
@@ -106,7 +106,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function isEpicEditorEnabled()
     {
-        return (boolean)Mage::getStoreConfig('schumacherfm/markdown/epiceditor_enable');
+        return (boolean)Mage::getStoreConfig('markdown/epiceditor/enable');
     }
 
     /**
@@ -116,7 +116,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getEpicEditorConfig()
     {
-        $config = trim(Mage::getStoreConfig('schumacherfm/markdown/epiceditor_config'));
+        $config = trim(Mage::getStoreConfig('markdown/epiceditor/config'));
         if (empty($config)) {
             return FALSE;
         }
