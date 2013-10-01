@@ -45,7 +45,7 @@
             return _detectionTag;
         }
         _detectionTag = $('markdownGlobalConfig').readAttribute('data-detectiontag') || '';
-        _detectionTag = unescape(_detectionTag);
+        _detectionTag = decodeURIComponent(_detectionTag);
         return _detectionTag;
     }
 
@@ -122,17 +122,16 @@
      */
     function _mdExtraRender(content) {
 
-        var
-            p = new promise.Promise(),
-            ajaxRequest = new Ajax.Request(_getMdExtraRenderUrl(), {
-                onSuccess: function (response) {
-                    p.done(null, response.responseText);
-                },
-                method: 'post',
-                parameters: {
-                    'content': content
-                }
-            });
+        var p = new promise.Promise();
+        new Ajax.Request(_getMdExtraRenderUrl(), {
+            onSuccess: function (response) {
+                p.done(null, response.responseText);
+            },
+            method: 'post',
+            parameters: {
+                'content': content
+            }
+        });
 
         return p;
     }
@@ -153,6 +152,19 @@
             oneKey = keys[0];
 
         return epicEditorInstances[oneKey];
+    }
+
+    /**
+     *
+     * @param string htmlString
+     * @returns string
+     * @private
+     */
+    function _highlight(htmlString) {
+        if (true === isViewMarkdownSourceHtml) {
+            htmlString = '<pre class="hljs">' + hljs.highlight('xml', htmlString).value + '</pre>';
+        }
+        return htmlString;
     }
 
     /**
@@ -179,19 +191,6 @@
         }
 
         return _highlight(marked(content.replace(_getDetectionTag(), '')));
-    }
-
-    /**
-     *
-     * @param string htmlString
-     * @returns string
-     * @private
-     */
-    function _highlight(htmlString) {
-        if (true === isViewMarkdownSourceHtml) {
-            htmlString = '<pre class="hljs">' + hljs.highlight('xml', htmlString).value + '</pre>';
-        }
-        return htmlString;
     }
 
     function _getDefaultEpicEditorOptions() {
@@ -254,7 +253,7 @@
             userConfig = {};
 
         if (!epicEditorInstances[instanceId]) {
-            userConfig = unescape($epicHtmlId.readAttribute('data-config') || '{}').evalJSON(true);
+            userConfig = decodeURIComponent($epicHtmlId.readAttribute('data-config') || '{}').evalJSON(true);
 
             Object.extend(editorOptions, userConfig);
             editorOptions.container = epicHtmlId;
@@ -318,7 +317,7 @@
 
     function mdLoadEpicEditor() {
 
-        if ('undefined' === typeof window.EpicEditor) {
+        if (typeof window.EpicEditor !== 'function') {
             return; // console.log('EpicEditor not loaded');
         }
 
