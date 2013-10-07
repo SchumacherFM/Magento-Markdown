@@ -15,7 +15,37 @@
         EPIC_EDITOR_PREFIX = 'epiceditor_EE_',
         isViewMarkdownSourceHtml = false,
         COLOR_ON = 'green',
-        COLOR_OFF = 'white';
+        COLOR_OFF = 'white',
+        _toggleMarkdownSourceOriginalMarkdown = '';
+
+    /**
+     *
+     * @param variable mixed
+     * @returns {boolean}
+     * @private
+     */
+    function _isObject(variable) {
+        return Object.prototype.toString.call(variable) === '[object Object]';
+    }
+
+    /**
+     *
+     * @param variable mixed
+     * @returns {boolean}
+     * @private
+     */
+    function _isFunction(variable) {
+        return Object.prototype.toString.call(variable) === '[object Function]';
+    }
+
+    /**
+     *
+     * @returns {boolean}
+     * @private
+     */
+    function _isEpicEditorEnabled() {
+        return window.EpicEditor !== undefined;
+    }
 
     /**
      *
@@ -79,39 +109,50 @@
      * @returns uninteresting
      */
     function toggleMarkdownSource(element, textAreaId) {
+        var _loadEpic = false,
+            _instance,
+            $textAreaId = $(textAreaId);
 
         if (true === isViewMarkdownSourceHtml) {
             isViewMarkdownSourceHtml = false;
             element.setStyle({
                 color: COLOR_OFF
             });
+            // restore original markdown, if not it is lost
+            if (_toggleMarkdownSourceOriginalMarkdown.length > 10) {
+                $textAreaId.writeAttribute('readonly', false);
+                $textAreaId.value = _toggleMarkdownSourceOriginalMarkdown;
+                _toggleMarkdownSourceOriginalMarkdown = '';
+            }
             return;
         }
-
-        var $textAreaId = $(textAreaId), instance;
 
         if ($textAreaId.value.indexOf(_getDetectionTag()) === -1) {
             alert('Markdown not found');
             return false;
         }
 
-        instance = epicEditorInstances[textAreaId] || false;
+        _instance = epicEditorInstances[textAreaId] || false;
+        _loadEpic = _isEpicEditorEnabled() && (false === _instance || (false !== _instance && _instance.is('unloaded')));
 
-        if (false === instance || (false !== instance && instance.is('unloaded'))) {
+        if (true === _loadEpic) {
             toggleEpicEditor(element, textAreaId);
-            instance = epicEditorInstances[textAreaId] || false;
+            _instance = epicEditorInstances[textAreaId] || false;
         }
 
-        if (instance && typeof instance === 'object') {
-            isViewMarkdownSourceHtml = true;
-            instance.preview();
-            element.setStyle({
-                color: COLOR_ON
-            });
+        isViewMarkdownSourceHtml = true;
+        element.setStyle({
+            color: COLOR_ON
+        });
+
+        if (_instance && _isObject(_instance)) {
+            _instance.preview();
         } else {
-            alert('Only available via Epic Editor ...');
+            _toggleMarkdownSourceOriginalMarkdown = $textAreaId.value;
+            // no cache available oroginal MD is lost.
+            $textAreaId.value = _parserDefault(_toggleMarkdownSourceOriginalMarkdown, $textAreaId);
+            $textAreaId.writeAttribute('readonly', true);
         }
-
     }
 
     /**
@@ -169,12 +210,35 @@
 
     /**
      *
+     * default parsing without syntax highlightning
+     *
      * @param string content
      * @param object $textArea
      * @returns string
      * @private
      */
-    function _epicParser(content, $textArea) {
+    function _parserDefault(content, $textArea) {
+        var pContent = {};
+
+        if (content.length > 10 && _getMdExtraRenderUrl()) {
+            pContent = _mdExtraRender(content);
+            pContent.then(function (error, html) {
+                $textArea.value = html;
+            });
+            return '<h3>Preview will be available shortly ...</h3>';
+        }
+
+        return marked(content.replace(_getDetectionTag(), ''));
+    }
+
+    /**
+     *
+     * @param string content
+     * @param object $textArea
+     * @returns string
+     * @private
+     */
+    function _parserEpicEditor(content, $textArea) {
         var currentActiveInstance = _getEpicEditorActiveInstance(),
             pContent = {};
 
@@ -193,13 +257,18 @@
         return _highlight(marked(content.replace(_getDetectionTag(), '')));
     }
 
+    /**
+     *
+     * @returns {{container: null, textarea: null, basePath: string, clientSideStorage: boolean, parser: Function, localStorageName: string, useNativeFullscreen: boolean, file: {name: string, defaultContent: string, autoSave: number}, theme: {base: string, preview: string, editor: string}, button: {preview: boolean, fullscreen: boolean, bar: string}, focusOnLoad: boolean, shortcut: {modifier: number, fullscreen: number, preview: number}, string: {togglePreview: string, toggleEdit: string, toggleFullscreen: string}, autogrow: {minHeight: number, maxHeight: number, scroll: boolean}}}
+     * @private
+     */
     function _getDefaultEpicEditorOptions() {
         return {
             container: null,
             textarea: null,
             basePath: '/skin/adminhtml/default/default/epiceditor/',
             clientSideStorage: true,
-            parser: _epicParser,
+            parser: _parserEpicEditor,
             localStorageName: 'epiceditor',
             useNativeFullscreen: true,
             file: {
@@ -240,7 +309,6 @@
 
         if (element === null || element === undefined) {
             throw 'Wysiwyg only bug ...';
-            alert('Wysiwyg only bug ...');
         }
 
         var
@@ -317,7 +385,7 @@
 
     function mdLoadEpicEditor() {
 
-        if (typeof window.EpicEditor !== 'function') {
+        if (false === _isEpicEditorEnabled()) {
             return; // console.log('EpicEditor not loaded');
         }
 
@@ -371,7 +439,7 @@
             p = new Promise();
             this._callbacks.push(function () {
                 var res = func.apply(context, arguments);
-                if (res && typeof res.then === 'function')
+                if (res && _isFunction(res.then))
                     res.then(p.done, p);
             });
         }

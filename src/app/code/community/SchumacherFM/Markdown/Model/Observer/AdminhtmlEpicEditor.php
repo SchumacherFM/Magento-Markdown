@@ -5,7 +5,7 @@
  * @author      Cyrill at Schumacher dot fm / @SchumacherFM
  * @copyright   Copyright (c)
  *
- * avoiding to load codemirror files on every page in the adminhtml area.
+ * avoiding to load files on every page in the adminhtml area.
  */
 class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
 {
@@ -29,9 +29,8 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
      */
     protected $_epicEditorFiles = array(
         'js' => array(
-            'markdown/adminhtml/epiceditor.min.js',
+            'markdown/adminhtml/epiceditor.js',
             'markdown/adminhtml/highlight.pack.js',
-//            'markdown/adminhtml/epiceditor.js',
         ),
     );
 
