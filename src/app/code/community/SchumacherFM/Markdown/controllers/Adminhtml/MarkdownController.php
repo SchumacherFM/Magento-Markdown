@@ -36,4 +36,8 @@ class SchumacherFM_Markdown_Adminhtml_MarkdownController extends Mage_Adminhtml_
         $this->getResponse()->setBody($string);
         return $this;
     }
+
+    public function imageUpload()
+    {
+    }
 }

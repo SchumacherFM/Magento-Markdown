@@ -134,15 +134,18 @@ About
 History
 -------
 
-#### 1.5.0
+#### 2.0.0
 
 - Remove live preview
-- Remove library marked.js and markdown.css
+- Remove markdown.css
 - Remove support for <= IE8
 - Add [EpicEditor](http://epiceditor.com) with built in marked.js, split fullscreen editing,
     live previewing, automatic draft saving and offline support.
     Down side: when inserting Magento widgets, images or variables you have to turn of the editor insert that item
     and then turn it on. (Missing bi-directional synchronization between textarea and editor)
+- Preview of HTML source code possible even if EpicEditor is not loaded or disabled.
+- If EpicEditor is unloaded then dropping image files with direct upload is possible [HTML5 FileReader](http://bgrins.github.io/filereader.js/).
+    Due the contenteditable mode in EpicEditor the FileReader cannot be implemented, only in a textarea field ...
 
 #### 1.4.2
 

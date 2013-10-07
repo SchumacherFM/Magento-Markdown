@@ -80,6 +80,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         ksort($this->_afterElementHtml);
         $element->setData('after_element_html', implode(' ', $this->_afterElementHtml));
         $this->_afterElementHtml = array();
+        $element->setClass('initFileReader');
     }
 
     /**

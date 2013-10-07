@@ -4,7 +4,7 @@
  * @author      Cyrill at Schumacher dot fm / @SchumacherFM
  * @copyright   Copyright (c)
  */
-/*global $,marked,varienGlobalEvents,Ajax,hljs*/
+/*global $,marked,varienGlobalEvents,Ajax,hljs,FileReaderJS,Event*/
 ;
 (function () {
     'use strict';
@@ -16,6 +16,8 @@
         isViewMarkdownSourceHtml = false,
         COLOR_ON = 'green',
         COLOR_OFF = 'white',
+        _initializedFileReaderContainer = {},
+        _textAreaCurrentCaretPosition = 0, // set by the onClick event
         _toggleMarkdownSourceOriginalMarkdown = '';
 
     /**
@@ -45,6 +47,15 @@
      */
     function _isEpicEditorEnabled() {
         return window.EpicEditor !== undefined;
+    }
+
+    /**
+     *
+     * @returns {boolean}
+     * @private
+     */
+    function _isFileReaderEnabled() {
+        return window.FileReader !== undefined;
     }
 
     /**
@@ -305,6 +316,12 @@
         };
     }
 
+    /**
+     *
+     * @param event
+     * @param element
+     * @private
+     */
     function _createEpicEditorInstances(event, element) {
 
         if (element === null || element === undefined) {
@@ -382,24 +399,95 @@
         return;
     }
 
+    /**
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/FileReader
+     * @param _epicEditorInstance window.EpicEditor loaded
+     * @private
+     */
+    function _createFileReader(event) {
+        var target = event.target || event.srcElement;
 
-    function mdLoadEpicEditor() {
+        _textAreaCurrentCaretPosition = target.selectionEnd;
+        console.log('_textAreaCurrentCaretPosition', _textAreaCurrentCaretPosition);
 
-        if (false === _isEpicEditorEnabled()) {
-            return; // console.log('EpicEditor not loaded');
+        // check if already initialized
+        if (_initializedFileReaderContainer[target.id]) {
+            return;
         }
+
+        var opts = {
+            dragClass: 'drag',
+            accept: 'image/*',
+            readAsMap: {
+                'image/*': 'BinaryString'
+            },
+            readAsDefault: 'BinaryString',
+            on: {
+                /* @todo display progress bar for:: progress: function (e, file) {
+                 console.log('progress: ', file);
+                 // Native ProgressEvent
+                 }, */
+                load: function (e, file) {
+                    // Native ProgressEvent
+                    // ajax request for upload ...
+                    console.log('load: ', e, file);
+
+//                    new Ajax.Request(_getMdExtraRenderUrl(), {
+//                        onSuccess: function (response) {
+//                            p.done(null, response.responseText);
+//                        },
+//                        method: 'post',
+//                        parameters: {
+//                            'content': content
+//                        }
+//                    });
+
+
+                },
+                error: function (e, file) {
+                    // Native ProgressEvent
+                    alert('An error occurred. Please see console.log');
+                    return console.log('error: ', e, file);
+                },
+                /* loadend: function (e, file) {
+                 // Native ProgressEvent
+                 console.log('loadend: ', file);
+
+                 }, */
+                skip: function (e, file) {
+                    return console.log('File format is not supported', file);
+                }
+            }
+        };
+
+        FileReaderJS.setupDrop(target, opts);
+        _initializedFileReaderContainer[target.id] = true;
+    }
+
+    /**
+     * loads the filereader, epiceditor
+     */
+    function _mdInitialize() {
 
         var parentElementIds = ['product_edit_form', 'edit_form', 'category-edit-container', 'email_template_edit_form'];
         if (varienGlobalEvents) {
-            varienGlobalEvents.fireEvent('mdLoadEpicEditorForms', parentElementIds);
+            varienGlobalEvents.fireEvent('mdLoadForms', parentElementIds);
         }
+
         //  loading multiple instances on one page
         // only works with event delegation due category edit page ...
         // fire event for customization varienGlobalEvents.attachEventHandler('showTab', function (e) {...}
         parentElementIds.forEach(function (elementId) {
             var $elementId = $(elementId);
             if ($elementId) {
-                $elementId.on('click', 'textarea.initEpicEditor', _createEpicEditorInstances);
+
+                if (true === _isEpicEditorEnabled()) {
+                    $elementId.on('click', 'textarea.initEpicEditor', _createEpicEditorInstances);
+                }
+                if (true === _isFileReaderEnabled()) {
+                    $elementId.on('click', 'textarea.initFileReader', _createFileReader);
+                }
+
             }
         });
     }
@@ -409,7 +497,7 @@
     this.toggleEpicEditor = toggleEpicEditor;
     this.toggleMarkdownSource = toggleMarkdownSource;
 
-    document.observe('dom:loaded', mdLoadEpicEditor);
+    document.observe('dom:loaded', _mdInitialize);
 
 }).
     call(function () {
