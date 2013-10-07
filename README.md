@@ -21,6 +21,8 @@ Rendering of catalog description fields have to be implemented in the phtml file
 Integrates the awesome [EpicEditor](http://epiceditor.com): split fullscreen editing,
 live previewing, automatic draft saving and offline support.
 
+Drag'n'Drop of images supported in textarea fields. [Automatic image uploading](https://developer.mozilla.org/en-US/docs/Web/API/FileReader) integrated. (>= IE10, Safari 6.0.2, FX3.6, Chrome 7, Opera 12.02)
+
 Bugs
 ----
 

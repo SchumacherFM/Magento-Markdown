@@ -102,6 +102,16 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * @param array $params
+     *
+     * @return string
+     */
+    public function getAdminFileUploadUrl(array $params = NULL)
+    {
+        return Mage::helper('adminhtml')->getUrl('*/markdown/fileUpload', $params);
+    }
+
+    /**
      * @return bool
      */
     public function isEpicEditorEnabled()

@@ -67,20 +67,22 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
     {
         $this->_afterElementHtml[90] = $element->getData('after_element_html');
 
-        $tag = Mage::helper('markdown')->getDetectionTag(TRUE);
+        $tag        = Mage::helper('markdown')->getDetectionTag(TRUE);
         $dataConfig = ' data-detectiontag="' . $tag . '"';
 
         if ($this->_isMarkdownExtra($element)) {
-            $url = Mage::helper('markdown')->getAdminRenderUrl(array('markdownExtra' => 1));
-            $dataConfig .= ' data-mdextrarenderer="' . $url . '"';
+            $dataConfig .= ' data-mdextrarenderer="' . Mage::helper('markdown')->getAdminRenderUrl(array('markdownExtra' => 1)) . '"';
         }
 
-        $this->_afterElementHtml[1000] = '<div id="markdownGlobalConfig" '.$dataConfig.' style="display:none;"></div>';
+        $dataConfig .= ' data-fileuploadurl="' . Mage::helper('markdown')->getAdminFileUploadUrl() . '"';
+
+        // @todo bug: will be inserted more than 1 time if there are more textareas available ... so singleton ...
+        $this->_afterElementHtml[1000] = '<div id="markdownGlobalConfig" ' . $dataConfig . ' style="display:none;"></div>';
 
         ksort($this->_afterElementHtml);
         $element->setData('after_element_html', implode(' ', $this->_afterElementHtml));
         $this->_afterElementHtml = array();
-        $element->setClass('initFileReader');
+        $element->addClass('initFileReader');
     }
 
     /**
@@ -94,7 +96,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 
         $id = $element->getHtmlId();
 
-        $element->setClass('initEpicEditor');
+        $element->addClass('initEpicEditor');
         $this->_afterElementHtml[100] = '<div id="epiceditor_EE_' . $id . '"' . $this->_getEpicEditorHtmlConfig($element) . '></div>';
         return $this;
     }

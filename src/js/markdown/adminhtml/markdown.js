@@ -4,7 +4,7 @@
  * @author      Cyrill at Schumacher dot fm / @SchumacherFM
  * @copyright   Copyright (c)
  */
-/*global $,marked,varienGlobalEvents,Ajax,hljs,FileReaderJS,Event*/
+/*global $,marked,varienGlobalEvents,Ajax,hljs,FileReaderJS,Event,encode_base64*/
 ;
 (function () {
     'use strict';
@@ -12,12 +12,13 @@
         _detectionTag = null,
         epicEditorInstances = {},
         _mdExtraRenderUrl = null,
+        _mdFileUploadUrl = null,
         EPIC_EDITOR_PREFIX = 'epiceditor_EE_',
         isViewMarkdownSourceHtml = false,
         COLOR_ON = 'green',
         COLOR_OFF = 'white',
         _initializedFileReaderContainer = {},
-        _textAreaCurrentCaretPosition = 0, // set by the onClick event
+        _textAreaCurrentCaretObject = {}, // set by the onClick event
         _toggleMarkdownSourceOriginalMarkdown = '';
 
     /**
@@ -74,6 +75,24 @@
         }
 
         return _mdExtraRenderUrl;
+    }
+
+    /**
+     *
+     * @returns string|boolean
+     * @private
+     */
+    function _getFileUploadUrl() {
+        if (null !== _mdFileUploadUrl) {
+            return _mdFileUploadUrl;
+        }
+        _mdFileUploadUrl = $('markdownGlobalConfig').readAttribute('data-fileuploadurl') || '';
+
+        if (_mdFileUploadUrl.indexOf('http') === -1) {
+            _mdFileUploadUrl = false;
+        }
+
+        return _mdFileUploadUrl;
     }
 
     /**
@@ -243,7 +262,8 @@
     }
 
     /**
-     *
+     * todo replace {{media url=""}} with a dummy preview image, otherwise loading errors will occurr
+     *      also test that in product and categorie desc fields
      * @param string content
      * @param object $textArea
      * @returns string
@@ -400,19 +420,33 @@
     }
 
     /**
-     * @see https://developer.mozilla.org/en-US/docs/Web/API/FileReader
-     * @param _epicEditorInstance window.EpicEditor loaded
+     *
+     * @param fileUrl
+     * @returns {boolean}
      * @private
      */
-    function _createFileReader(event) {
-        var target = event.target || event.srcElement;
+    function _fileReaderAddImageToMarkdown(fileUrl) {
 
-        _textAreaCurrentCaretPosition = target.selectionEnd;
-        console.log('_textAreaCurrentCaretPosition', _textAreaCurrentCaretPosition);
+        var
+            mdTpl = ' ![Alt_Text](' + fileUrl + ' "Logo_Title_Text") ',
+            prefix = _textAreaCurrentCaretObject.value.substring(0, _textAreaCurrentCaretObject.selectionEnd),
+            suffix = _textAreaCurrentCaretObject.value.substring(_textAreaCurrentCaretObject.selectionEnd);
 
-        // check if already initialized
-        if (_initializedFileReaderContainer[target.id]) {
-            return;
+        _textAreaCurrentCaretObject.value = prefix + mdTpl + suffix;
+        prefix = '';
+        suffix = '';
+        return true;
+    }
+
+    /**
+     *
+     * @param target event.target
+     * @private
+     */
+    function _createFileReaderInstance(target) {
+
+        if (encode_base64 === undefined) {
+            return console.log('FileReader not available because method encode_base64() is missing!');
         }
 
         var opts = {
@@ -423,25 +457,30 @@
             },
             readAsDefault: 'BinaryString',
             on: {
-                /* @todo display progress bar for:: progress: function (e, file) {
-                 console.log('progress: ', file);
-                 // Native ProgressEvent
-                 }, */
                 load: function (e, file) {
-                    // Native ProgressEvent
-                    // ajax request for upload ...
-                    console.log('load: ', e, file);
 
-//                    new Ajax.Request(_getMdExtraRenderUrl(), {
-//                        onSuccess: function (response) {
-//                            p.done(null, response.responseText);
-//                        },
-//                        method: 'post',
-//                        parameters: {
-//                            'content': content
-//                        }
-//                    });
+                    new Ajax.Request(_getFileUploadUrl(), {
+                        onSuccess: function (response) {
+                            var result = JSON.parse(response.responseText);
+                            if (result && _isObject(result)) {
+                                if (result.err === false) {
+                                    return _fileReaderAddImageToMarkdown(result.fileUrl);
+                                }
+                                if (result.err === true) {
+                                    alert('An error occurred:\n' + result.msg);
 
+                                }
+                            } else {
+                                alert('An error occurred after uploading. No JSON found ...');
+                            }
+                            return false;
+                        },
+                        method: 'post',
+                        parameters: {
+                            'binaryData': encode_base64(e.target.result),
+                            'file': JSON.stringify(file)
+                        }
+                    });
 
                 },
                 error: function (e, file) {
@@ -449,11 +488,6 @@
                     alert('An error occurred. Please see console.log');
                     return console.log('error: ', e, file);
                 },
-                /* loadend: function (e, file) {
-                 // Native ProgressEvent
-                 console.log('loadend: ', file);
-
-                 }, */
                 skip: function (e, file) {
                     return console.log('File format is not supported', file);
                 }
@@ -462,6 +496,22 @@
 
         FileReaderJS.setupDrop(target, opts);
         _initializedFileReaderContainer[target.id] = true;
+    }
+
+    /**
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/FileReader
+     * @param _epicEditorInstance window.EpicEditor loaded
+     * @private
+     */
+    function _createFileReader(event) {
+        var target = event.target || event.srcElement;
+
+        _textAreaCurrentCaretObject = target;
+
+        // check if already initialized
+        if (_initializedFileReaderContainer[target.id] === undefined) {
+            _createFileReaderInstance(target);
+        }
     }
 
     /**
@@ -481,6 +531,7 @@
             var $elementId = $(elementId);
             if ($elementId) {
 
+                // some things are only possible with event delegation ...
                 if (true === _isEpicEditorEnabled()) {
                     $elementId.on('click', 'textarea.initEpicEditor', _createEpicEditorInstances);
                 }
