@@ -120,7 +120,9 @@ echo $instance->renderMarkdown('text goes here');
 Todo
 ----
 
-For upcoming version 3.0 replace the EpicEditor with StackEdit
+- For version 3.0 replace the EpicEditor with StackEdit
+- For version 4.0 parallel support for Magento2
+- For version 5.0 drop Magento1 support
 
 Installation Instructions
 -------------------------
