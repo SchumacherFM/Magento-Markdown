@@ -8,7 +8,26 @@
 class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 {
 
+    /**
+     * @var bool
+     */
+    protected $_configInserted = FALSE;
+
+    /**
+     * @var array
+     */
     protected $_afterElementHtml = array();
+
+    /**
+     * @var string
+     */
+    protected $_imagePlaceHolder = NULL;
+
+    public function __construct()
+    {
+        $this->_imagePlaceHolder = Mage::getDesign()->getSkinUrl('images/catalog/product/placeholder/image.jpg');
+        $this->_imagePlaceHolder = str_replace('adminhtml' . '/', Mage_Core_Model_Design_Package::DEFAULT_AREA . '/', $this->_imagePlaceHolder);
+    }
 
     /**
      * adminhtml_block_html_before
@@ -62,31 +81,45 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 
     /**
      * @param Varien_Data_Form_Element_Abstract $element
+     *
+     * @return $this
      */
     protected function _mergeAfterElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
         $this->_afterElementHtml[90] = $element->getData('after_element_html');
 
-        $tag        = Mage::helper('markdown')->getDetectionTag(TRUE);
-        $dataConfig = ' data-detectiontag="' . $tag . '"';
+        $config        = array();
+        $config['dt']  = Mage::helper('markdown')->getDetectionTag(TRUE);
+        $config['fuu'] = Mage::helper('markdown')->getAdminFileUploadUrl(); // file upload url
+
+        /**
+         * when rendering via marked.js include that place holder ... if rendere via PHP replace {{media url...}}
+         * with the real image.
+         */
+        $config['phi'] = Mage::getBaseUrl('media'); // $this->_imagePlaceHolder; // placeholder image
 
         if ($this->_isMarkdownExtra($element)) {
-            $dataConfig .= ' data-mdextrarenderer="' . Mage::helper('markdown')->getAdminRenderUrl(array('markdownExtra' => 1)) . '"';
+            $config['eru'] = Mage::helper('markdown')->getAdminRenderUrl(array('markdownExtra' => 1)); // extra renderer url
         }
 
-        $dataConfig .= ' data-fileuploadurl="' . Mage::helper('markdown')->getAdminFileUploadUrl() . '"';
-
-        // @todo bug: will be inserted more than 1 time if there are more textareas available ... so singleton ...
-        $this->_afterElementHtml[1000] = '<div id="markdownGlobalConfig" ' . $dataConfig . ' style="display:none;"></div>';
+        if ($this->_configInserted === FALSE) {
+            $this->_afterElementHtml[1000] = '<div id="markdownGlobalConfig" data-config=\'' .
+                Zend_Json_Encoder::encode($config)
+                . '\' style="display:none;"></div>';
+            $this->_configInserted         = TRUE;
+        }
 
         ksort($this->_afterElementHtml);
         $element->setData('after_element_html', implode(' ', $this->_afterElementHtml));
         $this->_afterElementHtml = array();
         $element->addClass('initFileReader');
+        return $this;
     }
 
     /**
      * @param Varien_Data_Form_Element_Abstract $element
+     *
+     * @return $this
      */
     protected function _addEpicEditorHtml(Varien_Data_Form_Element_Abstract $element)
     {

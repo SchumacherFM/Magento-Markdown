@@ -23,6 +23,9 @@ class SchumacherFM_Markdown_Adminhtml_MarkdownController extends Mage_Adminhtml_
         $md = Mage::helper('markdown')->render($content, array(
             'extra' => $markdownExtra
         ));
+
+        $md = Mage::helper('markdown')->renderTemplateMediaUrl($md);
+
         return $this->_setReturn($md);
     }
 
@@ -71,7 +74,7 @@ class SchumacherFM_Markdown_Adminhtml_MarkdownController extends Mage_Adminhtml_
             if ($result > 10) {
                 $return['err']     = FALSE;
                 $return['msg']     = '';
-                $return['fileUrl'] = '{{media url="' . $this->_getBaseUrl() . $this->_getStorageSubDirectory() . $fileName . '"}}';
+                $return['fileUrl'] = Mage::helper('markdown')->getTemplateMediaUrl($this->_getBaseUrl() . $this->_getStorageSubDirectory() . $fileName);
             }
         }
 

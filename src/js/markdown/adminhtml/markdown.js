@@ -9,10 +9,8 @@
 (function () {
     'use strict';
     var
-        _detectionTag = null,
+        _markDownGlobalConfig = {},
         epicEditorInstances = {},
-        _mdExtraRenderUrl = null,
-        _mdFileUploadUrl = null,
         EPIC_EDITOR_PREFIX = 'epiceditor_EE_',
         isViewMarkdownSourceHtml = false,
         COLOR_ON = 'green',
@@ -20,6 +18,41 @@
         _initializedFileReaderContainer = {},
         _textAreaCurrentCaretObject = {}, // set by the onClick event
         _toggleMarkdownSourceOriginalMarkdown = '';
+
+    /**
+     *
+     * @param str string
+     * @returns boolean|string
+     * @private
+     */
+    function _checkHttp(str) {
+
+        if (!str || false === str || str.indexOf('http') === -1) {
+            return false;
+        }
+        return str;
+    }
+
+    /**
+     * inits the global md config
+     * @returns bool
+     * @private
+     */
+    function _initGlobalConfig() {
+
+        var config = JSON.parse($('markdownGlobalConfig').readAttribute('data-config') || '{}');
+        if (config.dt === undefined) {
+            return console.log('Markdown Global Config not found. General error!');
+        }
+
+        _markDownGlobalConfig = {
+            tag: decodeURIComponent(config.dt),
+            uploadUrl: _checkHttp(config.fuu || false),
+            placeholder1: _checkHttp(config.phi || false),
+            extraRendererUrl: _checkHttp(config.eru || false)
+        };
+        return true;
+    }
 
     /**
      *
@@ -59,56 +92,6 @@
         return window.FileReader !== undefined;
     }
 
-    /**
-     *
-     * @returns string|boolean
-     * @private
-     */
-    function _getMdExtraRenderUrl() {
-        if (null !== _mdExtraRenderUrl) {
-            return _mdExtraRenderUrl;
-        }
-        _mdExtraRenderUrl = $('markdownGlobalConfig').readAttribute('data-mdextrarenderer') || '';
-
-        if (_mdExtraRenderUrl.indexOf('http') === -1) {
-            _mdExtraRenderUrl = false;
-        }
-
-        return _mdExtraRenderUrl;
-    }
-
-    /**
-     *
-     * @returns string|boolean
-     * @private
-     */
-    function _getFileUploadUrl() {
-        if (null !== _mdFileUploadUrl) {
-            return _mdFileUploadUrl;
-        }
-        _mdFileUploadUrl = $('markdownGlobalConfig').readAttribute('data-fileuploadurl') || '';
-
-        if (_mdFileUploadUrl.indexOf('http') === -1) {
-            _mdFileUploadUrl = false;
-        }
-
-        return _mdFileUploadUrl;
-    }
-
-    /**
-     *
-     * @returns string
-     * @private
-     */
-    function _getDetectionTag() {
-        if (null !== _detectionTag) {
-            return _detectionTag;
-        }
-        _detectionTag = $('markdownGlobalConfig').readAttribute('data-detectiontag') || '';
-        _detectionTag = decodeURIComponent(_detectionTag);
-        return _detectionTag;
-    }
-
     function mdExternalUrl(url) {
         window.open(url);
     }
@@ -120,16 +103,16 @@
     function toggleMarkdown(textareaId) {
 
 
-        if ($(textareaId).value.indexOf(_getDetectionTag()) === -1) {
+        if ($(textareaId).value.indexOf(_markDownGlobalConfig.tag) === -1) {
 
             var instance = epicEditorInstances[textareaId] || false;
             if (instance && instance.is('loaded')) {
-                instance.getElement('editor').body.innerHTML = _getDetectionTag() + "<br>\n" + instance.getElement('editor').body.innerHTML;
+                instance.getElement('editor').body.innerHTML = _markDownGlobalConfig.tag + "<br>\n" + instance.getElement('editor').body.innerHTML;
             } else {
-                $(textareaId).value = _getDetectionTag() + "\n" + $(textareaId).value;
+                $(textareaId).value = _markDownGlobalConfig.tag + "\n" + $(textareaId).value;
             }
         }
-        alert('Markdown enabled with tag: "' + _getDetectionTag() + '"');
+        alert('Markdown enabled with tag: "' + _markDownGlobalConfig.tag + '"');
     }
 
     /**
@@ -157,7 +140,7 @@
             return;
         }
 
-        if ($textAreaId.value.indexOf(_getDetectionTag()) === -1) {
+        if ($textAreaId.value.indexOf(_markDownGlobalConfig.tag) === -1) {
             alert('Markdown not found');
             return false;
         }
@@ -193,16 +176,16 @@
      */
     function _mdExtraRender(content) {
 
-        var p = new promise.Promise();
-        new Ajax.Request(_getMdExtraRenderUrl(), {
-            onSuccess: function (response) {
-                p.done(null, response.responseText);
-            },
-            method: 'post',
-            parameters: {
-                'content': content
-            }
-        });
+        var p = new promise.Promise(),
+            ar = new Ajax.Request(_markDownGlobalConfig.extraRendererUrl, {
+                onSuccess: function (response) {
+                    p.done(null, response.responseText);
+                },
+                method: 'post',
+                parameters: {
+                    'content': content
+                }
+            });
 
         return p;
     }
@@ -240,6 +223,22 @@
 
     /**
      *
+     * @param content string
+     * @returns string
+     * @private
+     */
+    function _parserBefore(content) {
+        content = content.replace(_markDownGlobalConfig.tag, '');
+
+        if (false !== _markDownGlobalConfig.placeholder1) {
+            // @todo regex for adding image base url like in the helper
+            content = content.replace(/\{\{media\s+url="([^"]+)"\s*\}\}/ig, _markDownGlobalConfig.placeholder1);
+        }
+        return content;
+    }
+
+    /**
+     *
      * default parsing without syntax highlightning
      *
      * @param string content
@@ -250,19 +249,18 @@
     function _parserDefault(content, $textArea) {
         var pContent = {};
 
-        if (content.length > 10 && _getMdExtraRenderUrl()) {
+        if (content.length > 10 && _markDownGlobalConfig.extraRendererUrl) {
             pContent = _mdExtraRender(content);
             pContent.then(function (error, html) {
                 $textArea.value = html;
             });
             return '<h3>Preview will be available shortly ...</h3>';
         }
-
-        return marked(content.replace(_getDetectionTag(), ''));
+        return marked(_parserBefore(content));
     }
 
     /**
-     * todo replace {{media url=""}} with a dummy preview image, otherwise loading errors will occurr
+     * todo replace {{media url=""}} with a dummy preview image, otherwise loading errors will occur
      *      also test that in product and categorie desc fields
      * @param string content
      * @param object $textArea
@@ -273,7 +271,7 @@
         var currentActiveInstance = _getEpicEditorActiveInstance(),
             pContent = {};
 
-        if (content.length > 10 && _getMdExtraRenderUrl()) {
+        if (content.length > 10 && _markDownGlobalConfig.extraRendererUrl) {
             pContent = _mdExtraRender(content);
             pContent.then(function (error, html) {
                 if (currentActiveInstance && currentActiveInstance.is('loaded')) {
@@ -285,7 +283,7 @@
             return _highlight('<h3>Preview will be available shortly ...</h3>');
         }
 
-        return _highlight(marked(content.replace(_getDetectionTag(), '')));
+        return _highlight(marked(_parserBefore(content)));
     }
 
     /**
@@ -449,6 +447,10 @@
             return console.log('FileReader not available because method encode_base64() is missing!');
         }
 
+        if (false === _markDownGlobalConfig.uploadUrl) {
+            return console.log('FileReader upload url not available!');
+        }
+
         var opts = {
             dragClass: 'drag',
             accept: 'image/*',
@@ -459,7 +461,7 @@
             on: {
                 load: function (e, file) {
 
-                    new Ajax.Request(_getFileUploadUrl(), {
+                    var ar = new Ajax.Request(_markDownGlobalConfig.uploadUrl, {
                         onSuccess: function (response) {
                             var result = JSON.parse(response.responseText);
                             if (result && _isObject(result)) {
@@ -518,7 +520,7 @@
      * loads the filereader, epiceditor
      */
     function _mdInitialize() {
-
+        _initGlobalConfig();
         var parentElementIds = ['product_edit_form', 'edit_form', 'category-edit-container', 'email_template_edit_form'];
         if (varienGlobalEvents) {
             varienGlobalEvents.fireEvent('mdLoadForms', parentElementIds);

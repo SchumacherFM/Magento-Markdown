@@ -133,4 +133,24 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
         $decoded = json_decode($config);
         return $decoded instanceof stdClass ? rawurlencode($config) : FALSE;
     }
+
+    /**
+     * @param $imageUrl
+     *
+     * @return string
+     */
+    public function getTemplateMediaUrl($imageUrl)
+    {
+        return sprintf('{{media url="%s"}}', $imageUrl);
+    }
+
+    /**
+     * @param $content
+     *
+     * @return mixed
+     */
+    public function renderTemplateMediaUrl($content)
+    {
+        return preg_replace('~\{\{media\s+url="([^"]+)"\s*\}\}~i', Mage::getBaseUrl('media') . '\\1', $content);
+    }
 }
