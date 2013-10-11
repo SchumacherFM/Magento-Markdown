@@ -454,7 +454,7 @@
         }
 
         var opts = {
-            dragClass: 'drag',
+            dragClass: 'fReaderDrag',
             accept: 'image/*',
             readAsMap: {
                 'image/*': 'BinaryString'
@@ -472,7 +472,6 @@
                                 }
                                 if (result.err === true) {
                                     alert('An error occurred:\n' + result.msg);
-
                                 }
                             } else {
                                 alert('An error occurred after uploading. No JSON found ...');
