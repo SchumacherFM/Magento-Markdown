@@ -7,28 +7,22 @@ Markdown is a text-to-HTML conversion tool for web writers. Markdown
 allows you to write using an easy-to-read, easy-to-write plain text
 format, then convert it to structurally valid XHTML (or HTML).
 
-Full documentation of Markdown's syntax is available on John's
-Markdown page: <http://daringfireball.net/projects/markdown/>
+- Full support of [Markdown Extra](http://michelf.ca/projects/php-markdown/extra/)
+- Renders all CMS pages and all CMS blocks (Mage_Cms_Block_Block and Mage_Cms_Block_Widget_Block)
+- Renders every transactional email as Markdown (or MD Extra)
+- Rendering of catalog product and category short and long description fields have to be implemented in the phtml files by yourself.
+- Integrates the awesome [EpicEditor](http://epiceditor.com): split fullscreen editing, live previewing, automatic draft saving and offline support.
+- Drag'n'Drop of images supported in textarea fields. [Automatic image uploading](https://developer.mozilla.org/en-US/docs/Web/API/FileReader) integrated (>=
+ IE10, Safari 6.0.2, FX3.6, Chrome 7, Opera 12.02)
 
-Full support of Markdown Extra: <http://michelf.ca/projects/php-markdown/extra/>
-
-This module renders all CMS pages and all CMS blocks (Mage_Cms_Block_Block and Mage_Cms_Block_Widget_Block).
-
-Renders every transactional email as Markdown (or MD Extra) when the email templates includes a special tag.
-
-Rendering of catalog description fields have to be implemented in the phtml files by yourself.
-
-Integrates the awesome [EpicEditor](http://epiceditor.com): split fullscreen editing,
-live previewing, automatic draft saving and offline support.
-
-Drag'n'Drop of images supported in textarea fields. [Automatic image uploading](https://developer.mozilla.org/en-US/docs/Web/API/FileReader) integrated. (>= IE10, Safari 6.0.2, FX3.6, Chrome 7, Opera 12.02)
+Full documentation of Markdown's syntax is available on [John's Markdown page](http://daringfireball.net/projects/markdown/)
 
 Bugs
 ----
 
-#### CSS
+#### CSS in transactional emails
 
-CSS is included in the transactional emails in their style tag. Maybe some mail providers removes that
+CSS is included in the transactional emails in their style tag. Maybe some mail providers removes that style tag
 or cannot render it. So maybe there has to be some transformation that the CSS will be added
 into each html tag attribute: style.
 
@@ -41,7 +35,7 @@ Why do I need this?
 
 Because you want to get rid of the TinyMCE and force your customer to use easy and limited syntax.
 
-You can edit your text with external editors:
+You can edit your markdown text with external editors:
 
 #### Mac OS X
 
@@ -51,12 +45,32 @@ You can edit your text with external editors:
 
 - PhpStorm
 - Sublime Text
+- Cloud based: [StackEdit](http://benweet.github.io/stackedit/)
 
 #### Windows
 
 - [MarkdownPad is a full-featured Markdown editor for Windows](http://markdownpad.com/)
 
 ### Mashable: [78 Tools for Writing and Previewing Markdown](http://mashable.com/2013/06/24/markdown-tools/)
+
+
+Configuration
+-------------
+
+- Enable or disable Markdown parser per store view
+- Enable or disable Markdown extra parser per store view
+- Set Markdown detection tag per store view.
+- Add path to css file if using in transactional emails per store view
+- Enable or disable Markdown EpicEditor per store view
+- Enable or disable loading of the EpicEditor via click in a textarea field per store view
+- Full configuration for Markdown EpicEditor
+
+Every field which contains Markdown syntax must contain that detection tag otherwise it will not be parsed.
+
+File upload via Drag'n'Drop works only if you click on the textarea field once. During drag mode a green border will show that file upload
+via Drag'n'Drop is available. If you do not see that border during a drag then there will be no file upload.
+
+Demo Content: [http://daringfireball.net/projects/markdown/syntax.text](http://daringfireball.net/projects/markdown/syntax.text)
 
 Developer Usage
 ---------------
@@ -67,12 +81,13 @@ Anywhere in a .phtml file you can access the renderer via:
 <?php echo Mage::helper('markdown')->render($_description, [array $options] ); ?>
 ```
 
-Catalog product and category description fields have already enabled the markdown feature in the backend.
+Catalog product and category description fields have already enabled the markdown feature in the backend. For the frontend
+you have to implement the above mentioned code.
 
 CMS pages (instance of Mage_Cms_Model_Page) and blocks (instance of Mage_Cms_Block_Block and
-Mage_Cms_Block_Widget_Block) will be rendered automatically ... but only if the detection tag is present.
+Mage_Cms_Block_Widget_Block) will be rendered automatically but only if the detection tag is present.
 
-Magento Widgets and Variables will be automatically preserved:
+Magento Widgets and Variables will be automatically preserved and correctly rendered:
 
 ```
 {{(widget|config|media|...) ... }}
@@ -98,24 +113,14 @@ echo $instance->renderMarkdown('text goes here');
 - Remove body tags
 - Use ```<div markdown="1">``` including markdown=1 in other tags works not always properly
 
-Configuration
--------------
+#### How to integrate markdown into my module?
 
-- Enable or disable Markdown parser per store view
-- Enable or disable Markdown extra parser per store view
-- Set Markdown detection tag per store view
-- Add path to css file if using in transactional emails per store view
-- Enable or disable Markdown Epic Editor per store view
-- Full configuration for Markdown Epic Editor
-
-Every field which contains Markdown syntax must contain that detection tag otherwise it will not be parsed.
-
-Demo Content: [http://daringfireball.net/projects/markdown/syntax.text](http://daringfireball.net/projects/markdown/syntax.text)
+...
 
 Todo
 ----
 
- * Better usability in the backend
+For upcoming version 3.0 replace the EpicEditor with StackEdit
 
 Installation Instructions
 -------------------------
@@ -124,13 +129,13 @@ Installation Instructions
 3. `modman init`
 4. `modman clone git://github.com/SchumacherFM/Magento-Markdown.git`
 
-Composer …
-
+Please read the great article from Vinai: [Composer installation](http://magebase.com/magento-tutorials/composer-with-magento/)
 
 About
 -----
+
 - Key: SchumacherFM_Markdown
-- Current Version: see History section
+- Current Version: 2.0.0
 - [Download tarball](https://github.com/SchumacherFM/Magento-Markdown/tags)
 
 History
@@ -138,12 +143,11 @@ History
 
 #### 2.0.0
 
-- Remove live preview
-- Remove markdown.css
+- Major changes
 - Remove support for <= IE8
 - Add [EpicEditor](http://epiceditor.com) with built in marked.js, split fullscreen editing,
     live previewing, automatic draft saving and offline support.
-    Down side: when inserting Magento widgets, images or variables you have to turn of the editor insert that item
+    Down side: when inserting Magento widgets, images or variables you have to turn of the editor to insert that item
     and then turn it on. (Missing bi-directional synchronization between textarea and editor)
 - Preview of HTML source code possible even if EpicEditor is not loaded or disabled.
 - If EpicEditor is unloaded then dropping image files with direct upload is possible [HTML5 FileReader](http://bgrins.github.io/filereader.js/).
@@ -204,8 +208,8 @@ Instead of forking I can add you as a Collaborator IF you really intend to devel
 
 I am using that model: [A successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/)
 
-Licence
--------
+Licence BSD-3-Clause
+--------------------
 
 #### Magento Markdown Implementation
 
