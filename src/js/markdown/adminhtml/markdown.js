@@ -49,7 +49,8 @@
             tag: decodeURIComponent(config.dt),
             uploadUrl: _checkHttp(config.fuu || false),
             placeholder1: _checkHttp(config.phi || false),
-            extraRendererUrl: _checkHttp(config.eru || false)
+            extraRendererUrl: _checkHttp(config.eru || false),
+            eeLoadOnClick: config.eeloc || false
         };
         return true;
     }
@@ -386,6 +387,7 @@
      *
      * @param element this
      * @param textAreaId string
+     * @return false
      */
     function toggleEpicEditor(element, textAreaId) {
 
@@ -398,7 +400,7 @@
             element.setStyle({
                 color: COLOR_ON
             });
-            return;
+            return false;
         }
 
         if (instance.is('loaded')) {
@@ -414,7 +416,7 @@
                 color: COLOR_ON
             });
         }
-        return;
+        return false;
     }
 
     /**
@@ -534,7 +536,7 @@
             if ($elementId) {
 
                 // some things are only possible with event delegation ...
-                if (true === _isEpicEditorEnabled()) {
+                if (true === _isEpicEditorEnabled() && true === _markDownGlobalConfig.eeLoadOnClick) {
                     $elementId.on('click', 'textarea.initEpicEditor', _createEpicEditorInstances);
                 }
                 if (true === _isFileReaderEnabled()) {

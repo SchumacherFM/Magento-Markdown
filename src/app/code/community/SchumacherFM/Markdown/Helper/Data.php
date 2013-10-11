@@ -120,6 +120,14 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * @return bool
+     */
+    public function isEpicEditorLoadOnClick()
+    {
+        return (boolean)Mage::getStoreConfig('markdown/epiceditor/load_on_click_textarea');
+    }
+
+    /**
      * if json is invalid returns false
      *
      * @return string|boolean

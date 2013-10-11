@@ -102,6 +102,8 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
             $config['eru'] = Mage::helper('markdown')->getAdminRenderUrl(array('markdownExtra' => 1)); // extra renderer url
         }
 
+        $config['eeloc'] = Mage::helper('markdown')->isEpicEditorLoadOnClick();
+
         if ($this->_configInserted === FALSE) {
             $this->_afterElementHtml[1000] = '<div id="markdownGlobalConfig" data-config=\'' .
                 Zend_Json_Encoder::encode($config)
