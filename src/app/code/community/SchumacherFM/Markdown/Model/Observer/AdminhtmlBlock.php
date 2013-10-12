@@ -277,7 +277,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         }
 
         if (Mage::helper('markdown')->isReMarkedEnabled() === TRUE) {
-            $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')
+            $this->_afterElementHtml[600] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
                     'label'   => Mage::helper('markdown')->__('HTML2[M↓]'),
                     'type'    => 'button',
