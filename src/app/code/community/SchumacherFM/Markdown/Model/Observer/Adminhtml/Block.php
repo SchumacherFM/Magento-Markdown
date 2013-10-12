@@ -37,7 +37,9 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         $isWidgetElement  = $block instanceof Mage_Adminhtml_Block_Widget_Form_Renderer_Fieldset_Element;
         $isCatalogElement = $block instanceof Mage_Adminhtml_Block_Catalog_Form_Renderer_Fieldset_Element;
 
-        if ($isWidgetElement || $isCatalogElement) {
+        $isLayoutHandleAllowed = Mage::getSingleton('markdown/observer_adminhtml_layoutUpdate')->isAllowed();
+
+        if ($isLayoutHandleAllowed && ($isWidgetElement || $isCatalogElement)) {
             /** @var Varien_Data_Form_Element_Abstract $element */
             $element = $block->getElement();
 

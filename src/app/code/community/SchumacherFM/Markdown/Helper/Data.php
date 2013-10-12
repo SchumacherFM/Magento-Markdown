@@ -200,9 +200,19 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getAllowedLayoutHandles()
     {
-        return array(
+        $handles = array(
             'editor'                               => 1,
+            'adminhtml_cms_block_edit'             => 1,
             'adminhtml_system_email_template_edit' => 1,
         );
+
+        $customHandles = trim((string)Mage::getStoreConfig('markdown/markdown/custom_layout_handles'));
+        if (!empty($customHandles)) {
+            $customHandles = preg_split('~\s+~', $customHandles, -1, PREG_SPLIT_NO_EMPTY);
+            $customHandles = array_flip($customHandles);
+            $handles       = array_merge($handles, $customHandles);
+        }
+        return $handles;
+
     }
 }

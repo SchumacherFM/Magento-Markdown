@@ -58,6 +58,18 @@
                                 Only transactional emails which have the detection tag somewhere integrated will be rendered with markdown.
                             </comment>
                         </detection_tag>
+                        <custom_layout_handles translate="label">
+                            <label>Additional Layout Handles</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>220</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Expert Mode: Load Markdown feature and EpicEditor also via these custom layout handles.
+                            Whitespace separated list.
+                            </comment>
+                        </custom_layout_handles>
+
                     </fields>
                 </markdown>
 
