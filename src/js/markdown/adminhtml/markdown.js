@@ -229,11 +229,19 @@
      * @private
      */
     function _parserBefore(content) {
+        var imgUrl = '',
+            mediaRegex = /\{\{media\s+url="([^"]+)"\s*\}\}/i,
+            matches = null;
         content = content.replace(_markDownGlobalConfig.tag, '');
 
         if (false !== _markDownGlobalConfig.placeholder1) {
-            // @todo regex for adding image base url like in the helper
-            content = content.replace(/\{\{media\s+url="([^"]+)"\s*\}\}/ig, _markDownGlobalConfig.placeholder1);
+            while (mediaRegex.test(content)) {
+                matches = mediaRegex.exec(content);
+                if (null !== matches && matches[1] !== undefined) {
+                    imgUrl = _markDownGlobalConfig.placeholder1 + matches[1];
+                    content = content.replace(matches[0], imgUrl);
+                }
+            }
         }
         return content;
     }
