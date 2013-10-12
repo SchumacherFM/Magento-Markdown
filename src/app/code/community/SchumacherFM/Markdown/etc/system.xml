@@ -100,6 +100,29 @@
                     </fields>
                 </markdown_extra>
 
+                <file_reader translate="label">
+                    <label>Drag'n'Drop File Upload</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>70</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <upload_dir translate="label">
+                            <label>Upload directory</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Directory must be writable for the webserver. If directory did not exists system will
+                             attempt to create it recursively. Please add trailing slash.
+                             Default upload directory is media/wysiwyg/markdown/]]></comment>
+                        </upload_dir>
+                    </fields>
+                </file_reader>
+
+
                 <epiceditor>
                     <label>EpicEditor</label>
                     <frontend_type>text</frontend_type>

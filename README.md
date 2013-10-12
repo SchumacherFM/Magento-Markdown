@@ -64,6 +64,8 @@ Configuration
 - Enable or disable Markdown EpicEditor per store view
 - Enable or disable loading of the EpicEditor via click in a textarea field per store view
 - Full configuration for Markdown EpicEditor
+- Enable EpicEditor in your custom module by adding the body CSS class name into the config field.
+- Defining a custom upload folder for Drag'n'Drop image upload. This folder will be created automatically and recursively.
 
 Every field which contains Markdown syntax must contain that detection tag otherwise it will not be parsed.
 

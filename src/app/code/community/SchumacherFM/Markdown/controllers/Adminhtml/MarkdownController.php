@@ -74,7 +74,7 @@ class SchumacherFM_Markdown_Adminhtml_MarkdownController extends Mage_Adminhtml_
             if ($result > 10) {
                 $return['err']     = FALSE;
                 $return['msg']     = '';
-                $return['fileUrl'] = Mage::helper('markdown')->getTemplateMediaUrl($this->_getBaseUrl() . $this->_getStorageSubDirectory() . $fileName);
+                $return['fileUrl'] = Mage::helper('markdown')->getTemplateMediaUrl($this->_getStorageSubDirectory() . $fileName);
             }
         }
 
@@ -82,11 +82,15 @@ class SchumacherFM_Markdown_Adminhtml_MarkdownController extends Mage_Adminhtml_
     }
 
     /**
-     * @return string
+     * @return mixed|string
      */
     protected function _getStorageSubDirectory()
     {
-        return 'markdown' . DS;
+        $userDir = Mage::getStoreConfig('markdown/file_reader/upload_dir');
+        if (empty($userDir)) {
+            $userDir = Mage_Cms_Model_Wysiwyg_Config::IMAGE_DIRECTORY . DS . 'markdown' . DS;
+        }
+        return $userDir;
     }
 
     /**
@@ -96,17 +100,6 @@ class SchumacherFM_Markdown_Adminhtml_MarkdownController extends Mage_Adminhtml_
      */
     protected function _getStorageRoot()
     {
-        return Mage::getConfig()->getOptions()->getMediaDir() . DS . Mage_Cms_Model_Wysiwyg_Config::IMAGE_DIRECTORY . DS;
-    }
-
-    /**
-     * Images Storage base URL
-     *
-     * @return string
-     */
-    protected function _getBaseUrl()
-    {
-        /* Mage::getBaseUrl('media') . DS . */
-        return Mage_Cms_Model_Wysiwyg_Config::IMAGE_DIRECTORY . DS;
+        return Mage::getConfig()->getOptions()->getMediaDir() . DS;
     }
 }
