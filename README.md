@@ -14,6 +14,7 @@ format, then convert it to structurally valid XHTML (or HTML).
 - Integrates the awesome [EpicEditor](http://epiceditor.com): split fullscreen editing, live previewing, automatic draft saving and offline support.
 - Drag'n'Drop of images supported in textarea fields. [Automatic image uploading](https://developer.mozilla.org/en-US/docs/Web/API/FileReader) integrated (>=
  IE10, Safari 6.0.2, FX3.6, Chrome 7, Opera 12.02)
+- Converting of HTML into Markdown. Client side via JavaScript.
 
 Full documentation of Markdown's syntax is available on [John's Markdown page](http://daringfireball.net/projects/markdown/)
 
@@ -29,6 +30,11 @@ into each html tag attribute: style.
 ```
 	<h1 style="font-size..."></h1>
 ```
+
+#### HTML to Markdown reMarked.js
+
+Converting tables into real markdown tables is buggy and does not work at the moment. So GFM tables has been disabled
+but all HTML tables tags are preserved and nicely formatted after converting.
 
 Why do I need this?
 -------------------
@@ -228,6 +234,14 @@ Copyright (c) 2004-2013 Michel Fortin
 <http://michelf.ca/> <https://github.com/michelf/php-markdown/>
 
 All rights reserved.
+
+#### reMarked.js
+
+Copyright (c) 2013 Leon Sorokin / leeoniya
+
+https://github.com/leeoniya/reMarked.js
+
+MIT Licensed
 
 ####  Based on Markdown
 

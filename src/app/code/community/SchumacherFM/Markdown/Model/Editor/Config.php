@@ -33,6 +33,19 @@ class SchumacherFM_Markdown_Model_Editor_Config
                 )
             ),
             array(
+                'name'    => 'html2markdown',
+                'src'     => '',
+                'options' => array(
+                    'title'   => Mage::helper('markdown')->__('HTML2[M↓]'),
+                    'url'     => '',
+                    'onclick' => array(
+                        'search'  => array('html_id'),
+                        'subject' => 'htmlToMarkDown(this,\'{{html_id}}\');'
+                    ),
+                    'class'   => 'plugin'
+                )
+            ),
+            array(
                 'name'    => 'markdownToggle',
                 'src'     => '',
                 'options' => array(

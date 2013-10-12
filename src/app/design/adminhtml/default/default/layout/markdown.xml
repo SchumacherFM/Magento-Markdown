@@ -3,6 +3,9 @@
     <MARKDOWN_HEADER>
         <reference name="head">
             <action method="addJs">
+                <script>markdown/adminhtml/reMarked.js</script>
+            </action>
+            <action method="addJs">
                 <script>markdown/adminhtml/marked.js</script>
             </action>
             <action method="addJs">

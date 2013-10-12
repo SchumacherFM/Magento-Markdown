@@ -238,6 +238,12 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                     'onclick' => 'toggleMarkdown(\'' . $htmlId . '\');'
                 ))->toHtml();
         }
+        $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')
+            ->createBlock('adminhtml/widget_button', '', array(
+                'label'   => Mage::helper('markdown')->__('HTML2[M↓]'),
+                'type'    => 'button',
+                'onclick' => 'htmlToMarkDown(this,\'' . $htmlId . '\');'
+            ))->toHtml();
 
         $this->_afterElementHtml[210] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(

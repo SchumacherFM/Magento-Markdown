@@ -4,7 +4,7 @@
  * @author      Cyrill at Schumacher dot fm / @SchumacherFM
  * @copyright   Copyright (c)
  */
-/*global $,marked,varienGlobalEvents,Ajax,hljs,FileReaderJS,Event,encode_base64*/
+/*global $,marked,varienGlobalEvents,Ajax,hljs,FileReaderJS,Event,encode_base64,reMarked*/
 ;
 (function () {
     'use strict';
@@ -529,6 +529,55 @@
     }
 
     /**
+     *
+     * @returns {reMarked}
+     * @private
+     */
+    function _getReMarked() {
+
+        var options = {
+            link_list: false,    // render links as references, create link list as appendix
+            h1_setext: true,     // underline h1 headers
+            h2_setext: true,     // underline h2 headers
+            h_atx_suf: false,    // header suffixes (###)
+            gfm_code: false,    // gfm code blocks (```)
+            li_bullet: "*",      // list item bullet style
+            hr_char: "-",      // hr style
+            indnt_str: "    ",   // indentation string
+            bold_char: "*",      // char used for strong
+            emph_char: "_",      // char used for em
+            gfm_del: true,     // ~~strikeout~~ for <del>strikeout</del>
+            gfm_tbls: false,     // markdown-extra tables @SchumacherFM: if true the error on line 518 in remarked.js :-(
+            tbl_edges: false,    // show side edges on tables
+            hash_lnks: false,    // anchors w/hash hrefs as links
+            br_only: false    // avoid using "  " as line break indicator
+        };
+        return new reMarked(options);
+    }
+
+    /**
+     * renders html to markdown
+     * @param textAreaId string
+     */
+    function htmlToMarkDown(element,textAreaId) {
+        var html = $(textAreaId).value || '';
+
+        var _instance = epicEditorInstances[textAreaId] || false;
+        var _loadedEpic = _isEpicEditorEnabled() && false !== _instance && _instance.is('loaded');
+        if (true === _loadedEpic) {
+            toggleEpicEditor(element, textAreaId);
+        }
+
+
+        if (_markDownGlobalConfig.tag !== '' && html.indexOf(_markDownGlobalConfig.tag) === -1) {
+            $(textAreaId).value = _markDownGlobalConfig.tag + '\n' + _getReMarked().render(html);
+        }
+        if (_markDownGlobalConfig.tag === '') {
+            $(textAreaId).value = _getReMarked().render(html);
+        }
+    }
+
+    /**
      * loads the filereader, epiceditor
      */
     function _mdInitialize() {
@@ -560,6 +609,7 @@
     this.toggleMarkdown = toggleMarkdown;
     this.toggleEpicEditor = toggleEpicEditor;
     this.toggleMarkdownSource = toggleMarkdownSource;
+    this.htmlToMarkDown = htmlToMarkDown;
 
     document.observe('dom:loaded', _mdInitialize);
 
