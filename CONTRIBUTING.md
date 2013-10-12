@@ -28,3 +28,7 @@ Here. Take this template:
 4. Commit your changes with passing tests (`git commit -am 'Add some feature'`)
 5. Push to the branch (`git push origin develop-feature`)
 6. Create new Pull Request
+
+## Code style
+
+PSR and refer please to my code.

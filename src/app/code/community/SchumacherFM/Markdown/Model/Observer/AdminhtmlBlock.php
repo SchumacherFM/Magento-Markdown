@@ -93,6 +93,10 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
 
         $config['eeloc'] = Mage::helper('markdown')->isEpicEditorLoadOnClick();
 
+        if (Mage::helper('markdown')->isReMarkedEnabled() === TRUE) {
+            $config['rmc'] = Mage::helper('markdown')->getReMarkedConfig();
+        }
+
         if ($this->_configInserted === FALSE) {
             $this->_afterElementHtml[1000] = '<div id="markdownGlobalConfig" data-config=\'' .
                 Zend_Json_Encoder::encode($config)
@@ -238,12 +242,6 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                     'onclick' => 'toggleMarkdown(\'' . $htmlId . '\');'
                 ))->toHtml();
         }
-        $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')
-            ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => Mage::helper('markdown')->__('HTML2[M↓]'),
-                'type'    => 'button',
-                'onclick' => 'htmlToMarkDown(this,\'' . $htmlId . '\');'
-            ))->toHtml();
 
         $this->_afterElementHtml[210] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
@@ -275,6 +273,15 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                     'label'   => Mage::helper('markdown')->__('EpicEditor'),
                     'type'    => 'button',
                     'onclick' => 'toggleEpicEditor(this,\'' . $htmlId . '\');'
+                ))->toHtml();
+        }
+
+        if (Mage::helper('markdown')->isReMarkedEnabled() === TRUE) {
+            $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')
+                ->createBlock('adminhtml/widget_button', '', array(
+                    'label'   => Mage::helper('markdown')->__('HTML2[M↓]'),
+                    'type'    => 'button',
+                    'onclick' => 'htmlToMarkDown(this,\'' . $htmlId . '\');'
                 ))->toHtml();
         }
     }

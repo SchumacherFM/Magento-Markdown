@@ -139,6 +139,9 @@
                 <enable>0</enable>
                 <load_on_click_textarea>0</load_on_click_textarea>
             </epiceditor>
+            <remarked>
+                <enable>1</enable>
+            </remarked>
         </markdown>
     </default>
     <phpunit>

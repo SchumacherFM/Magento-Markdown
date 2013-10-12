@@ -137,12 +137,42 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getEpicEditorConfig()
     {
-        $config = trim(Mage::getStoreConfig('markdown/epiceditor/config'));
+        return $this->_getJsonConfig('epiceditor');
+    }
+
+    /**
+     * if json is invalid returns false
+     *
+     * @param string $type
+     *
+     * @return bool|string
+     */
+    protected function _getJsonConfig($type)
+    {
+        $config = trim(Mage::getStoreConfig('markdown/' . $type . '/config'));
         if (empty($config)) {
             return FALSE;
         }
         $decoded = json_decode($config);
         return $decoded instanceof stdClass ? rawurlencode($config) : FALSE;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReMarkedEnabled()
+    {
+        return (boolean)Mage::getStoreConfig('markdown/remarked/enable');
+    }
+
+    /**
+     * if json is invalid returns false
+     *
+     * @return string|boolean
+     */
+    public function getReMarkedConfig()
+    {
+        return $this->_getJsonConfig('remarked');
     }
 
     /**

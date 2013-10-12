@@ -18,24 +18,6 @@ format, then convert it to structurally valid XHTML (or HTML).
 
 Full documentation of Markdown's syntax is available on [John's Markdown page](http://daringfireball.net/projects/markdown/)
 
-Bugs
-----
-
-#### CSS in transactional emails
-
-CSS is included in the transactional emails in their style tag. Maybe some mail providers removes that style tag
-or cannot render it. So maybe there has to be some transformation that the CSS will be added
-into each html tag attribute: style.
-
-```
-	<h1 style="font-size..."></h1>
-```
-
-#### HTML to Markdown reMarked.js
-
-Converting tables into real markdown tables is buggy and does not work at the moment. So GFM tables has been disabled
-but all HTML tables tags are preserved and nicely formatted after converting.
-
 Why do I need this?
 -------------------
 
@@ -63,15 +45,19 @@ You can edit your markdown text with external editors:
 Configuration
 -------------
 
-- Enable or disable Markdown parser per store view
-- Enable or disable Markdown extra parser per store view
-- Set Markdown detection tag per store view.
-- Add path to css file if using in transactional emails per store view
-- Enable or disable Markdown EpicEditor per store view
-- Enable or disable loading of the EpicEditor via click in a textarea field per store view
-- Full configuration for Markdown EpicEditor
-- Enable EpicEditor in your custom module by adding the body CSS class name into the config field.
-- Defining a custom upload folder for Drag'n'Drop image upload. This folder will be created automatically and recursively.
+All options can be set per store view.
+
+- Enable or disable Markdown parser
+- Enable or disable Markdown extra parser
+- Set Markdown detection tag
+- Add path to css file if using in transactional emails
+- Enable or disable Markdown EpicEditor
+- Enable or disable loading of the EpicEditor via click in a textarea field
+- Full configuration for Markdown EpicEditor - add a JSON object in the System -> Configuration section
+- Enable EpicEditor in your custom module by adding the body CSS class name into the config field
+- Defining a custom upload folder for Drag'n'Drop image upload. This folder will be created automatically and recursively
+- Enable or disable HTML to Markdown converter reMarked.js
+- Full configuration for converter reMarked.js - add a JSON object in the System -> Configuration section
 
 Every field which contains Markdown syntax must contain that detection tag otherwise it will not be parsed.
 
@@ -79,6 +65,24 @@ File upload via Drag'n'Drop works only if you click on the textarea field once. 
 via Drag'n'Drop is available. If you do not see that border during a drag then there will be no file upload.
 
 Demo Content: [http://daringfireball.net/projects/markdown/syntax.text](http://daringfireball.net/projects/markdown/syntax.text)
+
+Bugs
+----
+
+#### CSS in transactional emails
+
+CSS is included in the transactional emails in their style tag. Maybe some mail providers removes that style tag
+or cannot render it. So maybe there has to be some transformation that the CSS will be added
+into each html tag attribute: style.
+
+```
+	<h1 style="font-size..."></h1>
+```
+
+#### HTML to Markdown reMarked.js
+
+Converting tables into real markdown tables is buggy and does not work at the moment. So GFM tables has been disabled
+but all HTML tables tags are preserved and nicely formatted after converting.
 
 Developer Usage
 ---------------
@@ -162,6 +166,7 @@ History
 - Preview of HTML source code possible even if EpicEditor is not loaded or disabled.
 - If EpicEditor is unloaded then dropping image files with direct upload is possible [HTML5 FileReader](http://bgrins.github.io/filereader.js/).
     Due the contenteditable mode in EpicEditor the FileReader cannot be implemented, only in a textarea field ...
+- Add reMarked.js to convert HTML into Markdown. reMarked.js is fully configurable via a JSON object.
 
 #### 1.4.2
 
@@ -239,7 +244,7 @@ All rights reserved.
 
 Copyright (c) 2013 Leon Sorokin / leeoniya
 
-https://github.com/leeoniya/reMarked.js
+<https://github.com/leeoniya/reMarked.js/>
 
 MIT Licensed
 

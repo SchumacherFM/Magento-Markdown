@@ -50,7 +50,8 @@
             uploadUrl: _checkHttp(config.fuu || false),
             mediaBaseUrl: _checkHttp(config.phi || false),
             extraRendererUrl: _checkHttp(config.eru || false),
-            eeLoadOnClick: config.eeloc || false
+            eeLoadOnClick: config.eeloc || false,
+            reMarkedCfg: decodeURIComponent(config.rmc || '{}').evalJSON(true)
         };
         return true;
     }
@@ -534,7 +535,6 @@
      * @private
      */
     function _getReMarked() {
-
         var options = {
             link_list: false,    // render links as references, create link list as appendix
             h1_setext: true,     // underline h1 headers
@@ -552,6 +552,7 @@
             hash_lnks: false,    // anchors w/hash hrefs as links
             br_only: false    // avoid using "  " as line break indicator
         };
+        Object.extend(options, _markDownGlobalConfig.reMarkedCfg);
         return new reMarked(options);
     }
 
@@ -559,7 +560,7 @@
      * renders html to markdown
      * @param textAreaId string
      */
-    function htmlToMarkDown(element,textAreaId) {
+    function htmlToMarkDown(element, textAreaId) {
         var html = $(textAreaId).value || '';
 
         var _instance = epicEditorInstances[textAreaId] || false;
