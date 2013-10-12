@@ -76,7 +76,11 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
      */
     protected function _getAllowedEpicEditorPages()
     {
-        Mage::dispatchEvent('markdown_adminhtml_epiceditor_inject', array('observer' => $this));
+        $cssClasses = trim((string)Mage::getStoreConfig('markdown/epiceditor/body_css_classes'));
+        if (!empty($cssClasses)) {
+            $cssClasses                    = preg_split('~\s+~', $cssClasses, -1, PREG_SPLIT_NO_EMPTY);
+            $this->_allowedEpicEditorPages = array_merge($this->_allowedEpicEditorPages, $cssClasses);
+        }
         return $this->_allowedEpicEditorPages;
     }
 

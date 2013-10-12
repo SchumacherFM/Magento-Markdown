@@ -541,7 +541,6 @@
         parentElementIds.forEach(function (elementId) {
             var $elementId = $(elementId);
             if ($elementId) {
-
                 // some things are only possible with event delegation ...
                 if (true === _isEpicEditorEnabled() && true === _markDownGlobalConfig.eeLoadOnClick) {
                     $elementId.on('click', 'textarea.initEpicEditor', _createEpicEditorInstances);
