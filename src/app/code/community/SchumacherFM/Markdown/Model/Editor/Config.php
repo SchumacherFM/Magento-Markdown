@@ -91,6 +91,10 @@ class SchumacherFM_Markdown_Model_Editor_Config
             );
         }
 
+        if (Mage::helper('markdown')->getDetectionTag() === '') {
+            unset($variableWysiwygPlugin[0]);
+        }
+
         $configPlugins             = $config->getData('plugins');
         $variableConfig['plugins'] = array_merge($configPlugins, $variableWysiwygPlugin);
         return $variableConfig;

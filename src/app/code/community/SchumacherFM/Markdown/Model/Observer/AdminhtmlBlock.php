@@ -19,17 +19,6 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
     protected $_afterElementHtml = array();
 
     /**
-     * @var string
-     */
-    protected $_imagePlaceHolder = NULL;
-
-    public function __construct()
-    {
-        $this->_imagePlaceHolder = Mage::getDesign()->getSkinUrl('images/catalog/product/placeholder/image.jpg');
-        $this->_imagePlaceHolder = str_replace('adminhtml' . '/', Mage_Core_Model_Design_Package::DEFAULT_AREA . '/', $this->_imagePlaceHolder);
-    }
-
-    /**
      * adminhtml_block_html_before
      *
      * @param Varien_Event_Observer $observer
@@ -96,7 +85,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
          * when rendering via marked.js include that place holder ... if rendere via PHP replace {{media url...}}
          * with the real image.
          */
-        $config['phi'] = Mage::getBaseUrl('media'); // $this->_imagePlaceHolder; // placeholder image
+        $config['phi'] = Mage::getBaseUrl('media');
 
         if ($this->_isMarkdownExtra($element)) {
             $config['eru'] = Mage::helper('markdown')->getAdminRenderUrl(array('markdownExtra' => 1)); // extra renderer url
@@ -241,12 +230,14 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
     {
         $htmlId = $element->getHtmlId();
 
-        $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')
-            ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => Mage::helper('markdown')->__('[M↓] enable'),
-                'type'    => 'button',
-                'onclick' => 'toggleMarkdown(\'' . $htmlId . '\');'
-            ))->toHtml();
+        if (Mage::helper('markdown')->getDetectionTag() !== '') {
+            $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')
+                ->createBlock('adminhtml/widget_button', '', array(
+                    'label'   => Mage::helper('markdown')->__('[M↓] enable'),
+                    'type'    => 'button',
+                    'onclick' => 'toggleMarkdown(\'' . $htmlId . '\');'
+                ))->toHtml();
+        }
 
         $this->_afterElementHtml[210] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(

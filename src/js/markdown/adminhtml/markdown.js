@@ -48,7 +48,7 @@
         _markDownGlobalConfig = {
             tag: decodeURIComponent(config.dt),
             uploadUrl: _checkHttp(config.fuu || false),
-            placeholder1: _checkHttp(config.phi || false),
+            mediaBaseUrl: _checkHttp(config.phi || false),
             extraRendererUrl: _checkHttp(config.eru || false),
             eeLoadOnClick: config.eeloc || false
         };
@@ -141,7 +141,7 @@
             return;
         }
 
-        if ($textAreaId.value.indexOf(_markDownGlobalConfig.tag) === -1) {
+        if (_markDownGlobalConfig.tag !== '' && $textAreaId.value.indexOf(_markDownGlobalConfig.tag) === -1) {
             alert('Markdown not found');
             return false;
         }
@@ -232,13 +232,16 @@
         var imgUrl = '',
             mediaRegex = /\{\{media\s+url="([^"]+)"\s*\}\}/i,
             matches = null;
-        content = content.replace(_markDownGlobalConfig.tag, '');
 
-        if (false !== _markDownGlobalConfig.placeholder1) {
+        if (_markDownGlobalConfig.tag !== '') {
+            content = content.replace(_markDownGlobalConfig.tag, '');
+        }
+
+        if (false !== _markDownGlobalConfig.mediaBaseUrl) {
             while (mediaRegex.test(content)) {
                 matches = mediaRegex.exec(content);
                 if (null !== matches && matches[1] !== undefined) {
-                    imgUrl = _markDownGlobalConfig.placeholder1 + matches[1];
+                    imgUrl = _markDownGlobalConfig.mediaBaseUrl + matches[1];
                     content = content.replace(matches[0], imgUrl);
                 }
             }
