@@ -53,7 +53,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Every content field which contains markdown must have this tag included that it will be parsed.
+                            <comment>Every content field which contains markdown must have this tag included otherwise it will not be parsed.
                                 This tag will of course be removed during parsing. If empty, every content is considered as markdown.
                                 Only transactional emails which have the detection tag somewhere integrated will be rendered with markdown.
                             </comment>

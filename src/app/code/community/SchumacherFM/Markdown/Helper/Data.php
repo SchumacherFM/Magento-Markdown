@@ -41,7 +41,10 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getDetectionTag($encoded = FALSE)
     {
-        $tag = Mage::getStoreConfig('markdown/markdown/detection_tag');
+        $tag = trim(Mage::getStoreConfig('markdown/markdown/detection_tag'));
+        if (empty($tag) === TRUE) {
+            return '';
+        }
         return $encoded ? rawurlencode($tag) : $tag;
     }
 
