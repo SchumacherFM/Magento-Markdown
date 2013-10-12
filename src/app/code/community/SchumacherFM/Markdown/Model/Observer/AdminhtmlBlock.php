@@ -34,6 +34,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         /** @var $block Mage_Adminhtml_Block_Template */
         $block = $observer->getEvent()->getBlock();
 
+
         $isWidgetElement  = $block instanceof Mage_Adminhtml_Block_Widget_Form_Renderer_Fieldset_Element;
         $isCatalogElement = $block instanceof Mage_Adminhtml_Block_Catalog_Form_Renderer_Fieldset_Element;
 
@@ -60,7 +61,9 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
         $idPrefix       = $element->getForm()->getHtmlIdPrefix();
         $element->setId(str_replace($idPrefix, '', $element->getHtmlId()) . $uniqueEntityId);
 
-        if ($this->_isCatalogElementAllowed($element) || $this->_isEmailTemplateElementAllowed($element)) {
+//        Zend_Debug::dump(get_class($element));
+
+        if ($this->_isElementEditor($element) || $this->_isCatalogElementAllowed($element) || $this->_isEmailTemplateElementAllowed($element)) {
             $this->_getMarkdownButtons($element);
         }
 
