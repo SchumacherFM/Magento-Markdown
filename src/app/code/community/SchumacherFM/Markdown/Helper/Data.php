@@ -194,4 +194,15 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     {
         return preg_replace('~\{\{media\s+url="([^"]+)"\s*\}\}~i', Mage::getBaseUrl('media') . '\\1', $content);
     }
+
+    /**
+     * @return array
+     */
+    public function getAllowedLayoutHandles()
+    {
+        return array(
+            'editor'                               => 1,
+            'adminhtml_system_email_template_edit' => 1,
+        );
+    }
 }

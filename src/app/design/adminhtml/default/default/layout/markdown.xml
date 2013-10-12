@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <layout>
+    <!--@see SchumacherFM_Markdown_Model_Observer_Adminhtml_LayoutUpdate-->
     <MARKDOWN_HEADER>
         <reference name="head">
             <action method="addJs">
@@ -21,10 +22,4 @@
             </action>
         </reference>
     </MARKDOWN_HEADER>
-    <editor>
-        <update handle="MARKDOWN_HEADER"/>
-    </editor>
-    <adminhtml_system_email_template_edit>
-        <update handle="MARKDOWN_HEADER"/>
-    </adminhtml_system_email_template_edit>
 </layout>

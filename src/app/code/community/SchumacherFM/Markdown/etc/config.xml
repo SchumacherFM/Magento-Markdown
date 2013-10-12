@@ -93,14 +93,22 @@
             </modules>
         </translate>
         <events>
+            <controller_action_layout_load_before>
+                <observers>
+                    <markdown_controller_action_layout_load_before>
+                        <class>markdown/observer_adminhtml_layoutUpdate</class>
+                        <method>injectMarkdownFiles</method>
+                    </markdown_controller_action_layout_load_before>
+                </observers>
+            </controller_action_layout_load_before>
             <adminhtml_block_html_before>
                 <observers>
                     <markdown_adminhtml_block_html_before_textarea>
-                        <class>markdown/observer_adminhtmlBlock</class>
+                        <class>markdown/observer_adminhtml_block</class>
                         <method>alterTextareaBlockTemplate</method>
                     </markdown_adminhtml_block_html_before_textarea>
                     <markdown_adminhtml_block_html_before_page>
-                        <class>markdown/observer_adminhtmlEpicEditor</class>
+                        <class>markdown/observer_adminhtml_epicEditor</class>
                         <method>injectEpicEditor</method>
                     </markdown_adminhtml_block_html_before_page>
                 </observers>

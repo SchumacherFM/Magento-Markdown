@@ -7,7 +7,7 @@
  *
  * avoiding to load files on every page in the adminhtml area.
  */
-class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
+class SchumacherFM_Markdown_Model_Observer_Adminhtml_EpicEditor
 {
     /**
      * using the body css class ... for better performance ... ?
@@ -34,6 +34,8 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
         ),
     );
 
+    protected $_isAllowed = FALSE;
+
     /**
      * adminhtml_block_html_before
      *
@@ -50,9 +52,12 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
         /** @var $block Mage_Adminhtml_Block_Page */
         $block = $observer->getEvent()->getBlock();
 
-        if (!$this->_isAllowedPageBlock($block)) {
+        if ($this->_isAllowedPageBlock($block) === FALSE) {
             return NULL;
         }
+
+        $this->_isAllowed = TRUE;
+
         /** @var Mage_Adminhtml_Block_Page_Head $headBlock */
         $headBlock = $block->getLayout()->getBlock('head');
 
@@ -140,5 +145,15 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlEpicEditor
     public function getEpicEditorFiles()
     {
         return $this->_epicEditorFiles;
+    }
+
+    /**
+     * needed for singelton access from AdminhtmlBlock.
+     *
+     * @return bool
+     */
+    public function isAllowed()
+    {
+        return $this->_isAllowed;
     }
 }

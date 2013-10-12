@@ -5,7 +5,7 @@
  * @author      Cyrill at Schumacher dot fm / @SchumacherFM
  * @copyright   Copyright (c)
  */
-class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
+class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
 {
 
     /**
@@ -265,7 +265,7 @@ class SchumacherFM_Markdown_Model_Observer_AdminhtmlBlock
                 ))->toHtml();
         }
 
-        if (Mage::helper('markdown')->isEpicEditorEnabled()) {
+        if (Mage::helper('markdown')->isEpicEditorEnabled() && Mage::getSingleton('markdown/observer_adminhtml_epicEditor')->isAllowed()) {
             $this->_afterElementHtml[500] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
                     'label'   => Mage::helper('markdown')->__('EpicEditor'),
