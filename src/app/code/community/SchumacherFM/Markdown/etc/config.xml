@@ -1,8 +1,4 @@
-<?xml version="1.0"?>
-<!--* @category    SchumacherFM_Markdown-->
-<!--* @package     etc-->
-<!--* @author      Cyrill at Schumacher dot fm / @SchumacherFM-->
-<!--* @copyright   Copyright (c)-->
+<?xml version="1.0"?><!--* @category    SchumacherFM_Markdown--><!--* @package     etc--><!--* @author      Cyrill at Schumacher dot fm / @SchumacherFM--><!--* @copyright   Copyright (c)-->
 <config>
     <modules>
         <SchumacherFM_Markdown>
@@ -97,20 +93,24 @@
             </modules>
         </translate>
         <events>
-            <cms_wysiwyg_config_prepare>
+            <controller_action_layout_load_before>
                 <observers>
-                    <markdown_observer>
-                        <class>markdown/editor_observer</class>
-                        <method>prepareWysiwygPluginConfig</method>
-                    </markdown_observer>
+                    <markdown_controller_action_layout_load_before>
+                        <class>markdown/observer_adminhtml_layoutUpdate</class>
+                        <method>injectMarkdownFiles</method>
+                    </markdown_controller_action_layout_load_before>
                 </observers>
-            </cms_wysiwyg_config_prepare>
+            </controller_action_layout_load_before>
             <adminhtml_block_html_before>
                 <observers>
-                    <markdown_adminhtml_block_html_before>
-                        <class>markdown/observer_adminhtmlBlock</class>
+                    <markdown_adminhtml_block_html_before_textarea>
+                        <class>markdown/observer_adminhtml_block</class>
                         <method>alterTextareaBlockTemplate</method>
-                    </markdown_adminhtml_block_html_before>
+                    </markdown_adminhtml_block_html_before_textarea>
+                    <markdown_adminhtml_block_html_before_page>
+                        <class>markdown/observer_adminhtml_epicEditor</class>
+                        <method>injectEpicEditor</method>
+                    </markdown_adminhtml_block_html_before_page>
                 </observers>
             </adminhtml_block_html_before>
             <core_config_data_save_after>
@@ -124,14 +124,25 @@
         </events>
     </adminhtml>
     <default>
-        <schumacherfm>
+        <markdown>
             <markdown>
                 <enable>1</enable>
-                <md_extra>0</md_extra>
-                <md_extra_email>0</md_extra_email>
+                <cheatsheet>https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet</cheatsheet>
                 <detection_tag>!#markdown</detection_tag>
             </markdown>
-        </schumacherfm>
+            <markdown_extra>
+                <enable>0</enable>
+                <enable_email>0</enable_email>
+            </markdown_extra>
+
+            <epiceditor>
+                <enable>0</enable>
+                <load_on_click_textarea>0</load_on_click_textarea>
+            </epiceditor>
+            <remarked>
+                <enable>1</enable>
+            </remarked>
+        </markdown>
     </default>
     <phpunit>
         <suite>

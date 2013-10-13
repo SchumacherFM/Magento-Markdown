@@ -1,16 +1,25 @@
 <?xml version="1.0"?>
 <layout>
+    <!--@see SchumacherFM_Markdown_Model_Observer_Adminhtml_LayoutUpdate-->
     <MARKDOWN_HEADER>
         <reference name="head">
-            <action method="addJs"><script>mage/adminhtml/markdown.js</script></action>
-            <action method="addJs"><script>mage/adminhtml/marked.js</script></action>
-            <action method="addCss"><name>markdown.css</name></action>
+            <action method="addJs">
+                <script>markdown/adminhtml/reMarked.js</script>
+            </action>
+            <action method="addJs">
+                <script>markdown/adminhtml/marked.js</script>
+            </action>
+            <action method="addJs">
+                <script>markdown/adminhtml/filereader.js</script>
+            </action>
+            <action method="addJs">
+                <script>markdown/adminhtml/markdown.js</script>
+            </action>
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>markdown/mdm.css</name>
+                <params/>
+            </action>
         </reference>
     </MARKDOWN_HEADER>
-    <editor>
-        <update handle="MARKDOWN_HEADER"/>
-    </editor>
-    <adminhtml_system_email_template_edit>
-        <update handle="MARKDOWN_HEADER"/>
-    </adminhtml_system_email_template_edit>
 </layout>

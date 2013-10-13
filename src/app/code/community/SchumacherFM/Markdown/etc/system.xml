@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?xml version="1.0"?><!--
  /**
  * @category  SchumacherFM
  * @package   SchumacherFM_Markdown
@@ -9,14 +8,15 @@
 -->
 <config>
     <sections>
-        <schumacherfm>
-            <label>@SchumacherFM</label>
-            <tab>advanced</tab>
+        <markdown>
+            <label>Markdown [M↓]</label>
+            <tab>general</tab>
             <frontend_type>text</frontend_type>
-            <sort_order>930</sort_order>
+            <sort_order>2001</sort_order>
             <show_in_default>1</show_in_default>
             <show_in_website>1</show_in_website>
             <show_in_store>1</show_in_store>
+
             <groups>
                 <markdown translate="label">
                     <label>Markdown [M↓]</label>
@@ -35,15 +35,17 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </enable>
-                        <md_extra translate="label">
-                            <label>Use Markdown Extra</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>20</sort_order>
+                        <cheatsheet translate="label">
+                            <label>Markdown Cheat Sheet URL</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>15</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </md_extra>
+                            <comment>Alternatives http://daringfireball.net/projects/markdown/syntax or
+                                https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet or your own page
+                            </comment>
+                        </cheatsheet>
                         <detection_tag translate="label">
                             <label>Markdown Detection Tag</label>
                             <frontend_type>text</frontend_type>
@@ -51,12 +53,45 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment>Every content field which contains markdown must have this tag included that it will be parsed.
-                            This tag will of course be removed during parsing. If empty, every content is considered as markdown.
-                            Only transactional emails which have the detection tag somewhere integrated will be rendered with markdown.
+                            <comment>Every content field which contains markdown must have this tag included otherwise it will not be parsed.
+                                This tag will of course be removed during parsing. If empty, every content is considered as markdown.
+                                Only transactional emails which have the detection tag somewhere integrated will be rendered with markdown.
                             </comment>
                         </detection_tag>
-                        <md_extra_email translate="label">
+                        <custom_layout_handles translate="label">
+                            <label>Additional Layout Handles</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>220</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Expert Mode: Load Markdown feature and EpicEditor also via these custom layout handles.
+                            A whitespace separated list. Q: Where can I find the name of a Layout Handle? A: View the class attribute
+                                on the body tag. Most handles starts with adminhtml-... Replace the - with _. Full string is required.
+                            </comment>
+                        </custom_layout_handles>
+
+                    </fields>
+                </markdown>
+
+                <markdown_extra translate="label">
+                    <label>Markdown Extra</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>60</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enable translate="label">
+                            <label>Use Markdown Extra</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enable>
+                        <enable_email translate="label">
                             <label>Transactional email: Use Markdown Extra</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
@@ -64,7 +99,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </md_extra_email>
+                        </enable_email>
                         <te_md_css translate="label">
                             <label>Transactional email: Path to CSS file</label>
                             <frontend_type>text</frontend_type>
@@ -76,8 +111,104 @@
                             Will be included in the &lt;style&gt; tag in each email.]]></comment>
                         </te_md_css>
                     </fields>
-                </markdown>
+                </markdown_extra>
+
+                <file_reader translate="label">
+                    <label>Drag'n'Drop File Upload</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>70</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <upload_dir translate="label">
+                            <label>Upload directory</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Directory must be writable for the webserver. If directory did not exists system will
+                             attempt to create it recursively. Please add trailing slash.
+                             Default upload directory is media/wysiwyg/markdown/]]></comment>
+                        </upload_dir>
+                    </fields>
+                </file_reader>
+
+                <epiceditor>
+                    <label>EpicEditor</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>100</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enable translate="label">
+                            <label>Enable EpicEditor</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>200</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Enables the awesome Markdown <a href="http://epiceditor.com" target="_blank">EpicEditor</a>.]]></comment>
+                        </enable>
+                        <load_on_click_textarea translate="label">
+                            <label>Load EpicEditor on click</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>210</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Loads the EpicEditor only on the first click into a textarea field. After that loading
+                            and unloading of the EpicEditor must be done via button. Hint: only enable that if you're not using
+                            too much the Drag'n'Drop image upload.]]></comment>
+                        </load_on_click_textarea>
+                        <config translate="label">
+                            <label>EpicEditor Config</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>220</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Expert Mode: A valid JSON object. Will be merged into the EpicEditor config.</comment>
+                        </config>
+                    </fields>
+                </epiceditor>
+
+                <remarked>
+                    <label>HTML to Markdown</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>150</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enable translate="label">
+                            <label>Enable Converter</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>200</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Enables the awesome reMarked.js HTML to Markdown converter]]></comment>
+                        </enable>
+                        <config translate="label">
+                            <label>reMarked.js Config</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>220</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Expert Mode: A valid JSON object. Will be merged into the
+                            <a href="https://github.com/leeoniya/reMarked.js" target="_blank">reMarked.js</a> config.]]></comment>
+                        </config>
+                    </fields>
+                </remarked>
+
             </groups>
-        </schumacherfm>
+        </markdown>
     </sections>
 </config>

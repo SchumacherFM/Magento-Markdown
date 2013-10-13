@@ -8,25 +8,6 @@
 class SchumacherFM_Markdown_Model_Editor_Observer
 {
     /**
-     * Add markdown wysiwyg plugin config
-     *
-     * @param Varien_Event_Observer $observer
-     *
-     * @return SchumacherFM_Markdown_Model_Editor_Observer
-     */
-    public function prepareWysiwygPluginConfig(Varien_Event_Observer $observer)
-    {
-        if (Mage::helper('markdown')->isDisabled()) {
-            return null;
-        }
-
-        $config   = $observer->getEvent()->getConfig();
-        $settings = Mage::getModel('markdown/editor_config')->getWysiwygPluginSettings($config);
-        $config->addData($settings);
-        return $this;
-    }
-
-    /**
      * is Markdown is enabled then disable completely the wysiwyg editor
      *
      * @param Varien_Event_Observer $observer

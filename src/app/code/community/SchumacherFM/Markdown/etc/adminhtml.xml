@@ -16,9 +16,9 @@
    						<children>
    							<config>
    								<children>
-   									<schumacherfm translate="title" module="schumacherfm_markdown">
-   										<title>@SchumacherFM (Config)</title>
-   									</schumacherfm>
+   									<markdown translate="title" module="schumacherfm_markdown">
+   										<title>Markdown [M↓]</title>
+   									</markdown>
    								</children>
    							</config>
    						</children>
