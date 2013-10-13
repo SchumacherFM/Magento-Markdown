@@ -13,8 +13,6 @@
         epicEditorInstances = {},
         EPIC_EDITOR_PREFIX = 'epiceditor_EE_',
         isViewMarkdownSourceHtml = false,
-        COLOR_ON = 'green',
-        COLOR_OFF = 'white',
         _initializedFileReaderContainer = {},
         _textAreaCurrentCaretObject = {}, // set by the onClick event
         _toggleMarkdownSourceOriginalMarkdown = '';
@@ -130,9 +128,8 @@
 
         if (true === isViewMarkdownSourceHtml) {
             isViewMarkdownSourceHtml = false;
-            element.setStyle({
-                color: COLOR_OFF
-            });
+            element.removeClassName('success');
+
             // restore original markdown, if not it is lost
             if (_toggleMarkdownSourceOriginalMarkdown.length > 10) {
                 $textAreaId.writeAttribute('readonly', false);
@@ -156,9 +153,7 @@
         }
 
         isViewMarkdownSourceHtml = true;
-        element.setStyle({
-            color: COLOR_ON
-        });
+        element.addClassName('success');
 
         if (_instance && _isObject(_instance)) {
             _instance.preview();
@@ -409,24 +404,18 @@
 
         if (false === instance) {
             _createEpicEditorInstances(null, $(textAreaId));
-            element.setStyle({
-                color: COLOR_ON
-            });
+            element.addClassName('success');
             return false;
         }
 
         if (instance.is('loaded')) {
             instance.unload();
             $(textAreaId).show();
-            element.setStyle({
-                color: COLOR_OFF
-            });
+            element.removeClassName('success');
         } else {
             $(textAreaId).hide();
             instance.load();
-            element.setStyle({
-                color: COLOR_ON
-            });
+            element.addClassName('success');
         }
         return false;
     }
