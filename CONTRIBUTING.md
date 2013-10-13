@@ -29,6 +29,8 @@ Here. Take this template:
 5. Push to the branch (`git push origin develop-feature`)
 6. Create new Pull Request
 
-## Code style
+## Code style / Git / Versions
 
 PSR and refer please to my code.
+
+We work with: [A successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/) and [Semantic Versioning 2.0.0](http://semver.org/)
