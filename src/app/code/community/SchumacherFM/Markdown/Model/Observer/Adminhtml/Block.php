@@ -171,8 +171,10 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
             }
         }
 
-        // if you run into trouble with strange values due to localStorage ... uncomment this or disable localStorage
-        // $idString .= Mage::app()->getRequest()->getControllerName() . '_' . Mage::app()->getRequest()->getActionName();
+        // prevent trouble with strange values due to localStorage ...
+        $secretKey = Mage::getModel('adminhtml/url')->getSecretKey();
+        $path      = Mage::app()->getRequest()->getRequestUri();
+        $idString .= '_' . md5(str_replace($secretKey, '', $path));
 
         // we could also use here md5 but it want to see the values.
         return preg_replace('~[^a-z0-9_\-]+~i', '', $idString);
