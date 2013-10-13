@@ -37,9 +37,12 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         $isWidgetElement  = $block instanceof Mage_Adminhtml_Block_Widget_Form_Renderer_Fieldset_Element;
         $isCatalogElement = $block instanceof Mage_Adminhtml_Block_Catalog_Form_Renderer_Fieldset_Element;
 
+        /**
+         * main reason for this layout handle thing is to avoid loading of lot of unused JS/CSS ...
+         */
         $isLayoutHandleAllowed = Mage::getSingleton('markdown/observer_adminhtml_layoutUpdate')->isAllowed();
 
-        if ($isLayoutHandleAllowed && ($isWidgetElement || $isCatalogElement)) {
+        if ($isWidgetElement || $isCatalogElement) {
             /** @var Varien_Data_Form_Element_Abstract $element */
             $element = $block->getElement();
 
@@ -48,9 +51,34 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
             $_isEmailTemplateElementAllowed = $this->_isEmailTemplateElementAllowed($element);
 
             if ($_isElementEditor || $_isCatalogElementAllowed || $_isEmailTemplateElementAllowed) {
-                $this->_integrate($element);
+                $method = $isLayoutHandleAllowed ? '_integrate' : '_addMarkdownHint';
+                $this->$method($element);
             }
         }
+    }
+
+    /**
+     * @param Varien_Data_Form_Element_Abstract $element
+     *
+     * @return $this
+     */
+    protected function _addMarkdownHint(Varien_Data_Form_Element_Abstract $element)
+    {
+        $element->setData('after_element_html', '<small>' .
+            Mage::helper('markdown')->__('Markdown feature may be available here!')
+            . '</small>' . $element->getData('after_element_html'));
+
+        /* not sure if useful ...
+        $params = array(
+            'layoutHandle' => '@todo',
+            'returnUrl'    => Mage::app()->getRequest()->getRequestUri(),
+        );
+        $url    = Mage::helper('markdown')->getAdminEnableUrl($params);
+        $element->setData('after_element_html', '<small><a href="' . $url . '">' .
+            Mage::helper('markdown')->__('Click to add Markdown feature!')
+            . '</a></small>');
+        */
+        return $this;
     }
 
     /**

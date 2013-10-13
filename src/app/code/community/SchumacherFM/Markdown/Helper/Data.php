@@ -101,7 +101,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getAdminRenderUrl(array $params = NULL)
     {
-        return Mage::helper('adminhtml')->getUrl('*/markdown/render', $params);
+        return Mage::helper('adminhtml')->getUrl('adminhtml/markdown/render', $params);
     }
 
     /**
@@ -112,6 +112,16 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     public function getAdminFileUploadUrl(array $params = NULL)
     {
         return Mage::helper('adminhtml')->getUrl('adminhtml/markdown/fileUpload', $params);
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return string
+     */
+    public function getAdminEnableUrl(array $params = NULL)
+    {
+        return Mage::helper('adminhtml')->getUrl('adminhtml/markdown/enable', $params);
     }
 
     /**
