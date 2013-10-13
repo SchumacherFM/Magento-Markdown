@@ -267,7 +267,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
                 ))->toHtml();
         }
 
-        if (Mage::helper('markdown')->isEpicEditorEnabled() && Mage::getSingleton('markdown/observer_adminhtml_epicEditor')->isAllowed()) {
+        if (Mage::helper('markdown')->isEpicEditorEnabled()) {
             $this->_afterElementHtml[500] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
                     'label'   => Mage::helper('markdown')->__('EpicEditor'),

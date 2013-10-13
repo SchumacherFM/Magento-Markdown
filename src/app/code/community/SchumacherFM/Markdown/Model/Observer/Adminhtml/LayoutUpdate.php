@@ -45,7 +45,6 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_LayoutUpdate
 
         $handles        = $update->getHandles();
         $allowedHandles = Mage::helper('markdown')->getAllowedLayoutHandles();
-     // Zend_Debug::dump($handles);
 
         foreach ($handles as $handle) {
             if (isset($allowedHandles[$handle])) {

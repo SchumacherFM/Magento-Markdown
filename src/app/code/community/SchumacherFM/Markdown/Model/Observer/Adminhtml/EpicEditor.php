@@ -10,20 +10,6 @@
 class SchumacherFM_Markdown_Model_Observer_Adminhtml_EpicEditor
 {
     /**
-     * using the body css class ... for better performance ... ?
-     * add additional css body classes here where the editor should be loaded
-     *
-     * @var array
-     */
-    protected $_allowedEpicEditorPages = array(
-        'adminhtml-cms-page-edit',
-        'adminhtml-catalog-product-edit',
-        'adminhtml-cms-block-edit',
-        'adminhtml-catalog-category-edit',
-        'adminhtml-system-email-template-edit',
-    );
-
-    /**
      *
      * @var array
      */
@@ -33,8 +19,6 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_EpicEditor
             'markdown/adminhtml/highlight.pack.js',
         ),
     );
-
-    protected $_isAllowed = FALSE;
 
     /**
      * adminhtml_block_html_before
@@ -52,11 +36,9 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_EpicEditor
         /** @var $block Mage_Adminhtml_Block_Page */
         $block = $observer->getEvent()->getBlock();
 
-        if ($this->_isAllowedPageBlock($block) === FALSE) {
+        if ($this->_isAllowedBlock($block) === FALSE) {
             return NULL;
         }
-
-        $this->_isAllowed = TRUE;
 
         /** @var Mage_Adminhtml_Block_Page_Head $headBlock */
         $headBlock = $block->getLayout()->getBlock('head');
@@ -75,60 +57,15 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_EpicEditor
     }
 
     /**
-     * dispatches also an event for modifying the css classes
-     *
-     * @return array
-     */
-    protected function _getAllowedEpicEditorPages()
-    {
-        $cssClasses = trim((string)Mage::getStoreConfig('markdown/epiceditor/body_css_classes'));
-        if (!empty($cssClasses)) {
-            $cssClasses                    = preg_split('~\s+~', $cssClasses, -1, PREG_SPLIT_NO_EMPTY);
-            $this->_allowedEpicEditorPages = array_merge($this->_allowedEpicEditorPages, $cssClasses);
-        }
-        return $this->_allowedEpicEditorPages;
-    }
-
-    /**
      * @param Mage_Core_Block_Abstract $block
      *
      * @return bool
      */
-    protected function _isAllowedPageBlock(Mage_Core_Block_Abstract $block)
+    protected function _isAllowedBlock(Mage_Core_Block_Abstract $block)
     {
-        $class = $block->getBodyClass();
-        if (empty($class)) {
-            return FALSE;
-        }
-
-        $hasClass                = FALSE;
-        $_allowedEpicEditorPages = $this->_getAllowedEpicEditorPages();
-        foreach ($_allowedEpicEditorPages as $pageBodyClass) {
-            if (strpos($class, $pageBodyClass) !== FALSE) {
-                $hasClass = TRUE;
-                break;
-            }
-        }
-
-        $isPage = $block instanceof Mage_Adminhtml_Block_Page;
-
-        return $isPage && $hasClass;
-    }
-
-    /**
-     * @param array $allowedEpicEditorPages
-     */
-    public function setAllowedEpicEditorPages($allowedEpicEditorPages)
-    {
-        $this->_allowedEpicEditorPages = $allowedEpicEditorPages;
-    }
-
-    /**
-     * @return array
-     */
-    public function getAllowedEpicEditorPages()
-    {
-        return $this->_allowedEpicEditorPages;
+        $isPage                = $block instanceof Mage_Adminhtml_Block_Page;
+        $isLayoutHandleAllowed = Mage::getSingleton('markdown/observer_adminhtml_layoutUpdate')->isAllowed();
+        return $isPage && $isLayoutHandleAllowed;
     }
 
     /**
@@ -147,13 +84,4 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_EpicEditor
         return $this->_epicEditorFiles;
     }
 
-    /**
-     * needed for singelton access from AdminhtmlBlock.
-     *
-     * @return bool
-     */
-    public function isAllowed()
-    {
-        return $this->_isAllowed;
-    }
 }
