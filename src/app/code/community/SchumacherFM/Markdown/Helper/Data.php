@@ -147,7 +147,10 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getEpicEditorConfig()
     {
-        return $this->_getJsonConfig('epiceditor');
+        $config = $this->_getJsonConfig('epiceditor');
+        $config = FALSE !== $config ? json_decode($config, TRUE) : array();
+        $config['basePath'] = Mage::getBaseUrl('skin') . 'adminhtml/default/default/epiceditor/';
+        return json_encode($config);
     }
 
     /**
@@ -226,6 +229,5 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
             $handles       = array_merge($handles, $customHandles);
         }
         return $handles;
-
     }
 }

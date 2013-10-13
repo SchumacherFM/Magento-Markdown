@@ -308,7 +308,7 @@
         return {
             container: null,
             textarea: null,
-            basePath: '/skin/adminhtml/default/default/epiceditor/',
+            basePath: null, // will be set via Mage Helper
             clientSideStorage: true,
             parser: _parserEpicEditor,
             localStorageName: 'epiceditor',

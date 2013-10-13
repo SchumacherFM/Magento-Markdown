@@ -167,9 +167,8 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         $config     = Mage::helper('markdown')->getEpicEditorConfig();
         $dataConfig = '';
         if ($config) {
-            $dataConfig = ' data-config="' . $config . '"';
+            $dataConfig = ' data-config=\'' . $config . '\'';
         }
-
         return $dataConfig;
     }
 
