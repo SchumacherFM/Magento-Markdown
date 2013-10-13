@@ -54,10 +54,10 @@ All options can be set per store view.
 - Enable or disable Markdown EpicEditor
 - Enable or disable loading of the EpicEditor via click in a textarea field
 - Full configuration for Markdown EpicEditor - add a JSON object in the System -> Configuration section
-- Enable EpicEditor in your custom module by adding the body CSS class name into the config field
 - Defining a custom upload folder for Drag'n'Drop image upload. This folder will be created automatically and recursively
 - Enable or disable HTML to Markdown converter reMarked.js
 - Full configuration for converter reMarked.js - add a JSON object in the System -> Configuration section
+- Integrate Markdown into your own module by adding the layout handle into the System -> Configuration section
 
 Every field which contains Markdown syntax must contain that detection tag otherwise it will not be parsed.
 
