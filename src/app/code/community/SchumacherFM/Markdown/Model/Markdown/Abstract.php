@@ -83,7 +83,9 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
      */
     public function setOptions(array $options = NULL)
     {
-        $this->_options = array_merge($this->_options, $options);
+		if(false === empty($options)){
+			$this->_options = array_merge($this->_options, $options);			
+		}
         return $this;
     }
 
