@@ -149,11 +149,15 @@ About
 -----
 
 - Key: SchumacherFM_Markdown
-- Current Version: 2.0.0
+- Current Version: 2.0.1
 - [Download tarball](https://github.com/SchumacherFM/Magento-Markdown/tags)
 
 History
 -------
+
+#### 2.0.1
+
+- Minor bug fix. Github Issue #14
 
 #### 2.0.0
 
