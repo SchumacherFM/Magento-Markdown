@@ -27,6 +27,7 @@ reMarked = function(opts) {
 		tbl_edges:	false,			// show side edges on tables
 		hash_lnks:	false,			// anchors w/hash hrefs as links
 		br_only:	false,			// avoid using "  " as line break indicator
+		col_pre:	"col ",			// column prefix to use when creating missing headers for tables
 	//	comp_style: false,			// use getComputedStyle instead of hardcoded tag list to discern block/inline
 		unsup_tags: {				// handling of unsupported tags, defined in terms of desired output style. if not listed, output = outerHTML
 			// no output
@@ -199,6 +200,34 @@ reMarked = function(opts) {
 				// inline elems allowing adjacent whitespace text nodes to be rendered
 				var inlRe = cfg.unsup_tags.inline, n, name;
 
+				// if no thead exists, detect header rows or make fake cols
+				if (nodeName(this.e) == "table") {
+					if (this.e.hasChildNodes() && !this.e.tHead) {
+						var thead = document.createElement("thead");
+
+						var tbody0 = this.e.tBodies[0],
+							row0 = tbody0.rows[0],
+							cell0 = row0.cells[0];
+
+						if (nodeName(cell0) == "th")
+							thead.appendChild(row0);
+						else {
+							var hcell,
+								i = 0,
+								len = row0.cells.length,
+								hrow = thead.insertRow();
+
+							while (i++ < len) {
+								hcell = document.createElement("th");
+								hcell.textContent = cfg.col_pre + i;
+								hrow.appendChild(hcell);
+							}
+						}
+
+						this.e.insertBefore(thead, tbody0);
+					}
+				}
+
 				for (i in this.e.childNodes) {
 					if (!/\d+/.test(i)) continue;
 
@@ -266,9 +295,7 @@ reMarked = function(opts) {
 			var n, buf = "";
 			for (var i in this.c) {
 				n = this.c[i];
-
-                // @SchumacherFM: added typeof n.rend
-				buf += (n.bef || "") +( typeof n.rend === 'function' ? n.rend() : '' ) + (n.aft || "");
+				buf += (n.bef || "") + n.rend() + (n.aft || "");
 			}
 			return buf.replace(/^\n+|\n+$/, "");
 		}
@@ -582,7 +609,7 @@ reMarked = function(opts) {
 				col.w = Math.max(col.w || 0, this.guts.length);
 				if (this.e.align)
 					col.a = this.e.align;
-			}
+			},
 		}) : lib.ctblk.extend();
 
 			lib.td = lib.th.extend();
