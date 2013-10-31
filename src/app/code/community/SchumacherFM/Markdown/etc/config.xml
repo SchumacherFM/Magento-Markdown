@@ -1,4 +1,12 @@
-<?xml version="1.0"?><!--* @category    SchumacherFM_Markdown--><!--* @package     etc--><!--* @author      Cyrill at Schumacher dot fm / @SchumacherFM--><!--* @copyright   Copyright (c)-->
+<?xml version="1.0"?>
+<!--
+/**
+ * @category  SchumacherFM
+ * @package   SchumacherFM_Markdown
+ * @copyright Copyright (c) http://www.schumacher.fm
+ * @author    Cyrill at Schumacher dot fm @SchumacherFM
+ */
+-->
 <config>
     <modules>
         <SchumacherFM_Markdown>
