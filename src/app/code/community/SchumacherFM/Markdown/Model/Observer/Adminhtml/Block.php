@@ -258,6 +258,8 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
 
     /**
      * @param Varien_Data_Form_Element_Abstract $element
+     *
+     * @return $this
      */
     protected function _getMarkdownButtons(Varien_Data_Form_Element_Abstract $element)
     {
@@ -266,7 +268,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         if (Mage::helper('markdown')->getDetectionTag() !== '') {
             $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
-                    'label'   => Mage::helper('markdown')->__('[M↓] enable'),
+                    'label'   => Mage::helper('markdown')->__('Markdown enable'),
                     'type'    => 'button',
                     'onclick' => 'toggleMarkdown(\'' . $htmlId . '\');'
                 ))->toHtml();
@@ -274,7 +276,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
 
         $this->_afterElementHtml[210] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => Mage::helper('markdown')->__('[M↓] Source'),
+                'label'   => Mage::helper('markdown')->__('Markdown Source'),
                 'type'    => 'button',
                 'title'   => Mage::helper('markdown')->__('View generated HTML source code'),
                 'onclick' => 'toggleMarkdownSource(this,\'' . $htmlId . '\');'
@@ -282,7 +284,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
 
         $this->_afterElementHtml[300] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => Mage::helper('markdown')->__('[M↓] Syntax'),
+                'label'   => Mage::helper('markdown')->__('Markdown Syntax'),
                 'type'    => 'button',
                 'onclick' => 'mdExternalUrl(\'' . Mage::helper('markdown')->getCheatSheetUrl() . '\');'
             ))->toHtml();
@@ -290,7 +292,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         if ($this->_isMarkdownExtra($element)) {
             $this->_afterElementHtml[400] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
-                    'label'   => Mage::helper('markdown')->__('[M↓] Extra Syntax'),
+                    'label'   => Mage::helper('markdown')->__('Markdown Extra Syntax'),
                     'type'    => 'button',
                     'onclick' => 'mdExternalUrl(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_EXTRA_SYNTAX . '\');'
                 ))->toHtml();
@@ -308,7 +310,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         if (Mage::helper('markdown')->isReMarkedEnabled() === TRUE) {
             $this->_afterElementHtml[600] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
-                    'label'   => Mage::helper('markdown')->__('HTML2[M↓]'),
+                    'label'   => Mage::helper('markdown')->__('HTML2Markdown'),
                     'type'    => 'button',
                     'onclick' => 'htmlToMarkDown(this,\'' . $htmlId . '\');'
                 ))->toHtml();
