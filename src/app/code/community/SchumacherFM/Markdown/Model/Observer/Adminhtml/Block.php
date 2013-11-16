@@ -276,7 +276,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
 
         $this->_afterElementHtml[210] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => Mage::helper('markdown')->__('Markdown Source'),
+                'label'   => Mage::helper('markdown')->__('HTML Preview'),
                 'type'    => 'button',
                 'title'   => Mage::helper('markdown')->__('View generated HTML source code'),
                 'onclick' => 'toggleMarkdownSource(this,\'' . $htmlId . '\');'
