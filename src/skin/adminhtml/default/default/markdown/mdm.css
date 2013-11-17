@@ -27,6 +27,7 @@ textarea.initFileReader:focus {
     -webkit-box-shadow : 0 0 5px rgba(81, 203, 238, 1);
     -moz-box-shadow    : 0 0 5px rgba(81, 203, 238, 1);
 }
+
 textarea.initFileReader.fReaderDrag {
     color              : #000;
     outline            : none;
@@ -35,4 +36,16 @@ textarea.initFileReader.fReaderDrag {
     box-shadow         : 0 0 5px rgb(34, 139, 34);
     -webkit-box-shadow : 0 0 5px rgb(34, 139, 34);
     -moz-box-shadow    : 0 0 5px rgb(34, 139, 34);
+}
+
+.md-bottom-text {
+    margin-top : 5px;
+}
+
+.md-manual-file-chooser {
+    position    : absolute;
+    width       : 154px;
+    margin-left : -70px;
+    opacity     : 0.0001;
+    cursor      : pointer;
 }

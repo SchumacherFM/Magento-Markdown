@@ -61,6 +61,10 @@ class SchumacherFM_Markdown_Adminhtml_MarkdownController extends Mage_Adminhtml_
         $file       = json_decode($this->getRequest()->getParam('file', '[]'), TRUE);
         $fileName   = preg_replace('~[^\w\.]+~i', '', isset($file['name']) ? $file['name'] : '');
 
+        if (strpos(strtolower($fileName), 'clipboard') !== FALSE) {
+            $fileName = 'clipboard_' . date('Ymd-His') . '_' . str_replace('clipboard', '', strtolower($fileName));
+        }
+
         if (empty($fileName) || empty($binaryData) || empty($file)) {
             $return['msg'] = 'Either fileName or binaryData or file is empty ...';
             return $this->_setReturn($return, TRUE);

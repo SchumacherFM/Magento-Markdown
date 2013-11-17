@@ -458,7 +458,7 @@
             dragClass: 'fReaderDrag',
             accept: 'image/*',
             readAsMap: {
-                'image/*': 'BinaryString'
+                'image/*': 'BinaryString' // @todo refactor for using: ArrayBuffer
             },
             readAsDefault: 'BinaryString',
             on: {
@@ -481,7 +481,7 @@
                         },
                         method: 'post',
                         parameters: {
-                            'binaryData': encode_base64(e.target.result),
+                            'binaryData': encode_base64(e.target.result), // @todo refactor use real file uploads -> ArrayBuffer
                             'file': JSON.stringify(file)
                         }
                     });
@@ -499,6 +499,8 @@
         };
 
         FileReaderJS.setupDrop(target, opts);
+        FileReaderJS.setupInput($('man_chooser_' + target.id), opts);
+        FileReaderJS.setupClipboard(target, opts);
         _initializedFileReaderContainer[target.id] = true;
     }
 

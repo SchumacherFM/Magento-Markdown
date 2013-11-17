@@ -132,6 +132,12 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
             $this->_configInserted         = TRUE;
         }
 
+        $this->_afterElementHtml[9999]  = '<p class="md-bottom-text">';
+        $id = 'man_chooser_'.$element->getHtmlId();
+        $this->_afterElementHtml[10000] = Mage::helper('markdown')->__('Attach images by dragging & dropping,
+        <input type="file" multiple="multiple" id="%s" class="md-manual-file-chooser"> <a href="#">selecting them</a>,
+        or pasting from the clipboard.', $id, '#');
+        $this->_afterElementHtml[10001] = '</p>';
         ksort($this->_afterElementHtml);
         $element->setData('after_element_html', implode(' ', $this->_afterElementHtml));
         $this->_afterElementHtml = array();
