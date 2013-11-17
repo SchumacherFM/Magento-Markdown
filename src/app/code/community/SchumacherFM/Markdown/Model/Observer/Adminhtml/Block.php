@@ -284,7 +284,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
 
         $this->_afterElementHtml[300] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => Mage::helper('markdown')->__('Markdown Syntax'),
+                'label'   => Mage::helper('markdown')->__('Docs for Markdown'),
                 'type'    => 'button',
                 'onclick' => 'mdExternalUrl(\'' . Mage::helper('markdown')->getCheatSheetUrl() . '\');'
             ))->toHtml();
@@ -292,7 +292,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         if ($this->_isMarkdownExtra($element)) {
             $this->_afterElementHtml[400] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
-                    'label'   => Mage::helper('markdown')->__('Markdown Extra Syntax'),
+                    'label'   => Mage::helper('markdown')->__('Docs for Markdown Extra'),
                     'type'    => 'button',
                     'onclick' => 'mdExternalUrl(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_EXTRA_SYNTAX . '\');'
                 ))->toHtml();

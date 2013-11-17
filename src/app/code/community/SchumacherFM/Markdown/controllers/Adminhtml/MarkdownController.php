@@ -7,15 +7,6 @@
  */
 class SchumacherFM_Markdown_Adminhtml_MarkdownController extends Mage_Adminhtml_Controller_Action
 {
-
-    /**
-     * @see Adminhtml/Block.php --> _addMarkdownHint()
-     * not sure if useful
-     */
-    public function enableAction(){
-
-    }
-
     /**
      * @return void
      */
