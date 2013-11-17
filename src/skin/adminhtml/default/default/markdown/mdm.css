@@ -4,6 +4,7 @@
 textarea.initFileReader {
     color                 : #666;
     font-size             : 14px;
+    border-radius         : 8px;
     -moz-border-radius    : 8px;
     -webkit-border-radius : 8px;
     margin                : 5px 0px 10px 0px;
@@ -11,11 +12,11 @@ textarea.initFileReader {
     border                : #999 1px solid;
     font-family           : "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     transition            : all 0.25s ease-in-out;
-    -webkit-transition    : all 0.25s ease-in-out;
     -moz-transition       : all 0.25s ease-in-out;
+    -webkit-transition    : all 0.25s ease-in-out;
     box-shadow            : 0 0 5px rgba(81, 203, 238, 0);
-    -webkit-box-shadow    : 0 0 5px rgba(81, 203, 238, 0);
     -moz-box-shadow       : 0 0 5px rgba(81, 203, 238, 0);
+    -webkit-box-shadow    : 0 0 5px rgba(81, 203, 238, 0);
 }
 
 textarea.initFileReader:focus {
@@ -24,8 +25,8 @@ textarea.initFileReader:focus {
     border             : #35a5e5 1px solid;
     font-family        : "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     box-shadow         : 0 0 5px rgba(81, 203, 238, 1);
-    -webkit-box-shadow : 0 0 5px rgba(81, 203, 238, 1);
     -moz-box-shadow    : 0 0 5px rgba(81, 203, 238, 1);
+    -webkit-box-shadow : 0 0 5px rgba(81, 203, 238, 1);
 }
 
 textarea.initFileReader.fReaderDrag {
@@ -34,8 +35,8 @@ textarea.initFileReader.fReaderDrag {
     border             : #228b22 1px solid;
     font-family        : "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     box-shadow         : 0 0 5px rgb(34, 139, 34);
-    -webkit-box-shadow : 0 0 5px rgb(34, 139, 34);
     -moz-box-shadow    : 0 0 5px rgb(34, 139, 34);
+    -webkit-box-shadow : 0 0 5px rgb(34, 139, 34);
 }
 
 .md-bottom-text {
@@ -48,4 +49,72 @@ textarea.initFileReader.fReaderDrag {
     margin-left : -70px;
     opacity     : 0.0001;
     cursor      : pointer;
+}
+
+.mdTabContainer {
+
+}
+
+.mdTabs {
+    height        : 37px;
+    border-bottom : 1px solid #333;
+}
+
+.mdTabs > ul {
+    margin-left : 1em;
+    list-style  : none;
+}
+
+.mdTabs > ul > li {
+    margin                         : 4px 4px 4px 0 !important;
+    padding                        : 7px 10px;
+    display                        : block;
+    float                          : left;
+    color                          : black;
+    -webkit-user-select            : none;
+    -moz-user-select               : none;
+    user-select                    : none;
+    -moz-border-radius-topleft     : 4px;
+    -moz-border-radius-topright    : 4px;
+    -moz-border-radius-bottomright : 0px;
+    -moz-border-radius-bottomleft  : 0px;
+    border-top-left-radius         : 4px;
+    border-top-right-radius        : 4px;
+    border-bottom-right-radius     : 0px;
+    border-bottom-left-radius      : 0px;
+    border                         : 1px solid #333;
+    background                     : rgb(227, 235, 235);
+}
+
+.mdTabs > ul > li:hover {
+    background : #ececec; /* old browsers */
+    cursor     : pointer;
+    color      : #333;
+}
+
+.mdTabs > ul > li.mdTabActiveHeader {
+    background          : white; /* old browsers */
+    cursor              : pointer;
+    color               : #333;
+    font-weight         : bold;
+    border-bottom-color : rgb(250, 250, 250);
+}
+
+.mdTabscontent {
+    -moz-border-radius-topleft     : 0px;
+    -moz-border-radius-topright    : 4px;
+    -moz-border-radius-bottomright : 4px;
+    -moz-border-radius-bottomleft  : 4px;
+    border-top-left-radius         : 0px;
+    border-top-right-radius        : 4px;
+    border-bottom-right-radius     : 4px;
+    border-bottom-left-radius      : 4px;
+    padding                        : 10px 10px 25px;
+    background                     : rgb(250, 250, 250);
+    margin                         : 0;
+    color                          : #333;
+}
+
+.mdTabpage {
+    display : none;
 }

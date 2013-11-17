@@ -506,13 +506,25 @@
     }
 
     /**
+     *
+     * @param $parentTdNode object
+     * @param textAreaElement object
+     * @private
+     */
+    function _buildTabs($parentTdNode, textAreaElement) {
+        var $mdTextArea = $parentTdNode.select('.mdTextArea')[0];
+        $mdTextArea.insert(textAreaElement);
+        $parentTdNode.select('.mdTabContainer')[0].show();
+    }
+
+    /**
      * @see https://developer.mozilla.org/en-US/docs/Web/API/FileReader
      * @param _epicEditorInstance window.EpicEditor loaded
      * @private
      */
     function _createFileReader(event) {
         var target = event.target || event.srcElement;
-
+        _buildTabs(target.parentNode, target);
         _textAreaCurrentCaretObject = target;
 
         // check if already initialized
@@ -593,7 +605,6 @@
                 if (true === _isFileReaderEnabled()) {
                     $elementId.on('click', 'textarea.initFileReader', _createFileReader);
                 }
-
             }
         });
 
@@ -602,6 +613,20 @@
                 element.remove();
             });
         }
+
+        $$('.mdTabs ul li').each(function (liElement) {
+            liElement.observe('click', function () {
+                var current = this.parentNode.getAttribute('data-current'),
+                    taId = this.parentNode.getAttribute('data-id');
+                document.getElementById('mdTabHeader_' + current).removeAttribute('class');
+                document.getElementById('mdTabpage_' + current).style.display = 'none';
+
+                var ident = this.id.split('_')[1];
+                this.setAttribute('class', 'mdTabActiveHeader');
+                document.getElementById('mdTabpage_' + ident).style.display = 'block';
+                this.parentNode.setAttribute('data-current', ident);
+            });
+        });
     }
 
     this.mdExternalUrl = mdExternalUrl;
