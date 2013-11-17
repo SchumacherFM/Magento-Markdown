@@ -119,7 +119,8 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
             $config['eru'] = Mage::helper('markdown')->getAdminRenderUrl(array('markdownExtra' => 1)); // extra renderer url
         }
 
-        $config['eeloc'] = Mage::helper('markdown')->isEpicEditorLoadOnClick();
+        $config['eeloc']   = Mage::helper('markdown')->isEpicEditorLoadOnClick();
+        $config['hideIIB'] = Mage::helper('markdown')->isHiddenInsertImageButton();
 
         if (Mage::helper('markdown')->isReMarkedEnabled() === TRUE) {
             $config['rmc'] = Mage::helper('markdown')->getReMarkedConfig();
@@ -133,7 +134,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         }
 
         $this->_afterElementHtml[9999]  = '<p class="md-bottom-text">';
-        $id = 'man_chooser_'.$element->getHtmlId();
+        $id                             = 'man_chooser_' . $element->getHtmlId();
         $this->_afterElementHtml[10000] = Mage::helper('markdown')->__('Attach images by dragging & dropping,
         <input type="file" multiple="multiple" id="%s" class="md-manual-file-chooser"> <a href="#">selecting them</a>,
         or pasting from the clipboard.', $id, '#');

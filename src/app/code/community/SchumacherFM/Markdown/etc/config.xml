@@ -137,6 +137,7 @@
                 <enable>1</enable>
                 <cheatsheet>https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet</cheatsheet>
                 <detection_tag>!#markdown</detection_tag>
+                <hide_insert_image_button>1</hide_insert_image_button>
             </markdown>
             <markdown_extra>
                 <enable>0</enable>

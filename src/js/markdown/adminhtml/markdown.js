@@ -4,7 +4,7 @@
  * @author      Cyrill at Schumacher dot fm / @SchumacherFM
  * @copyright   Copyright (c)
  */
-/*global $,marked,varienGlobalEvents,Ajax,hljs,FileReaderJS,Event,encode_base64,reMarked*/
+/*global $,$$,marked,varienGlobalEvents,Ajax,hljs,FileReaderJS,Event,encode_base64,reMarked*/
 ;
 (function () {
     'use strict';
@@ -49,6 +49,7 @@
             mediaBaseUrl: _checkHttp(config.phi || false),
             extraRendererUrl: _checkHttp(config.eru || false),
             eeLoadOnClick: config.eeloc || false,
+            isHiddenInsertImageButton: config.hideIIB || true,
             reMarkedCfg: decodeURIComponent(config.rmc || '{}').evalJSON(true)
         };
         return true;
@@ -552,10 +553,10 @@
      * @param textAreaId string
      */
     function htmlToMarkDown(element, textAreaId) {
-        var html = $(textAreaId).value || '';
+        var html = $(textAreaId).value || '',
+            _instance = epicEditorInstances[textAreaId] || false,
+            _loadedEpic = _isEpicEditorEnabled() && false !== _instance && _instance.is('loaded');
 
-        var _instance = epicEditorInstances[textAreaId] || false;
-        var _loadedEpic = _isEpicEditorEnabled() && false !== _instance && _instance.is('loaded');
         if (true === _loadedEpic) {
             toggleEpicEditor(element, textAreaId);
         }
@@ -595,6 +596,12 @@
 
             }
         });
+
+        if (_markDownGlobalConfig.isHiddenInsertImageButton === true) {
+            $$('button.add-image').each(function (element) {
+                element.remove();
+            });
+        }
     }
 
     this.mdExternalUrl = mdExternalUrl;

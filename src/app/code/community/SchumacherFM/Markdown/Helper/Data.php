@@ -71,6 +71,14 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * @return bool
+     */
+    public function isHiddenInsertImageButton()
+    {
+        return (boolean)Mage::getStoreConfig('markdown/markdown/hide_insert_image_button');
+    }
+
+    /**
      * loads CSS files and minifies it
      *
      * @todo if backend check for current selected store view / website
@@ -147,8 +155,8 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getEpicEditorConfig()
     {
-        $config = $this->_getJsonConfig('epiceditor');
-        $config = FALSE !== $config ? json_decode($config, TRUE) : array();
+        $config             = $this->_getJsonConfig('epiceditor');
+        $config             = FALSE !== $config ? json_decode($config, TRUE) : array();
         $config['basePath'] = Mage::getBaseUrl('skin') . 'adminhtml/default/default/epiceditor/';
         return json_encode($config);
     }
