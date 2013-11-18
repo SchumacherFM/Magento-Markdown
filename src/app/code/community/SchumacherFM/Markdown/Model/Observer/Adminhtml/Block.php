@@ -24,6 +24,11 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
     protected $_helper = NULL;
 
     /**
+     * @var Varien_Data_Form_Element_Abstract
+     */
+    protected $_currentElement = NULL;
+
+    /**
      * adminhtml_block_html_before
      *
      * @param Varien_Event_Observer $observer
@@ -49,56 +54,53 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         $isLayoutHandleAllowed = Mage::getSingleton('markdown/observer_adminhtml_layoutUpdate')->isAllowed();
 
         if ($isWidgetElement || $isCatalogElement) {
-            /** @var Varien_Data_Form_Element_Abstract $element */
-            $element = $block->getElement();
+            /** @var Varien_Data_Form_Element_Abstract _currentElement */
+            $this->_currentElement = $block->getElement();
 
-            $_isElementEditor               = $this->_isElementEditor($element);
-            $_isCatalogElementAllowed       = $this->_isCatalogElementAllowed($element);
-            $_isEmailTemplateElementAllowed = $this->_isEmailTemplateElementAllowed($element);
+            $_isElementEditor               = $this->_isElementEditor();
+            $_isCatalogElementAllowed       = $this->_isCatalogElementAllowed();
+            $_isEmailTemplateElementAllowed = $this->_isEmailTemplateElementAllowed();
 
             if ($_isElementEditor || $_isCatalogElementAllowed || $_isEmailTemplateElementAllowed) {
                 $method = $isLayoutHandleAllowed ? '_integrate' : '_addMarkdownHint';
-                $this->$method($element);
+                $this->$method();
             }
         }
     }
 
     /**
-     * @param Varien_Data_Form_Element_Abstract $element
-     *
      * @return $this
      */
-    protected function _addMarkdownHint(Varien_Data_Form_Element_Abstract $element)
+    protected function _addMarkdownHint()
     {
-        $element->setData('after_element_html', '<small>' .
+        $this->_currentElement->setData('after_element_html', '<small>' .
             $this->___('Markdown feature may be available here!')
-            . '</small>' . $element->getData('after_element_html'));
+            . '</small>' . $this->_currentElement->getData('after_element_html'));
         return $this;
     }
 
     /**
-     * @param Varien_Data_Form_Element_Abstract $element
-     *
      * @return $this
      */
-    protected function _integrate(Varien_Data_Form_Element_Abstract $element)
+    protected function _integrate()
     {
-        $uniqueEntityId = $this->_getUniqueEntityId($element);
-        $idPrefix       = $element->getForm()->getHtmlIdPrefix();
-        $element->setId(str_replace($idPrefix, '', $element->getHtmlId()) . $uniqueEntityId);
+        $uniqueEntityId = $this->_getUniqueEntityId($this->_currentElement);
+        $idPrefix       = $this->_currentElement->getForm()->getHtmlIdPrefix();
+        $this->_currentElement->setId(str_replace($idPrefix, '', $this->_currentElement->getHtmlId()) . $uniqueEntityId);
 
         // adds to every Element the MD buttons at the bottom of the textarea
-        return $this->_getMarkdownButtons($element)->_addEpicEditorHtml($element)->_mergeAfterElementHtml($element);
+        return $this
+            ->_getMarkdownButtons()
+            ->_addEpicEditorHtml()
+            ->_mergeAfterElementHtml();
     }
 
     /**
-     * @param Varien_Data_Form_Element_Abstract $element
-     *
      * @return $this
      */
-    protected function _mergeAfterElementHtml(Varien_Data_Form_Element_Abstract $element)
+    protected function _mergeAfterElementHtml()
     {
-        $this->_afterElementHtml[90] = $element->getData('after_element_html');
+        $this->_afterElementHtml[90] = $this->_currentElement->getData('after_element_html');
 
         $config        = array();
         $config['dt']  = $this->_helper->getDetectionTag(TRUE);
@@ -110,7 +112,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
          */
         $config['phi'] = Mage::getBaseUrl('media');
 
-        if ($this->_isMarkdownExtra($element)) {
+        if ($this->_isMarkdownExtra()) {
             $config['eru'] = $this->_helper->getAdminRenderUrl(array('markdownExtra' => 1)); // extra renderer url
         }
 
@@ -122,7 +124,6 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         }
 
         if ($this->_configInserted === FALSE) {
-            // @todo bug, id can occur more often
             $this->_afterElementHtml[1000] = '<div id="markdownGlobalConfig" data-config=\'' .
                 Zend_Json_Encoder::encode($config)
                 . '\' style="display:none;"></div>';
@@ -130,56 +131,49 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         }
 
         ksort($this->_afterElementHtml);
-        $element->setData('after_element_html', $this->_generateTabs($element));
+        $this->_currentElement->setData('after_element_html', $this->_generateTabs());
         $this->_afterElementHtml = array();
-        $element->addClass('initFileReader');
+        $this->_currentElement->addClass('initMarkdown');
         return $this;
     }
 
     /**
-     * @param Varien_Data_Form_Element_Abstract $element
-     *
      * @return string
      */
-    protected function _generateTabs(Varien_Data_Form_Element_Abstract $element)
+    protected function _generateTabs()
     {
         $block = Mage::getSingleton('core/layout')->createBlock('markdown/adminhtml_form_renderer_fieldset_element_textarea');
         $block
-            ->setElementId($element->getHtmlId())
-            ->setAfterElementHtml(implode(' ', $this->_afterElementHtml))
-            ->setFileReaderInputId('man_chooser_' . $element->getHtmlId());
+            ->setElementId($this->_currentElement->getHtmlId())
+            ->setAfterElementHtml(implode(' ', $this->_afterElementHtml));
         return $block->toHtml();
     }
 
     /**
-     * @param Varien_Data_Form_Element_Abstract $element
-     *
      * @return $this
      */
-    protected function _addEpicEditorHtml(Varien_Data_Form_Element_Abstract $element)
+    protected function _addEpicEditorHtml()
     {
         if (!$this->_helper->isEpicEditorEnabled()) {
             return $this;
         }
 
-        $id = $element->getHtmlId();
+        $id = $this->_currentElement->getHtmlId();
 
-        $element->addClass('initEpicEditor');
-        $this->_afterElementHtml[100] = ' < div id = "epiceditor_EE_' . $id . '"' . $this->_getEpicEditorHtmlConfig($element) . ' ></div > ';
+        $this->_currentElement->addClass('initEpicEditor');
+        $this->_afterElementHtml[100] = ' <div id="epiceditor_EE_' . $id . '"' . $this->_getEpicEditorHtmlConfig() . '></div>';
         return $this;
     }
 
     /**
-     * @param Varien_Data_Form_Element_Abstract $element
-     *
      * @return string
      */
-    protected function _getEpicEditorHtmlConfig(Varien_Data_Form_Element_Abstract $element)
+    protected function _getEpicEditorHtmlConfig()
     {
         $config     = $this->_helper->getEpicEditorConfig();
         $dataConfig = '';
         if ($config) {
-            $dataConfig = ' data - config = \'' . $config . '\'';
+            $dataConfig = ' data-config = \'' . $config . '\'';
         }
         return $dataConfig;
     }
@@ -220,62 +214,50 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
     }
 
     /**
-     * @param Varien_Data_Form_Element_Abstract $element
-     *
      * @return bool
      */
-    protected function _isEmailTemplateElementAllowed(Varien_Data_Form_Element_Abstract $element)
+    protected function _isEmailTemplateElementAllowed()
     {
-        $trueOne = $element instanceof Varien_Data_Form_Element_Textarea;
-        $trueTwo = stristr($element->getHtmlId(), 'template_text') !== FALSE;
+        $trueOne = $this->_currentElement instanceof Varien_Data_Form_Element_Textarea;
+        $trueTwo = stristr($this->_currentElement->getHtmlId(), 'template_text') !== FALSE;
         return $trueOne && $trueTwo;
     }
 
     /**
-     * @param Varien_Data_Form_Element_Abstract $element
-     *
      * @return bool
      */
-    protected function _isCatalogElementAllowed(Varien_Data_Form_Element_Abstract $element)
+    protected function _isCatalogElementAllowed()
     {
-        $isTextArea    = $element instanceof Mage_Adminhtml_Block_Catalog_Helper_Form_Wysiwyg;
-        $isDescription = stristr($element->getName(), 'description') !== FALSE && stristr($element->getName(), 'meta') === FALSE;
+        $isTextArea    = $this->_currentElement instanceof Mage_Adminhtml_Block_Catalog_Helper_Form_Wysiwyg;
+        $isDescription = stristr($this->_currentElement->getName(), 'description') !== FALSE && stristr($this->_currentElement->getName(), 'meta') === FALSE;
         return $isDescription && $isTextArea;
     }
 
     /**
-     * @param Varien_Data_Form_Element_Abstract $element
-     *
      * @return bool
      */
-    protected function _isElementEditor(Varien_Data_Form_Element_Abstract $element)
+    protected function _isElementEditor()
     {
-        return $element instanceof Varien_Data_Form_Element_Editor;
+        return $this->_currentElement instanceof Varien_Data_Form_Element_Editor;
     }
 
     /**
-     * checks if md extra is enabled
-     *
-     * @param Varien_Data_Form_Element_Abstract $element
-     *
      * @return bool
      */
-    protected function _isMarkdownExtra(Varien_Data_Form_Element_Abstract $element)
+    protected function _isMarkdownExtra( )
     {
-        $_isEmailTemplateElementAllowed = $this->_isEmailTemplateElementAllowed($element);
+        $_isEmailTemplateElementAllowed = $this->_isEmailTemplateElementAllowed();
 
         return $this->_helper->isMarkdownExtra() ||
         ($this->_helper->isMarkdownExtra('email') && $_isEmailTemplateElementAllowed);
     }
 
     /**
-     * @param Varien_Data_Form_Element_Abstract $element
-     *
      * @return $this
      */
-    protected function _getMarkdownButtons(Varien_Data_Form_Element_Abstract $element)
+    protected function _getMarkdownButtons()
     {
-        $htmlId = $element->getHtmlId();
+        $htmlId = $this->_currentElement->getHtmlId();
 
         if ($this->_helper->getDetectionTag() !== '') {
             $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')

@@ -33,4 +33,12 @@ class SchumacherFM_Markdown_Block_Adminhtml_Form_Renderer_Fieldset_Element_Texta
     {
         return $this->_helper->__($translation);
     }
+
+    /**
+     * @return string
+     */
+    public function  getFileReaderInputId()
+    {
+        return 'man_chooser_' . $this->getElementId();
+    }
 }

@@ -503,34 +503,6 @@
 
     /**
      *
-     * @param $parentTdNode object
-     * @param textAreaElement object
-     * @private
-     */
-    function _buildTabs($parentTdNode, textAreaElement) {
-        var $mdTextArea = $parentTdNode.select('.mdTextArea')[0];
-        $mdTextArea.insert(textAreaElement);
-        $parentTdNode.select('.mdTabContainer')[0].show();
-    }
-
-    /**
-     * @see https://developer.mozilla.org/en-US/docs/Web/API/FileReader
-     * @param _epicEditorInstance window.EpicEditor loaded
-     * @private
-     */
-    function _createFileReader(event) {
-        var target = event.target || event.srcElement;
-        _buildTabs(target.parentNode, target);
-        _textAreaCurrentCaretObject = target;
-
-        // check if already initialized
-        if (_initializedFileReaderContainer[target.id] === undefined) {
-            _createFileReaderInstance(target);
-        }
-    }
-
-    /**
-     *
      * @returns {reMarked}
      * @private
      */
@@ -579,6 +551,44 @@
     }
 
     /**
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/FileReader
+     * @param _epicEditorInstance window.EpicEditor loaded
+     * @private
+     */
+    function _createFileReaderFactory(event) {
+        var target = event.target || event.srcElement;
+        _textAreaCurrentCaretObject = target;
+
+        // check if already initialized
+        if (_initializedFileReaderContainer[target.id] === undefined) {
+            _createFileReaderInstance(target);
+        }
+    }
+
+    /**
+     *
+     * @param event
+     * @private
+     */
+    function _buildTabsFactory(event) {
+        var target = event.target || event.srcElement,
+            $mdTextArea = {},
+            $parentTd = target.parentNode;
+
+        if (target.readAttribute('data-tabsBuilt')) {
+            return;
+        }
+        $mdTextArea = $parentTd.select('.mdTextArea')[0];
+        $mdTextArea.insert(target);
+        $parentTd.select('.mdTabContainer')[0].show();
+        target.writeAttribute('data-tabsBuilt', 1);
+
+        if (false === _isFileReaderEnabled()) {
+            $parentTd.select('.md-filereader-text')[0].remove();
+        }
+    }
+
+    /**
      * loads the filereader, epiceditor
      */
     function _mdInitialize() {
@@ -589,17 +599,20 @@
         }
 
         //  loading multiple instances on one page
-        // only works with event delegation due category edit page ...
+        // only works with event delegation due category edit page ... and the varientabs js class ...
         // fire event for customization varienGlobalEvents.attachEventHandler('showTab', function (e) {...}
         parentElementIds.forEach(function (elementId) {
             var $elementId = $(elementId);
             if ($elementId) {
+
+                $elementId.on('click', 'textarea.initMarkdown', _buildTabsFactory);
+
                 // some things are only possible with event delegation ...
                 if (true === _isEpicEditorEnabled() && true === _markDownGlobalConfig.eeLoadOnClick) {
                     $elementId.on('click', 'textarea.initEpicEditor', _createEpicEditorInstances);
                 }
                 if (true === _isFileReaderEnabled()) {
-                    $elementId.on('click', 'textarea.initFileReader', _createFileReader);
+                    $elementId.on('click', 'textarea.initMarkdown', _createFileReaderFactory);
                 }
             }
         });

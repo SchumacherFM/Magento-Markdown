@@ -1,7 +1,7 @@
 /**
     Magento Markdown Module CSS
 */
-textarea.initFileReader {
+textarea.initMarkdown {
     color                 : #666;
     font-size             : 14px;
     border-radius         : 8px;
@@ -19,7 +19,7 @@ textarea.initFileReader {
     -webkit-box-shadow    : 0 0 5px rgba(81, 203, 238, 0);
 }
 
-textarea.initFileReader:focus {
+textarea.initMarkdown:focus {
     color              : #000;
     outline            : none;
     border             : #35a5e5 1px solid;
@@ -29,7 +29,7 @@ textarea.initFileReader:focus {
     -webkit-box-shadow : 0 0 5px rgba(81, 203, 238, 1);
 }
 
-textarea.initFileReader.fReaderDrag {
+textarea.initMarkdown.fReaderDrag {
     color              : #000;
     outline            : none;
     border             : #228b22 1px solid;
@@ -39,8 +39,8 @@ textarea.initFileReader.fReaderDrag {
     -webkit-box-shadow : 0 0 5px rgb(34, 139, 34);
 }
 
-.md-bottom-text {
-    margin-top : 5px;
+.md-filereader-text {
+    margin-top : 2px;
 }
 
 .md-manual-file-chooser {
