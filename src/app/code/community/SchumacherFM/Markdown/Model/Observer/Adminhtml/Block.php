@@ -73,17 +73,6 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         $element->setData('after_element_html', '<small>' .
             $this->___('Markdown feature may be available here!')
             . '</small>' . $element->getData('after_element_html'));
-
-        /* not sure if useful ...
-        $params = array(
-            'layoutHandle' => '@todo',
-            'returnUrl'    => Mage::app()->getRequest()->getRequestUri(),
-        );
-        $url    = $this->_helper->getAdminEnableUrl($params);
-        $element->setData('after_element_html', '<small><a href="' . $url . '">' .
-            $this->___('Click to add Markdown feature!')
-            . '</a></small>');
-        */
         return $this;
     }
 
@@ -141,42 +130,25 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         }
 
         ksort($this->_afterElementHtml);
-        $element->setData('after_element_html', $this->_generateTabs($element->getHtmlId()));
+        $element->setData('after_element_html', $this->_generateTabs($element));
         $this->_afterElementHtml = array();
         $element->addClass('initFileReader');
         return $this;
     }
 
-    protected function _generateTabs($elementId = '')
+    /**
+     * @param Varien_Data_Form_Element_Abstract $element
+     *
+     * @return string
+     */
+    protected function _generateTabs(Varien_Data_Form_Element_Abstract $element)
     {
-        $id = 'man_chooser_' . $elementId;
-
-        $html = '<div class="mdTabContainer" style="display:none;">
-    <div class="mdTabs">
-      <ul data-id="' . $elementId . '" data-current="1">
-        <li id="mdTabHeader_1" class="mdTabActiveHeader">' . $this->___('Write') . '</li>
-        <li id="mdTabHeader_2">' . $this->___('Preview') . '</li>
-        <li id="mdTabHeader_3">' . $this->___('HTML Preview') . '</li>
-      </ul>
-    </div>
-    <div class="mdTabscontent">
-      <div class="mdTabpage" style="display:block;" id="mdTabpage_1">
-        ' . implode(' ', $this->_afterElementHtml) . '
-        <div class="mdTextArea"></div>
-        <p class="md - bottom - text">' . $this->___('Attach images by dragging & dropping,') . '
-                <input type="file" multiple="multiple" id="' . $id . '" class="md - manual - file - chooser">
-                <a href="#">' . $this->___('selecting them') . '</a>,
-                ' . $this->___('or pasting from the clipboard . ') . ' </p >
-      </div >
-      <div class="mdTabpage" id = "mdTabpage_2" >
-        preview
-      </div >
-      <div class="mdTabpage" id = "mdTabpage_3" >
-        html preview
-    </div >
-    </div ></div > ';
-
-        return $html;
+        $block = Mage::getSingleton('core/layout')->createBlock('markdown/adminhtml_form_renderer_fieldset_element_textarea');
+        $block
+            ->setElementId($element->getHtmlId())
+            ->setAfterElementHtml(implode(' ', $this->_afterElementHtml))
+            ->setFileReaderInputId('man_chooser_' . $element->getHtmlId());
+        return $block->toHtml();
     }
 
     /**
@@ -209,175 +181,150 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         if ($config) {
             $dataConfig = ' data - config = \'' . $config . '\'';
         }
-return $dataConfig;
-}
+        return $dataConfig;
+    }
 
-/**
- * this is mainly a work around for the category section because fields will
- * be there loaded via ajax with the same id each time ... and that confuses me and
- * Epic Editor 8-)
- *
- * @param Varien_Data_Form_Element_Abstract $parentElement
- *
- * @return string
- */
-protected
-function _getUniqueEntityId(Varien_Data_Form_Element_Abstract $parentElement)
-{
-    /** @var Varien_Data_Form_Element_Collection $elements */
-    $elements = $parentElement->getForm()->getElements();
+    /**
+     * this is mainly a work around for the category section because fields will
+     * be there loaded via ajax with the same id each time ... and that confuses me and
+     * Epic Editor 8-)
+     *
+     * @param Varien_Data_Form_Element_Abstract $parentElement
+     *
+     * @return string
+     */
+    protected function _getUniqueEntityId(Varien_Data_Form_Element_Abstract $parentElement)
+    {
+        /** @var Varien_Data_Form_Element_Collection $elements */
+        $elements = $parentElement->getForm()->getElements();
 
-    $idString = '';
-    foreach ($elements as $fieldSet) {
-        /** @var Varien_Data_Form_Element_Fieldset $fieldSet */
-        $sortedElements = $fieldSet->getSortedElements();
-        foreach ($sortedElements as $sortedElement) {
-            /** @var $sortedElement Varien_Data_Form_Element_Abstract */
-            if (stristr($sortedElement->getName(), 'id') !== FALSE) {
-                $idString .= $sortedElement->getValue();
+        $idString = '';
+        foreach ($elements as $fieldSet) {
+            /** @var Varien_Data_Form_Element_Fieldset $fieldSet */
+            $sortedElements = $fieldSet->getSortedElements();
+            foreach ($sortedElements as $sortedElement) {
+                /** @var $sortedElement Varien_Data_Form_Element_Abstract */
+                if (stristr($sortedElement->getName(), 'id') !== FALSE) {
+                    $idString .= $sortedElement->getValue();
+                }
             }
         }
+
+        // prevent trouble with strange values due to localStorage ...
+        $secretKey = Mage::getModel('adminhtml/url')->getSecretKey();
+        $path      = Mage::app()->getRequest()->getRequestUri();
+        $idString .= '_' . md5(str_replace($secretKey, '', $path));
+
+        // we could also use here md5 but it want to see the values.
+        return preg_replace('~[^a-z0-9_\-]+~i', '', $idString);
     }
 
-    // prevent trouble with strange values due to localStorage ...
-    $secretKey = Mage::getModel('adminhtml/url')->getSecretKey();
-    $path      = Mage::app()->getRequest()->getRequestUri();
-    $idString .= '_' . md5(str_replace($secretKey, '', $path));
+    /**
+     * @param Varien_Data_Form_Element_Abstract $element
+     *
+     * @return bool
+     */
+    protected function _isEmailTemplateElementAllowed(Varien_Data_Form_Element_Abstract $element)
+    {
+        $trueOne = $element instanceof Varien_Data_Form_Element_Textarea;
+        $trueTwo = stristr($element->getHtmlId(), 'template_text') !== FALSE;
+        return $trueOne && $trueTwo;
+    }
 
-    // we could also use here md5 but it want to see the values.
-    return preg_replace('~[^a-z0-9_\-]+~i', '', $idString);
-}
+    /**
+     * @param Varien_Data_Form_Element_Abstract $element
+     *
+     * @return bool
+     */
+    protected function _isCatalogElementAllowed(Varien_Data_Form_Element_Abstract $element)
+    {
+        $isTextArea    = $element instanceof Mage_Adminhtml_Block_Catalog_Helper_Form_Wysiwyg;
+        $isDescription = stristr($element->getName(), 'description') !== FALSE && stristr($element->getName(), 'meta') === FALSE;
+        return $isDescription && $isTextArea;
+    }
 
-/**
- * @param Varien_Data_Form_Element_Abstract $element
- *
- * @return bool
- */
-protected
-function _isEmailTemplateElementAllowed(Varien_Data_Form_Element_Abstract $element)
-{
-    $trueOne = $element instanceof Varien_Data_Form_Element_Textarea;
-    $trueTwo = stristr($element->getHtmlId(), 'template_text') !== FALSE;
-    return $trueOne && $trueTwo;
-}
+    /**
+     * @param Varien_Data_Form_Element_Abstract $element
+     *
+     * @return bool
+     */
+    protected function _isElementEditor(Varien_Data_Form_Element_Abstract $element)
+    {
+        return $element instanceof Varien_Data_Form_Element_Editor;
+    }
 
-/**
- * @param Varien_Data_Form_Element_Abstract $element
- *
- * @return bool
- */
-protected
-function _isCatalogElementAllowed(Varien_Data_Form_Element_Abstract $element)
-{
-    $isTextArea    = $element instanceof Mage_Adminhtml_Block_Catalog_Helper_Form_Wysiwyg;
-    $isDescription = stristr($element->getName(), 'description') !== FALSE && stristr($element->getName(), 'meta') === FALSE;
-    return $isDescription && $isTextArea;
-}
+    /**
+     * checks if md extra is enabled
+     *
+     * @param Varien_Data_Form_Element_Abstract $element
+     *
+     * @return bool
+     */
+    protected function _isMarkdownExtra(Varien_Data_Form_Element_Abstract $element)
+    {
+        $_isEmailTemplateElementAllowed = $this->_isEmailTemplateElementAllowed($element);
 
-/**
- * @param Varien_Data_Form_Element_Abstract $element
- *
- * @return bool
- */
-protected
-function _isElementEditor(Varien_Data_Form_Element_Abstract $element)
-{
-    return $element instanceof Varien_Data_Form_Element_Editor;
-}
+        return $this->_helper->isMarkdownExtra() ||
+        ($this->_helper->isMarkdownExtra('email') && $_isEmailTemplateElementAllowed);
+    }
 
-/**
- * checks if md extra is enabled
- *
- * @param Varien_Data_Form_Element_Abstract $element
- *
- * @return bool
- */
-protected
-function _isMarkdownExtra(Varien_Data_Form_Element_Abstract $element)
-{
-    $_isEmailTemplateElementAllowed = $this->_isEmailTemplateElementAllowed($element);
+    /**
+     * @param Varien_Data_Form_Element_Abstract $element
+     *
+     * @return $this
+     */
+    protected function _getMarkdownButtons(Varien_Data_Form_Element_Abstract $element)
+    {
+        $htmlId = $element->getHtmlId();
 
-    return $this->_helper->isMarkdownExtra() ||
-    ($this->_helper->isMarkdownExtra('email') && $_isEmailTemplateElementAllowed);
-}
+        if ($this->_helper->getDetectionTag() !== '') {
+            $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')
+                ->createBlock('adminhtml/widget_button', '', array(
+                    'label'   => $this->___('Markdown enable'),
+                    'type'    => 'button',
+                    'class'   => 'mdButton',
+                    'onclick' => 'toggleMarkdown(\'' . $htmlId . '\');'
+                ))->toHtml();
+        }
 
-/**
- * @param Varien_Data_Form_Element_Abstract $element
- *
- * @return $this
- */
-protected
-function _getMarkdownButtons(Varien_Data_Form_Element_Abstract $element)
-{
-    $htmlId = $element->getHtmlId();
-
-    if ($this->_helper->getDetectionTag() !== '') {
-        $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')
+        $this->_afterElementHtml[210] = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => $this->___('Markdown enable'),
+                'label'   => $this->___('HTML Preview'),
                 'type'    => 'button',
-                'class'   => 'mdButton',
-                'onclick' => 'toggleMarkdown(\'' . $htmlId . '\');'
+                'class'   => 'mdButton', // @todo maybe remove all those classes
+                'title'   => $this->___('View generated HTML source code'),
+                'onclick' => 'toggleMarkdownSource(this,\'' . $htmlId . '\');'
             ))->toHtml();
+
+        if ($this->_helper->isEpicEditorEnabled()) {
+            $this->_afterElementHtml[500] = Mage::getSingleton('core/layout')
+                ->createBlock('adminhtml/widget_button', '', array(
+                    'label'   => $this->___('EpicEditor'),
+                    'class'   => 'mdButton',
+                    'type'    => 'button',
+                    'onclick' => 'toggleEpicEditor(this,\'' . $htmlId . '\');'
+                ))->toHtml();
+        }
+
+        if ($this->_helper->isReMarkedEnabled() === TRUE) {
+            $this->_afterElementHtml[600] = Mage::getSingleton('core/layout')
+                ->createBlock('adminhtml/widget_button', '', array(
+                    'label'   => $this->___('HTML2Markdown'),
+                    'class'   => 'mdButton',
+                    'type'    => 'button',
+                    'onclick' => 'htmlToMarkDown(this,\'' . $htmlId . '\');'
+                ))->toHtml();
+        }
+        return $this;
     }
 
-    $this->_afterElementHtml[210] = Mage::getSingleton('core/layout')
-        ->createBlock('adminhtml/widget_button', '', array(
-            'label'   => $this->___('HTML Preview'),
-            'type'    => 'button',
-            'class'   => 'mdButton', // @todo maybe remove all those classes
-            'title'   => $this->___('View generated HTML source code'),
-            'onclick' => 'toggleMarkdownSource(this,\'' . $htmlId . '\');'
-        ))->toHtml();
-
-    $this->_afterElementHtml[300] = Mage::getSingleton('core/layout')
-        ->createBlock('adminhtml/widget_button', '', array(
-            'label'   => $this->___('Docs for Markdown'),
-            'class'   => 'mdButton',
-            'type'    => 'button',
-            'onclick' => 'mdExternalUrl(\'' . $this->_helper->getCheatSheetUrl() . '\');'
-        ))->toHtml();
-
-    if ($this->_isMarkdownExtra($element)) {
-        $this->_afterElementHtml[400] = Mage::getSingleton('core/layout')
-            ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => $this->___('Docs for Markdown Extra'),
-                'class'   => 'mdButton',
-                'type'    => 'button',
-                'onclick' => 'mdExternalUrl(\'' . SchumacherFM_Markdown_Helper_Data::URL_MD_EXTRA_SYNTAX . '\');'
-            ))->toHtml();
+    /**
+     * @param $translation
+     *
+     * @return string
+     */
+    protected function ___($translation)
+    {
+        return $this->_helper->__($translation);
     }
-
-    if ($this->_helper->isEpicEditorEnabled()) {
-        $this->_afterElementHtml[500] = Mage::getSingleton('core/layout')
-            ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => $this->___('EpicEditor'),
-                'class'   => 'mdButton',
-                'type'    => 'button',
-                'onclick' => 'toggleEpicEditor(this,\'' . $htmlId . '\');'
-            ))->toHtml();
-    }
-
-    if ($this->_helper->isReMarkedEnabled() === TRUE) {
-        $this->_afterElementHtml[600] = Mage::getSingleton('core/layout')
-            ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => $this->___('HTML2Markdown'),
-                'class'   => 'mdButton',
-                'type'    => 'button',
-                'onclick' => 'htmlToMarkDown(this,\'' . $htmlId . '\');'
-            ))->toHtml();
-    }
-    return $this;
-}
-
-/**
- * @param $translation
- *
- * @return string
- */
-protected
-function ___($translation)
-{
-    return $this->_helper->__($translation);
-}
 }

@@ -118,3 +118,7 @@ textarea.initFileReader.fReaderDrag {
 .mdTabpage {
     display : none;
 }
+
+.mdParserInfo {
+    padding-top: 13px;
+}

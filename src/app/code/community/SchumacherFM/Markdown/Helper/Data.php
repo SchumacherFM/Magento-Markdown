@@ -27,11 +27,19 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * @return mixed|string
+     * @return string
      */
     public function getCheatSheetUrl()
     {
         return Mage::getStoreConfig('markdown/markdown/cheatsheet');
+    }
+
+    /**
+     * @return string
+     */
+    public function getMdExtraDocUrl()
+    {
+        return self::URL_MD_EXTRA_SYNTAX;
     }
 
     /**

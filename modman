@@ -3,6 +3,7 @@ src/app/etc/modules/SchumacherFM_Markdown.xml app/etc/modules/SchumacherFM_Markd
 src/app/locale/en_US/SchumacherFM_Markdown.csv app/locale/en_US/SchumacherFM_Markdown.csv
 src/app/locale/de_DE/SchumacherFM_Markdown.csv app/locale/de_DE/SchumacherFM_Markdown.csv
 src/app/design/adminhtml/default/default/layout/markdown.xml app/design/adminhtml/default/default/layout/markdown.xml
+src/app/design/adminhtml/default/default/template/markdown app/design/adminhtml/default/default/template/markdown
 src/js/markdown js/markdown
 src/skin/adminhtml/default/default/epiceditor skin/adminhtml/default/default/epiceditor
 src/skin/adminhtml/default/default/markdown skin/adminhtml/default/default/markdown

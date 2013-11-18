@@ -1,0 +1,35 @@
+<?php
+/** @var $this SchumacherFM_Markdown_Block_Adminhtml_Form_Renderer_Fieldset_Element_Textarea */
+
+?>
+<div class="mdTabContainer" style="display:none;">
+    <div class="mdTabs">
+        <ul data-id="<?php echo $this->getElementId(); ?>" data-current="1">
+            <li id="mdTabHeader_1" class="mdTabActiveHeader"><?php echo $this->___('Write') ?></li>
+            <li id="mdTabHeader_2"><?php echo $this->___('Preview') ?></li>
+            <li id="mdTabHeader_3"><?php echo $this->___('HTML Preview') ?></li>
+        </ul>
+        <div class="mdParserInfo"><?php echo $this->___('Content is parsed with') ?>
+            <a target="_blank" href="<?php echo Mage::helper('markdown')->getCheatSheetUrl(); ?>">Markdown</a>
+            <?php if (Mage::helper('markdown')->isMarkdownExtra()): ?>
+                <?php echo $this->___('and') ?> <a target="_blank" href="<?php echo Mage::helper('markdown')->getMdExtraDocUrl(); ?>">Markdown Extra</a>
+            <?php endif; ?>
+        </div>
+    </div>
+    <div class="mdTabscontent">
+        <div class="mdTabpage" style="display:block;" id="mdTabpage_1">
+            <?php echo $this->getAfterElementHtml(); ?>
+            <div class="mdTextArea"></div>
+            <p class="md-bottom-text"><?php echo $this->___('Attach images by dragging & dropping,') ?>
+                <input type="file" multiple="multiple" id="<?php echo $this->getFileReaderInputId() ?>" class="md-manual-file-chooser">
+                <a href="#"><?php echo $this->___('selecting them') ?></a>,
+                <?php echo $this->___('or pasting from the clipboard . ') ?> </p>
+        </div>
+        <div class="mdTabpage" id="mdTabpage_2">
+            preview
+        </div>
+        <div class="mdTabpage" id="mdTabpage_3">
+            html preview
+        </div>
+    </div>
+</div>

@@ -93,10 +93,6 @@
         return window.FileReader !== undefined;
     }
 
-    function mdExternalUrl(url) {
-        window.open(url);
-    }
-
     /**
      *
      * @param textareaId
@@ -629,7 +625,6 @@
         });
     }
 
-    this.mdExternalUrl = mdExternalUrl;
     this.toggleMarkdown = toggleMarkdown;
     this.toggleEpicEditor = toggleEpicEditor;
     this.toggleMarkdownSource = toggleMarkdownSource;
