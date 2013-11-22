@@ -578,8 +578,18 @@
         if (target.readAttribute('data-tabsBuilt')) {
             return;
         }
+
+        // @todo that id is terrible ... because of multiple occurrences of a textarea field on the page
+        var mageButtons = $('buttons' + target.id).select('button');
+        mageButtons.each(function (buttonElement) {
+            $('mdTabpage_1').insert({
+                top: buttonElement
+            });
+        });
+
         $mdTextArea = $parentTd.select('.mdTextArea')[0];
         $mdTextArea.insert(target);
+
         $parentTd.select('.mdTabContainer')[0].show();
         target.writeAttribute('data-tabsBuilt', 1);
 
