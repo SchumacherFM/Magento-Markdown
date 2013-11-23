@@ -257,6 +257,7 @@
         if (content.length > 10 && _markDownGlobalConfig.extraRendererUrl) {
             pContent = _mdExtraRender(content);
             pContent.then(function (error, html) {
+                console.log('$textArea', $textArea); // @todo bug if epicEditor is disabled an extra enabled
                 $textArea.value = html;
             });
             return '<h3>Preview will be available shortly ...</h3>';
@@ -282,7 +283,7 @@
                 if (currentActiveInstance && currentActiveInstance.is('loaded')) {
                     currentActiveInstance.getElement('previewer').body.innerHTML = _highlight(html);
                 } else {
-                    $textArea.value = html;
+                    $textArea.value = html; // @todo bug if epicEditor is disabled an extra enabled
                 }
             });
             return _highlight('<h3>Preview will be available shortly ...</h3>');
@@ -582,7 +583,7 @@
         // @todo that id is terrible ... because of multiple occurrences of a textarea field on the page
         var mageButtons = $('buttons' + target.id).select('button');
         mageButtons.each(function (buttonElement) {
-            $('mdTabpage_1').insert({
+            $(target.id + '__writeB').insert({
                 top: buttonElement
             });
         });
@@ -599,11 +600,41 @@
     }
 
     /**
+     *
+     * @constructor
+     */
+    function TabPreviewFactory() {
+        this.data = {};
+    }
+
+    TabPreviewFactory.prototype = {
+        setData: function (data) {
+            this.data = data;
+        },
+        preview: function () {
+            var $textArea = null;
+            var markedContent = _parserDefault($(this.data.textAreaId).value, $textArea);
+            this.data.tabBody.update(markedContent);
+        },
+        livePreview: function () {
+            console.log('Lpre', this.data)
+        },
+        htmlPreview: function () {
+            isViewMarkdownSourceHtml = true;
+            var $textArea = null,
+                markedContent = _parserEpicEditor($(this.data.textAreaId).value, $textArea);
+            this.data.tabBody.update(markedContent);
+            isViewMarkdownSourceHtml = false;
+        }
+    };
+
+    /**
      * loads the filereader, epiceditor
      */
     function _mdInitialize() {
         _initGlobalConfig();
-        var parentElementIds = ['product_edit_form', 'edit_form', 'category-edit-container', 'email_template_edit_form'];
+        var parentElementIds = ['product_edit_form', 'edit_form', 'category-edit-container', 'email_template_edit_form'],
+            tabPreview = new TabPreviewFactory();
         if (varienGlobalEvents) {
             varienGlobalEvents.fireEvent('mdLoadForms', parentElementIds);
         }
@@ -633,17 +664,35 @@
             });
         }
 
+        /**
+         * creating clickable tabs
+         */
         $$('.mdTabs ul li').each(function (liElement) {
+
             liElement.observe('click', function () {
                 var current = this.parentNode.getAttribute('data-current'),
-                    taId = this.parentNode.getAttribute('data-id');
-                document.getElementById('mdTabHeader_' + current).removeAttribute('class');
-                document.getElementById('mdTabpage_' + current).style.display = 'none';
+                    idSplit = this.id.split('__'),
+                    taId = idSplit[0],
+                    ident = idSplit[idSplit.length - 1],
+                    $tabBody = document.getElementById(taId + '__' + ident + 'B');
 
-                var ident = this.id.split('_')[1];
-                this.setAttribute('class', 'mdTabActiveHeader');
-                document.getElementById('mdTabpage_' + ident).style.display = 'block';
+                // hide
+                document.getElementById(taId + '__' + current).removeClassName('active'); // header
+                document.getElementById(taId + '__' + current + 'B').removeClassName('active'); // page
+
+                // show
+                this.setAttribute('class', 'active'); // header
+
+                $tabBody.addClassName('active'); // page
                 this.parentNode.setAttribute('data-current', ident);
+
+                if (typeof tabPreview[ident] === 'function') {
+                    tabPreview.setData({
+                        tabBody: $tabBody,
+                        textAreaId: taId
+                    });
+                    tabPreview[ident]();
+                }
             });
         });
     }

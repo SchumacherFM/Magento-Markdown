@@ -1,14 +1,14 @@
 <?php
 /** @var $this SchumacherFM_Markdown_Block_Adminhtml_Form_Renderer_Fieldset_Element_Textarea */
-
+// @todo rewrite to <script type="text/template"> ... and include only once
 ?>
 <div class="mdTabContainer" style="display:none;">
     <div class="mdTabs">
-        <ul data-id="<?php echo $this->getElementId(); ?>" data-current="1">
-            <li id="mdTabHeader_1" class="mdTabActiveHeader"><?php echo $this->___('Write') ?></li>
-            <li id="mdTabHeader_2"><?php echo $this->___('Preview') ?></li>
-            <li id="mdTabHeader_3"><?php echo $this->___('Live Preview') ?></li>
-            <li id="mdTabHeader_4"><?php echo $this->___('HTML Preview') ?></li>
+        <ul data-current="write">
+            <li id="<?php echo $this->getElementId(); ?>__write" class="active"><?php echo $this->___('Write') ?></li>
+            <li id="<?php echo $this->getElementId(); ?>__preview" class=""><?php echo $this->___('Preview') ?></li>
+            <li id="<?php echo $this->getElementId(); ?>__livePreview" class=""><?php echo $this->___('Live Preview') ?></li>
+            <li id="<?php echo $this->getElementId(); ?>__htmlPreview" class=""><?php echo $this->___('HTML Preview') ?></li>
         </ul>
         <div class="mdParserInfo"><?php echo $this->___('Content is parsed with') ?>
             <a target="_blank" href="<?php echo Mage::helper('markdown')->getCheatSheetUrl(); ?>">Markdown</a>
@@ -18,7 +18,7 @@
         </div>
     </div>
     <div class="mdTabscontent">
-        <div class="mdTabpage" style="display:block;" id="mdTabpage_1">
+        <div class="mdTabpage active" id="<?php echo $this->getElementId(); ?>__writeB">
             <?php echo $this->getAfterElementHtml(); ?>
             <div class="mdTextArea"></div>
             <p class="md-filereader-text"><?php echo $this->___('Attach images by dragging & dropping,') ?>
@@ -26,13 +26,13 @@
                 <a href="#"><?php echo $this->___('selecting them') ?></a>,
                 <?php echo $this->___('or pasting from the clipboard.') ?> </p>
         </div>
-        <div class="mdTabpage" id="mdTabpage_2">
+        <div class="mdTabpage white" id="<?php echo $this->getElementId(); ?>__previewB">
             preview
         </div>
-        <div class="mdTabpage" id="mdTabpage_3">
+        <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__livePreviewB">
             live preview
         </div>
-        <div class="mdTabpage" id="mdTabpage_4">
+        <div class="mdTabpage white" id="<?php echo $this->getElementId(); ?>__htmlPreviewB">
             html preview
         </div>
     </div>

@@ -4,6 +4,9 @@
  * @package     Block
  * @author      Cyrill at Schumacher dot fm / @SchumacherFM
  * @copyright   Copyright (c)
+ *
+ * @method SchumacherFM_Markdown_Block_Adminhtml_Form_Renderer_Fieldset_Element_Textarea setElementId($id)
+ * @method string getElementId()
  */
 class SchumacherFM_Markdown_Block_Adminhtml_Form_Renderer_Fieldset_Element_Textarea extends Mage_Adminhtml_Block_Template
 {

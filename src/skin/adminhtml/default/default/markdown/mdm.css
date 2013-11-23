@@ -92,7 +92,7 @@ textarea.initMarkdown.fReaderDrag {
     color      : #333;
 }
 
-.mdTabs > ul > li.mdTabActiveHeader {
+.mdTabs > ul > li.active {
     background          : white; /* old browsers */
     cursor              : pointer;
     color               : #333;
@@ -116,9 +116,36 @@ textarea.initMarkdown.fReaderDrag {
 }
 
 .mdTabpage {
+    /*-webkit-transition : all 0.3s ease;*/
+    /*-moz-transition    : all 0.35s ease;*/
+    /*-ms-transition     : all 0.3s ease;*/
+    /*-o-transition      : all 0.3s ease;*/
+    /*transition         : all 0.3s ease;*/
+    /*opacity            : 0;*/
     display : none;
 }
 
+.mdTabpage.white {
+    background-color : white;
+    margin           : 0 -10px;
+    padding          : 0 10px;
+}
+
+.mdTabpage.active {
+    /*opacity  : 1;*/
+    /*height   : auto;*/
+    /*overflow : visible;*/
+    display : block;
+}
+
+.mdTabpage button {
+    margin-right : 3px;
+}
+
 .mdParserInfo {
-    padding-top: 13px;
+    padding-top : 13px;
+}
+
+.mdParserInfo a {
+    cursor : help;
 }
