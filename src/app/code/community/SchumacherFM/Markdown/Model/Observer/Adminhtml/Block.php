@@ -29,6 +29,11 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
     protected $_currentElement = NULL;
 
     /**
+     * @var string
+     */
+    protected $_livePreviewUrl = '';
+
+    /**
      * adminhtml_block_html_before
      *
      * @param Varien_Event_Observer $observer
@@ -43,10 +48,10 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         }
 
         /** @var $block Mage_Adminhtml_Block_Template */
-        $block = $observer->getEvent()->getBlock();
-        $this->_addHighLightCss($block);
+        $block            = $observer->getEvent()->getBlock();
         $isWidgetElement  = $block instanceof Mage_Adminhtml_Block_Widget_Form_Renderer_Fieldset_Element;
         $isCatalogElement = $block instanceof Mage_Adminhtml_Block_Catalog_Form_Renderer_Fieldset_Element;
+        $this->_tryToGetPreviewUrl($block);
 
         /**
          * main reason for this layout handle thing is to avoid loading of lot of unused JS/CSS ...
@@ -69,21 +74,28 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
     }
 
     /**
-     * @param Mage_Core_Block_Abstract $block
+     * @todo this needs to be extended for each on which markdown can occur.
      *
-     * @return bool
+     * @param Mage_Core_Block_Abstract $block
      */
-    protected function _addHighLightCss(Mage_Core_Block_Abstract $block)
+    protected function _tryToGetPreviewUrl(Mage_Core_Block_Abstract $block)
     {
-        if (!($block instanceof Mage_Adminhtml_Block_Page)) {
-            return FALSE;
+        if ($block instanceof Mage_Adminhtml_Block_Cms_Page_Edit_Tab_Main) {
+
+            /* @var $model Mage_Cms_Model_Page */
+            $model = Mage::registry('cms_page');
+
+            $_first_store_id       = current($model->getStoreId());
+            $_storeCode            = Mage::app()->getStore($_first_store_id)->getCode();
+            $_identifier           = $model->getIdentifier();
+            $urlModel              = Mage::getModel('core/url')->setStore($_first_store_id);
+            $this->_livePreviewUrl = $urlModel->getUrl(
+                $_identifier, array(
+                    '_current' => FALSE,
+                    '_query'   => '___store=' . $_storeCode
+                )
+            );
         }
-        /** @var Mage_Adminhtml_Block_Page $block */
-
-        /** @var Mage_Adminhtml_Block_Page_Head $head */
-        $head = $block->getLayout()->getBlock('head');
-
-        $head->addItem('skin_css', Mage::helper('markdown')->getHighLightStyleCss());
     }
 
     /**
@@ -156,6 +168,8 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         $config['eeloc']   = $this->_helper->isEpicEditorLoadOnClick();
         $config['hideIIB'] = $this->_helper->isHiddenInsertImageButton();
         $config['mdCss']   = $this->_helper->getMarkdownStyleCss(TRUE);
+        $config['hlCss']   = $this->_helper->getHighLightStyleCss(TRUE);
+        $config['lpUrl']   = $this->_livePreviewUrl; // @todo implement in JS
 
         if ($this->_helper->isReMarkedEnabled() === TRUE) {
             $config['rmc'] = $this->_helper->getReMarkedConfig();

@@ -51,6 +51,7 @@
             eeLoadOnClick: config.eeloc || false,
             isHiddenInsertImageButton: config.hideIIB || true,
             previewCSS: config.mdCss || false,
+            highLightCSS: config.hlCss || false,
             reMarkedCfg: decodeURIComponent(config.rmc || '{}').evalJSON(true)
         };
         return true;
@@ -122,7 +123,27 @@
     function toggleMarkdownSource(element, textAreaId) {
         var _loadEpic = false,
             _instance,
-            $textAreaId = $(textAreaId);
+            $textAreaId = $(textAreaId),
+
+            /**
+             *
+             * @param content
+             * @param $textArea
+             * @returns {*}
+             * @private
+             */
+                _parserDefault = function (content, $textArea) {
+                var pContent = {}, renderedMarkDown = '';
+
+                if (content.length > 10 && _markDownGlobalConfig.extraRendererUrl) {
+                    pContent = _mdExtraRender(content);
+                    pContent.then(function (error, html) {
+                        $textArea.value = html;
+                    });
+                    return '<h3>Preview will be available shortly ...</h3>';
+                }
+                return marked(_parserBefore(content));
+            };
 
         if (true === isViewMarkdownSourceHtml) {
             isViewMarkdownSourceHtml = false;
@@ -205,18 +226,20 @@
 
     /**
      *
-     * @param string htmlString
-     * @returns string
+     * @param htmlString
+     * @param options
+     * @returns {string}
      * @private
      */
-    function _highlight(htmlString) {
-        if (true === isViewMarkdownSourceHtml) {
-            htmlString = '<pre class="hljs">' + hljs.highlight('xml', htmlString).value + '</pre>';
-        }
-        return htmlString;
+    function _highlightOpt(htmlString, options) {
+        options = options || {};
+        var _hlPre = options.hlPre || '<pre>',
+            _hlPost = options.hlPost || '</pre>';
+        return _hlPre + hljs.highlight('xml', htmlString).value + _hlPost;
     }
 
     /**
+     * handles magento special tags
      *
      * @param content string
      * @returns string
@@ -245,48 +268,22 @@
 
     /**
      *
-     * default parsing without syntax highlightning
-     *
-     * @param string content
-     * @param object $textArea
-     * @param options object
-     * @returns string
+     * @param htmlString
+     * @returns {*}
      * @private
      */
-    function _parserDefault(content, $textArea, options) {
-        var pContent = {}, renderedMarkDown = '';
-        options = options || {};
-
-        if (content.length > 10 && _markDownGlobalConfig.extraRendererUrl) {
-            pContent = _mdExtraRender(content);
-            pContent.then(function (error, html) {
-                console.log('$textArea', $textArea); // @todo bug if epicEditor is disabled an extra enabled
-                $textArea.value = html;
-            });
-            return '<h3>Preview will be available shortly ...</h3>';
-        }
-        renderedMarkDown = marked(_parserBefore(content));
-
-        if (options.htmlBeautify) {
-            renderedMarkDown = window.html_beautify(renderedMarkDown, {
-                'indent_inner_html': false,
-                'indent_size': 2,
-                'indent_char': ' ',
-                'wrap_line_length': 78,
-                'brace_style': 'expand',
-                'unformatted': ['a', 'sub', 'sup', 'b', 'i', 'u'],
-                'preserve_newlines': true,
-                'max_preserve_newlines': 5,
-                'indent_handlebars': false
-            });
-        }
-
-        if (options.highlight) {
-            var _hlPre = options.hlPre || '<pre>',
-                _hlPost = options.hlPost || '</pre>';
-            return _hlPre + hljs.highlight('xml', renderedMarkDown).value + _hlPost;
-        }
-        return renderedMarkDown;
+    function _htmlBeautify(htmlString) {
+        return window.html_beautify(htmlString, {
+            'indent_inner_html': false,
+            'indent_size': 2,
+            'indent_char': ' ',
+            'wrap_line_length': 78,
+            'brace_style': 'expand',
+            'unformatted': ['a', 'sub', 'sup', 'b', 'i', 'u'],
+            'preserve_newlines': true,
+            'max_preserve_newlines': 5,
+            'indent_handlebars': false
+        });
     }
 
     /**
@@ -299,7 +296,13 @@
      */
     function _parserEpicEditor(content, $textArea) {
         var currentActiveInstance = _getEpicEditorActiveInstance(),
-            pContent = {};
+            pContent = {},
+            _highlight = function (htmlString) {
+                if (true === isViewMarkdownSourceHtml) {
+                    htmlString = _highlightOpt(htmlString, {'hlPre': '<pre class="hljs">'});
+                }
+                return htmlString;
+            };
 
         if (content.length > 10 && _markDownGlobalConfig.extraRendererUrl) {
             pContent = _mdExtraRender(content);
@@ -627,56 +630,98 @@
      *
      * @constructor
      */
-    function TabPreviewFactory() {
+    function TabPreviewHandler() {
         this.data = {};
-        this._hasHighLight = false;
-        this._hasHtmlBeautify = false;
+        this._isHtmlPreview = false;
     }
 
-    TabPreviewFactory.prototype = {
+    /**
+     *
+     *
+     */
+    TabPreviewHandler.prototype = {
         setData: function (data) {
-            this._hasHighLight = false;
-            this._hasHtmlBeautify = false;
+            this._isHtmlPreview = false;
             this.data = data;
         },
         _preview: function () {
-            var $textArea = null,
-                self = this;
+            var pContent = new promise.Promise(),
+                self = this,
+                content = $(this.data.textAreaId).value;
 
-            return _parserDefault($(this.data.textAreaId).value, $textArea, {
-                highlight: self._hasHighLight,
-                htmlBeautify: self._hasHtmlBeautify
-            });
+            if (_markDownGlobalConfig.extraRendererUrl) {
+                pContent = _mdExtraRender(content);
+                pContent.then(function (error, html) {
+                    self._setIframe(html);
+                });
+            } else {
+                pContent.then(function (error, markdownContent) {
+                    markdownContent = marked(_parserBefore(markdownContent));
+                    this._setIframe(markdownContent);
+                }, this);
+                window.setTimeout(function () {
+                    pContent.done(null, content);
+                }.bind(this), 1);
+            }
+            return this._setIframe('<h3>Preview will be available shortly ...</h3>');
+
         },
-        preview: function () {
-            var rendered = this._preview();
+        _getHtmlStyleSheet: function (styleUrl) {
+            return '<link href="' + styleUrl + '" rel="stylesheet" type="text/css" />';
+        },
+        _getStyleSheets: function () {
+            var styleSheet = this._getHtmlStyleSheet(_markDownGlobalConfig.previewCSS);
+            if (_markDownGlobalConfig.highLightCSS && this._isHtmlPreview) {
+                styleSheet += this._getHtmlStyleSheet(_markDownGlobalConfig.highLightCSS);
+            }
+            return styleSheet;
+        },
+        _setIframe: function (htmlString) {
             if (_markDownGlobalConfig.previewCSS === false) {
                 alert('Markdown Preview Style Sheet not available!');
                 console.log(_markDownGlobalConfig);
                 return false;
             }
-            rendered = '<html><head><link href="' +
-                _markDownGlobalConfig.previewCSS
-                + '" rel="stylesheet" type="text/css" /></head><body>' + rendered + '</body></html>';
-            this.data.tabBody.select('.iframePreview')[0].src = "data:text/html;charset=utf-8," + encodeURIComponent(rendered);
+
+            if (true === this._isHtmlPreview) {
+                htmlString = _highlightOpt(_htmlBeautify(htmlString));
+            }
+
+            var myIFrame = this.data.tabBody.select('.iframePreview')[0];
+
+            myIFrame = (myIFrame.contentWindow) ?
+                myIFrame.contentWindow
+                : (myIFrame.contentDocument.document) ? myIFrame.contentDocument.document : myIFrame.contentDocument;
+            myIFrame.document.open();
+            myIFrame.document.write('<html><head>' + this._getStyleSheets() + '</head><body>' + htmlString + '</body></html>');
+            myIFrame.document.close();
+
+            /*
+             this.data.tabBody.select('.iframePreview')[0].src = 'data:text/html;charset=utf-8,' +
+             encodeURIComponent('<html><head>' + this._getStyleSheets() + '</head><body>' +
+             htmlString
+             + '</body></html>'); */
+            return true;
+        },
+        preview: function () {
+            this._preview();
+        },
+        htmlPreview: function () {
+            this._isHtmlPreview = true;
+            this._preview();
         },
         livePreview: function () {
             console.log('Lpre', this.data);
-        },
-        htmlPreview: function () {
-            this._hasHighLight = true;
-            this._hasHtmlBeautify = true;
-            this.data.tabBody.update(this._preview());
         }
     };
 
-    /**
+    /*************************************************************************************************************
      * loads the filereader, epiceditor
      */
     function _mdInitialize() {
         _initGlobalConfig();
         var parentElementIds = ['product_edit_form', 'edit_form', 'category-edit-container', 'email_template_edit_form'],
-            tabPreview = new TabPreviewFactory();
+            tabPreview = new TabPreviewHandler();
         if (varienGlobalEvents) {
             varienGlobalEvents.fireEvent('mdLoadForms', parentElementIds);
         }
@@ -839,11 +884,6 @@
         Promise: Promise,
         join: join,
         chain: chain,
-
-        /* Error codes */
-        ENOXHR: 1,
-        ETIMEOUT: 2
-
     };
 
     if (typeof define === 'function' && define.amd) {
