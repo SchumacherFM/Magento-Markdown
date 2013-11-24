@@ -50,6 +50,7 @@
             extraRendererUrl: _checkHttp(config.eru || false),
             eeLoadOnClick: config.eeloc || false,
             isHiddenInsertImageButton: config.hideIIB || true,
+            previewCSS: config.mdCss || false,
             reMarkedCfg: decodeURIComponent(config.rmc || '{}').evalJSON(true)
         };
         return true;
@@ -248,11 +249,13 @@
      *
      * @param string content
      * @param object $textArea
+     * @param options object
      * @returns string
      * @private
      */
-    function _parserDefault(content, $textArea) {
-        var pContent = {};
+    function _parserDefault(content, $textArea, options) {
+        var pContent = {}, renderedMarkDown = '';
+        options = options || {};
 
         if (content.length > 10 && _markDownGlobalConfig.extraRendererUrl) {
             pContent = _mdExtraRender(content);
@@ -262,7 +265,28 @@
             });
             return '<h3>Preview will be available shortly ...</h3>';
         }
-        return marked(_parserBefore(content));
+        renderedMarkDown = marked(_parserBefore(content));
+
+        if (options.htmlBeautify) {
+            renderedMarkDown = window.html_beautify(renderedMarkDown, {
+                'indent_inner_html': false,
+                'indent_size': 2,
+                'indent_char': ' ',
+                'wrap_line_length': 78,
+                'brace_style': 'expand',
+                'unformatted': ['a', 'sub', 'sup', 'b', 'i', 'u'],
+                'preserve_newlines': true,
+                'max_preserve_newlines': 5,
+                'indent_handlebars': false
+            });
+        }
+
+        if (options.highlight) {
+            var _hlPre = options.hlPre || '<pre>',
+                _hlPost = options.hlPost || '</pre>';
+            return _hlPre + hljs.highlight('xml', renderedMarkDown).value + _hlPost;
+        }
+        return renderedMarkDown;
     }
 
     /**
@@ -574,14 +598,14 @@
     function _buildTabsFactory(event) {
         var target = event.target || event.srcElement,
             $mdTextArea = {},
+            mageButtons = [],
             $parentTd = target.parentNode;
 
         if (target.readAttribute('data-tabsBuilt')) {
             return;
         }
 
-        // @todo that id is terrible ... because of multiple occurrences of a textarea field on the page
-        var mageButtons = $('buttons' + target.id).select('button');
+        mageButtons = $('buttons' + target.id).select('button');
         mageButtons.each(function (buttonElement) {
             $(target.id + '__writeB').insert({
                 top: buttonElement
@@ -605,26 +629,44 @@
      */
     function TabPreviewFactory() {
         this.data = {};
+        this._hasHighLight = false;
+        this._hasHtmlBeautify = false;
     }
 
     TabPreviewFactory.prototype = {
         setData: function (data) {
+            this._hasHighLight = false;
+            this._hasHtmlBeautify = false;
             this.data = data;
         },
+        _preview: function () {
+            var $textArea = null,
+                self = this;
+
+            return _parserDefault($(this.data.textAreaId).value, $textArea, {
+                highlight: self._hasHighLight,
+                htmlBeautify: self._hasHtmlBeautify
+            });
+        },
         preview: function () {
-            var $textArea = null;
-            var markedContent = _parserDefault($(this.data.textAreaId).value, $textArea);
-            this.data.tabBody.update(markedContent);
+            var rendered = this._preview();
+            if (_markDownGlobalConfig.previewCSS === false) {
+                alert('Markdown Preview Style Sheet not available!');
+                console.log(_markDownGlobalConfig);
+                return false;
+            }
+            rendered = '<html><head><link href="' +
+                _markDownGlobalConfig.previewCSS
+                + '" rel="stylesheet" type="text/css" /></head><body>' + rendered + '</body></html>';
+            this.data.tabBody.select('.iframePreview')[0].src = "data:text/html;charset=utf-8," + encodeURIComponent(rendered);
         },
         livePreview: function () {
-            console.log('Lpre', this.data)
+            console.log('Lpre', this.data);
         },
         htmlPreview: function () {
-            isViewMarkdownSourceHtml = true;
-            var $textArea = null,
-                markedContent = _parserEpicEditor($(this.data.textAreaId).value, $textArea);
-            this.data.tabBody.update(markedContent);
-            isViewMarkdownSourceHtml = false;
+            this._hasHighLight = true;
+            this._hasHtmlBeautify = true;
+            this.data.tabBody.update(this._preview());
         }
     };
 

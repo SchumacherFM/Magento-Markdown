@@ -138,6 +138,8 @@
                 <cheatsheet>https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet</cheatsheet>
                 <detection_tag>!#markdown</detection_tag>
                 <hide_insert_image_button>1</hide_insert_image_button>
+                <highlight_style>github.css</highlight_style>
+                <preview_style>github.css</preview_style>
             </markdown>
             <markdown_extra>
                 <enable>0</enable>

@@ -44,7 +44,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
 
         /** @var $block Mage_Adminhtml_Block_Template */
         $block = $observer->getEvent()->getBlock();
-
+        $this->_addHighLightCss($block);
         $isWidgetElement  = $block instanceof Mage_Adminhtml_Block_Widget_Form_Renderer_Fieldset_Element;
         $isCatalogElement = $block instanceof Mage_Adminhtml_Block_Catalog_Form_Renderer_Fieldset_Element;
 
@@ -66,6 +66,24 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
                 $this->$method();
             }
         }
+    }
+
+    /**
+     * @param Mage_Core_Block_Abstract $block
+     *
+     * @return bool
+     */
+    protected function _addHighLightCss(Mage_Core_Block_Abstract $block)
+    {
+        if (!($block instanceof Mage_Adminhtml_Block_Page)) {
+            return FALSE;
+        }
+        /** @var Mage_Adminhtml_Block_Page $block */
+
+        /** @var Mage_Adminhtml_Block_Page_Head $head */
+        $head = $block->getLayout()->getBlock('head');
+
+        $head->addItem('skin_css', Mage::helper('markdown')->getHighLightStyleCss());
     }
 
     /**
@@ -102,6 +120,25 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
     {
         $this->_afterElementHtml[90] = $this->_currentElement->getData('after_element_html');
 
+        $this->_addMarkDownConfig();
+
+        ksort($this->_afterElementHtml);
+        $this->_currentElement->setData('after_element_html', $this->_generateTabs());
+        $this->_afterElementHtml = array();
+        $this->_currentElement->addClass('initMarkdown');
+        return $this;
+    }
+
+    /**
+     * singleton to add markdown config
+     * @return bool
+     */
+    protected function _addMarkDownConfig()
+    {
+        if ($this->_configInserted === TRUE) {
+            return $this->_configInserted;
+        }
+
         $config        = array();
         $config['dt']  = $this->_helper->getDetectionTag(TRUE);
         $config['fuu'] = $this->_helper->getAdminFileUploadUrl(); // file upload url
@@ -118,23 +155,17 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
 
         $config['eeloc']   = $this->_helper->isEpicEditorLoadOnClick();
         $config['hideIIB'] = $this->_helper->isHiddenInsertImageButton();
+        $config['mdCss']   = $this->_helper->getMarkdownStyleCss(TRUE);
 
         if ($this->_helper->isReMarkedEnabled() === TRUE) {
             $config['rmc'] = $this->_helper->getReMarkedConfig();
         }
 
-        if ($this->_configInserted === FALSE) {
-            $this->_afterElementHtml[1000] = '<div id="markdownGlobalConfig" data-config=\'' .
-                Zend_Json_Encoder::encode($config)
-                . '\' style="display:none;"></div>';
-            $this->_configInserted         = TRUE;
-        }
-
-        ksort($this->_afterElementHtml);
-        $this->_currentElement->setData('after_element_html', $this->_generateTabs());
-        $this->_afterElementHtml = array();
-        $this->_currentElement->addClass('initMarkdown');
-        return $this;
+        $this->_afterElementHtml[1000] = '<div id="markdownGlobalConfig" data-config=\'' .
+            Zend_Json_Encoder::encode($config)
+            . '\' style="display:none;"></div>';
+        $this->_configInserted         = TRUE;
+        return $this->_configInserted;
     }
 
     /**
@@ -244,7 +275,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
     /**
      * @return bool
      */
-    protected function _isMarkdownExtra( )
+    protected function _isMarkdownExtra()
     {
         $_isEmailTemplateElementAllowed = $this->_isEmailTemplateElementAllowed();
 

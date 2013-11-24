@@ -35,6 +35,30 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * gets a css file name
+     * @return string
+     */
+    public function getHighLightStyleCss()
+    {
+        $styleFile = Mage::getStoreConfig('markdown/markdown/highlight_style');
+        return 'markdown/highlight/styles/' . $styleFile;
+    }
+
+    /**
+     * gets a css file name
+     * @return string
+     */
+    public function getMarkdownStyleCss($fullPath = FALSE)
+    {
+        $styleFile = Mage::getStoreConfig('markdown/markdown/preview_style');
+        $return    = 'markdown/styles/' . $styleFile;
+        if (TRUE === $fullPath) {
+            return Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN) . DS . 'adminhtml' . DS . 'default' . DS . 'default' . DS . $return;
+        }
+        return $return;
+    }
+
+    /**
      * @return string
      */
     public function getMdExtraDocUrl()

@@ -242,19 +242,38 @@ All rights reserved.
 
 #### PHP Markdown Lib
 
-Copyright (c) 2004-2013 Michel Fortin
-
-<http://michelf.ca/> <https://github.com/michelf/php-markdown/>
-
-All rights reserved.
+- Copyright (c) 2004-2013 Michel Fortin
+- [http://michelf.ca](http://michelf.ca)
+- [https://github.com/michelf/php-markdown/](https://github.com/michelf/php-markdown/)
 
 #### reMarked.js
 
-Copyright (c) 2013 Leon Sorokin / leeoniya
+- Copyright (c) 2013 Leon Sorokin / leeoniya
+- [https://github.com/leeoniya/reMarked.js](https://github.com/leeoniya/reMarked.js)
 
-<https://github.com/leeoniya/reMarked.js/>
+#### marked.js
 
-MIT Licensed
+- Copyright (c) 2011-2013, Christopher Jeffrey. (MIT Licensed)
+- [https://github.com/chjj/marked](https://github.com/chjj/marked)
+
+#### highlight.js
+
+- Copyright (c) 2006, Ivan Sagalaev
+- [https://github.com/isagalaev/highlight.js](https://github.com/isagalaev/highlight.js)
+
+#### Markdown Styles
+
+- [http://mixu.net/markdown-styles/](http://mixu.net/markdown-styles/)
+
+#### beautify-html
+
+- Copyright (c) 2007-2013 Einar Lielmanis and contributors.
+- [https://github.com/einars/js-beautify/blob/master/js/lib/beautify-html.js](https://github.com/einars/js-beautify/blob/master/js/lib/beautify-html.js)
+
+#### EpicEditor
+
+- Copyright (c) 2011-2013, Oscar Godson (http://oscargodson.com)
+- [https://github.com/OscarGodson/EpicEditor](https://github.com/OscarGodson/EpicEditor)
 
 ####  Based on Markdown
 
