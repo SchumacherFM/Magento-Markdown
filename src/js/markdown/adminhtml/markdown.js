@@ -51,6 +51,7 @@
             eeLoadOnClick: config.eeloc || false,
             isHiddenInsertImageButton: config.hideIIB || true,
             previewCSS: config.mdCss || false,
+            previewUrls: config.lpUrls || [],
             highLightCSS: config.hlCss || false,
             reMarkedCfg: decodeURIComponent(config.rmc || '{}').evalJSON(true)
         };
@@ -633,6 +634,7 @@
     function TabPreviewHandler() {
         this.data = {};
         this._isHtmlPreview = false;
+        this._livePreviewSetUpDone = false;
     }
 
     /**
@@ -643,6 +645,7 @@
         setData: function (data) {
             this._isHtmlPreview = false;
             this.data = data;
+            return this;
         },
         _preview: function () {
             var pContent = new promise.Promise(),
@@ -659,12 +662,8 @@
                     markdownContent = marked(_parserBefore(markdownContent));
                     this._setIframe(markdownContent);
                 }, this);
-                window.setTimeout(function () {
-                    pContent.done(null, content);
-                }.bind(this), 1);
+                pContent.done(null, content);
             }
-            return this._setIframe('<h3>Preview will be available shortly ...</h3>');
-
         },
         _getHtmlStyleSheet: function (styleUrl) {
             return '<link href="' + styleUrl + '" rel="stylesheet" type="text/css" />';
@@ -675,6 +674,10 @@
                 styleSheet += this._getHtmlStyleSheet(_markDownGlobalConfig.highLightCSS);
             }
             return styleSheet;
+        },
+        _setIframeSrc: function (theSrc) {
+            this.data.tabBody.select('.iframePreview')[0].src = theSrc;
+            return this;
         },
         _setIframe: function (htmlString) {
             if (_markDownGlobalConfig.previewCSS === false) {
@@ -687,20 +690,10 @@
                 htmlString = _highlightOpt(_htmlBeautify(htmlString));
             }
 
-            var myIFrame = this.data.tabBody.select('.iframePreview')[0];
-
-            myIFrame = (myIFrame.contentWindow) ?
-                myIFrame.contentWindow
-                : (myIFrame.contentDocument.document) ? myIFrame.contentDocument.document : myIFrame.contentDocument;
-            myIFrame.document.open();
-            myIFrame.document.write('<html><head>' + this._getStyleSheets() + '</head><body>' + htmlString + '</body></html>');
-            myIFrame.document.close();
-
-            /*
-             this.data.tabBody.select('.iframePreview')[0].src = 'data:text/html;charset=utf-8,' +
-             encodeURIComponent('<html><head>' + this._getStyleSheets() + '</head><body>' +
-             htmlString
-             + '</body></html>'); */
+            this._setIframeSrc('data:text/html;charset=utf-8,' +
+                encodeURIComponent('<html><head>' + this._getStyleSheets() + '</head><body>' +
+                    htmlString
+                    + '</body></html>'));
             return true;
         },
         preview: function () {
@@ -710,8 +703,25 @@
             this._isHtmlPreview = true;
             this._preview();
         },
+        _setUpLivePreview: function () {
+            if (true === this._livePreviewSetUpDone) {
+                return null;
+            }
+
+            var ul = this.data.tabBody.select('.previewUrls')[0];
+            _markDownGlobalConfig.previewUrls.forEach(function (url) {
+                ul.insert('<li><a href="' + url + '" target="__livePreviewB">' + url + '</a></li>');
+            });
+
+            this._livePreviewSetUpDone = true;
+            return _markDownGlobalConfig.previewUrls[0] || null;
+        },
         livePreview: function () {
-            console.log('Lpre', this.data);
+            var firstUrl = this._setUpLivePreview();
+
+            if (null !== firstUrl) {
+                this._setIframeSrc(firstUrl);
+            }
         }
     };
 
@@ -756,7 +766,7 @@
          */
         $$('.mdTabs ul li').each(function (liElement) {
 
-            liElement.observe('click', function () {
+            liElement.observe('click', function (event) {
                 var current = this.parentNode.getAttribute('data-current'),
                     idSplit = this.id.split('__'),
                     taId = idSplit[0],

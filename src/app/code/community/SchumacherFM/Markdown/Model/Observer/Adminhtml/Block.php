@@ -29,9 +29,11 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
     protected $_currentElement = NULL;
 
     /**
-     * @var string
+     * contains all live preview URLs
+     *
+     * @var array
      */
-    protected $_livePreviewUrl = '';
+    protected $_livePreviewUrls = array();
 
     /**
      * adminhtml_block_html_before
@@ -85,16 +87,17 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
             /* @var $model Mage_Cms_Model_Page */
             $model = Mage::registry('cms_page');
 
-            $_first_store_id       = current($model->getStoreId());
-            $_storeCode            = Mage::app()->getStore($_first_store_id)->getCode();
-            $_identifier           = $model->getIdentifier();
-            $urlModel              = Mage::getModel('core/url')->setStore($_first_store_id);
-            $this->_livePreviewUrl = $urlModel->getUrl(
-                $_identifier, array(
-                    '_current' => FALSE,
-                    '_query'   => '___store=' . $_storeCode
-                )
-            );
+            foreach ($model->getStoreId() as $storeId) {
+                $_storeCode            = Mage::app()->getStore($storeId)->getCode();
+                $_identifier           = $model->getIdentifier();
+                $urlModel              = Mage::getModel('core/url')->setStore($storeId);
+                $this->_livePreviewUrls[] = $urlModel->getUrl(
+                    $_identifier, array(
+                        '_current' => FALSE,
+                        '_query'   => '___store=' . $_storeCode
+                    )
+                );
+            }
         }
     }
 
@@ -169,7 +172,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         $config['hideIIB'] = $this->_helper->isHiddenInsertImageButton();
         $config['mdCss']   = $this->_helper->getMarkdownStyleCss(TRUE);
         $config['hlCss']   = $this->_helper->getHighLightStyleCss(TRUE);
-        $config['lpUrl']   = $this->_livePreviewUrl; // @todo implement in JS
+        $config['lpUrls']   = $this->_livePreviewUrls; // @todo implement in JS
 
         if ($this->_helper->isReMarkedEnabled() === TRUE) {
             $config['rmc'] = $this->_helper->getReMarkedConfig();
@@ -336,7 +339,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         if ($this->_helper->isReMarkedEnabled() === TRUE) {
             $this->_afterElementHtml[600] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
-                    'label'   => $this->___('HTML2Markdown'),
+                    'label'   => $this->___('Convert HTML to Markdown'),
                     'class'   => 'mdButton',
                     'type'    => 'button',
                     'onclick' => 'htmlToMarkDown(this,\'' . $htmlId . '\');'

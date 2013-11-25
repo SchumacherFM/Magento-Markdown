@@ -71,6 +71,14 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * @return string
      */
+    public function getPreviewIframeCSS()
+    {
+        return trim(Mage::getStoreConfig('markdown/markdown/preview_iframe_css'));
+    }
+
+    /**
+     * @return string
+     */
     public function getMdExtraDocUrl()
     {
         return self::URL_MD_EXTRA_SYNTAX;

@@ -44,4 +44,15 @@ class SchumacherFM_Markdown_Block_Adminhtml_Form_Renderer_Fieldset_Element_Texta
     {
         return 'man_chooser_' . $this->getElementId();
     }
+
+    /**
+     * @param $name
+     *
+     * @return string
+     */
+    public function getIframe($name)
+    {
+        return '<iframe class="iframePreview" sandbox name="' . $name . '" src="" style="' .
+        $this->_helper->getPreviewIframeCSS() . '"></iframe>';
+    }
 }

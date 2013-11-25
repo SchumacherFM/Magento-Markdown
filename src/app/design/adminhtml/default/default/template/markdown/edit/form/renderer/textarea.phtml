@@ -27,13 +27,14 @@
                 <?php echo $this->___('or pasting from the clipboard.') ?> </p>
         </div>
         <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__previewB">
-            <iframe class="iframePreview" src=""></iframe>
+            <?php echo $this->getIframe('__previewB'); ?>
         </div>
         <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__livePreviewB">
-            <iframe class="iframePreview" src=""></iframe>
+            <ul class="previewUrls"></ul>
+            <?php echo $this->getIframe('__livePreviewB'); ?>
         </div>
         <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__htmlPreviewB">
-            <iframe class="iframePreview" src=""></iframe>
+            <?php echo $this->getIframe('__htmlPreviewB'); ?>
         </div>
     </div>
 </div>
