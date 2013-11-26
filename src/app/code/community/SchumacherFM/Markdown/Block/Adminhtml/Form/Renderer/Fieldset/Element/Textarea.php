@@ -50,9 +50,10 @@ class SchumacherFM_Markdown_Block_Adminhtml_Form_Renderer_Fieldset_Element_Texta
      *
      * @return string
      */
-    public function getIframe($name)
+    public function getIframe($name, $useSandBox = TRUE)
     {
-        return '<iframe class="iframePreview" sandbox name="' . $name . '" src="" style="' .
+        $sandBox = $useSandBox === TRUE ? ' sandbox="allow-same-origin"' : '';
+        return '<iframe class="iframePreview" ' . $sandBox . ' name="' . $name . '" src="" style="' .
         $this->_helper->getPreviewIframeCSS() . '"></iframe>';
     }
 }

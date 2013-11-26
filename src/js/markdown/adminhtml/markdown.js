@@ -594,6 +594,8 @@
         }
     }
 
+    var tempIframeJSSource = '';
+
     /**
      *
      * @param event
@@ -625,9 +627,11 @@
         if (false === _isFileReaderEnabled()) {
             $parentTd.select('.md-filereader-text')[0].remove();
         }
+
+        tempIframeJSSource = $(target.id + '__iFrameJS').innerHTML;
     }
 
-    /**
+    /******************************************************************************************************
      *
      * @constructor
      */
@@ -676,8 +680,12 @@
             return styleSheet;
         },
         _setIframeSrc: function (theSrc) {
-            this.data.tabBody.select('.iframePreview')[0].src = theSrc;
+            var theIframe = this.data.tabBody.select('.iframePreview')[0];
+            theIframe.src = theSrc;
             return this;
+        },
+        _getJavaScript: function () {
+            return '<script type="text/javascript">' + tempIframeJSSource + '</script>';
         },
         _setIframe: function (htmlString) {
             if (_markDownGlobalConfig.previewCSS === false) {
@@ -690,8 +698,11 @@
                 htmlString = _highlightOpt(_htmlBeautify(htmlString));
             }
 
+            // @todo add here js in the iframe html for getting the scroll position
             this._setIframeSrc('data:text/html;charset=utf-8,' +
                 encodeURIComponent('<html><head>' + this._getStyleSheets() + '</head><body>' +
+                    this._getJavaScript()
+                    +
                     htmlString
                     + '</body></html>'));
             return true;
@@ -730,8 +741,10 @@
      */
     function _mdInitialize() {
         _initGlobalConfig();
+
         var parentElementIds = ['product_edit_form', 'edit_form', 'category-edit-container', 'email_template_edit_form'],
             tabPreview = new TabPreviewHandler();
+
         if (varienGlobalEvents) {
             varienGlobalEvents.fireEvent('mdLoadForms', parentElementIds);
         }

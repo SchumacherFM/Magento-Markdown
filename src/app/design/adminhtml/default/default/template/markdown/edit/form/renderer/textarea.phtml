@@ -27,14 +27,22 @@
                 <?php echo $this->___('or pasting from the clipboard.') ?> </p>
         </div>
         <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__previewB">
-            <?php echo $this->getIframe('__previewB'); ?>
+            <?php echo $this->getIframe('__previewB', FALSE); ?>
         </div>
         <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__livePreviewB">
             <ul class="previewUrls"></ul>
             <?php echo $this->getIframe('__livePreviewB'); ?>
         </div>
         <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__htmlPreviewB">
-            <?php echo $this->getIframe('__htmlPreviewB'); ?>
+            <?php echo $this->getIframe('__htmlPreviewB', FALSE); ?>
         </div>
     </div>
+    <script type="text/template" id="<?php echo $this->getElementId(); ?>__iFrameJS">
+        window.onscroll=function(event){
+            var target = event.target || event.srcElement,
+                doc = target.documentElement, body = document.body,
+                top = (doc && doc.scrollTop  || body && body.scrollTop  || 0);
+                // window.top.postMessage();
+        }
+    </script>
 </div>
