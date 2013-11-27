@@ -594,7 +594,8 @@
         }
     }
 
-    var tempIframeJSSource = '';
+    var tempIframeJSSource = '',
+        iFrameScrollPositions = {};
 
     /**
      *
@@ -628,7 +629,14 @@
             $parentTd.select('.md-filereader-text')[0].remove();
         }
 
-        tempIframeJSSource = $(target.id + '__iFrameJS').innerHTML;
+        tempIframeJSSource = $(target.id + '__iFrameJS').innerHTML.replace('~~origin~~', document.location.origin);
+
+//        window.addEventListener("message", receiveMessage, false);
+        Event.observe(window, 'message', function (event) {
+            var data = event.data.split('=');
+            iFrameScrollPositions[data[0]] = ~~data[1];
+        });
+
     }
 
     /******************************************************************************************************
@@ -685,7 +693,10 @@
             return this;
         },
         _getJavaScript: function () {
-            return '<script type="text/javascript">' + tempIframeJSSource + '</script>';
+//            console.log('iFrameScrollPositions',iFrameScrollPositions)
+            var insertJS = tempIframeJSSource.replace('~~id~~', this.data.tabBody.id);
+            insertJS = insertJS.replace(/~~scrollto~~/g, iFrameScrollPositions[this.data.tabBody.id] || 0);
+            return '<script type="text/javascript">' + insertJS + '</script>';
         },
         _setIframe: function (htmlString) {
             if (_markDownGlobalConfig.previewCSS === false) {
