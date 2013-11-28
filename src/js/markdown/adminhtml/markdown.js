@@ -693,9 +693,8 @@
             return this;
         },
         _getJavaScript: function () {
-//            console.log('iFrameScrollPositions',iFrameScrollPositions)
             var insertJS = tempIframeJSSource.replace('~~id~~', this.data.tabBody.id);
-            insertJS = insertJS.replace(/~~scrollto~~/g, iFrameScrollPositions[this.data.tabBody.id] || 0);
+            insertJS = insertJS.replace('~~scrollto~~', iFrameScrollPositions[this.data.tabBody.id] || 0);
             return '<script type="text/javascript">' + insertJS + '</script>';
         },
         _setIframe: function (htmlString) {

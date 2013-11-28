@@ -37,9 +37,18 @@
             <?php echo $this->getIframe('__htmlPreviewB', FALSE); ?>
         </div>
     </div>
+    <script type="text/javascript">
+        window.scrollBy(0,333);
+    </script>
+    <?php
+    /**
+     * this piece of js code will be injected into the iframe (above) via src="data:text/html,..." attribute
+     * in file src/js/markdown/adminhtml/markdown.js line 695
+     */
+    ?>
     <script type="text/template" id="<?php echo $this->getElementId(); ?>__iFrameJS">
-        var sTimeOut;
-        if(~~scrollto~~>0){window.scrollTo(0,~~scrollto~~); console.log('st:',~~scrollto~~);}
+        var sTimeOut, st = ~~'~~scrollto~~';
+        window.onload=function(){ if(st>0){ window.scrollTo(0,st);} }
         window.onscroll=function(event){
             if(sTimeOut){clearTimeout(sTimeOut);}
             sTimeOut = setTimeout(function(){
