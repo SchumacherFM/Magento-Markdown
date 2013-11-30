@@ -143,7 +143,7 @@
                     });
                     return '<h3>Preview will be available shortly ...</h3>';
                 }
-                return marked(_parserBefore(content));
+                return marked(_handleMagentoMediaUrl(content));
             };
 
         if (true === isViewMarkdownSourceHtml) {
@@ -240,13 +240,13 @@
     }
 
     /**
-     * handles magento special tags
+     * handles magento special tag {{media url=""}}
      *
      * @param content string
      * @returns string
      * @private
      */
-    function _parserBefore(content) {
+    function _handleMagentoMediaUrl(content) {
         var imgUrl = '',
             mediaRegex = /\{\{media\s+url="([^"]+)"\s*\}\}/i,
             matches = null;
@@ -317,7 +317,7 @@
             return _highlight('<h3>Preview will be available shortly ...</h3>');
         }
 
-        return _highlight(marked(_parserBefore(content)));
+        return _highlight(marked(_handleMagentoMediaUrl(content)));
     }
 
     /**
@@ -558,11 +558,57 @@
     }
 
     /**
+     *
+     * @param text
+     * @constructor
+     */
+    function MagentoTagPreserver(text) {
+        this.text = text;
+        this.container = {};
+    }
+
+    MagentoTagPreserver.prototype = {
+        getPreserved: function () {
+            var
+                tagRegex = /(\{\{[^\}]+\}\})/,  // e.g.: {{store direct_url="about-us"}}
+                matches = null,
+                key = '',
+                i = 0;
+
+            while (tagRegex.test(this.text)) {
+                matches = tagRegex.exec(this.text);
+                if (null !== matches && matches[1] !== undefined) {
+                    key = Math.random() + '_' + i;
+                    this.text = this.text.replace(matches[1], key);
+                    this.container[key] = matches[1];
+                    i = i + 1;
+                }
+            }
+
+            return this.text;
+        },
+        restore: function (transformedString) {
+            var key = '';
+            this.text = '';
+
+            for (key in this.container) {
+                if (this.container.hasOwnProperty(key)) {
+                    transformedString = transformedString.replace(key, this.container[key]);
+                }
+            }
+            this.container = {};
+            return transformedString;
+        }
+
+    };
+
+    /**
      * renders html to markdown
      * @param textAreaId string
      */
     function htmlToMarkDown(element, textAreaId) {
-        var html = $(textAreaId).value || '',
+        var html = '',
+            thePreserver = new MagentoTagPreserver($(textAreaId).value || ''),
             markDownGlobalConfigTag = '',
             _instance = epicEditorInstances[textAreaId] || false,
             _loadedEpic = _isEpicEditorEnabled() && false !== _instance && _instance.is('loaded');
@@ -574,8 +620,9 @@
         if (_markDownGlobalConfig.tag !== '' && html.indexOf(_markDownGlobalConfig.tag) === -1) {
             markDownGlobalConfigTag = _markDownGlobalConfig.tag;
         }
-        // @todo preserve magento special tags like {{store ... }}
-        $(textAreaId).value = markDownGlobalConfigTag + '\n' + _getReMarked().render(html);
+
+        html = markDownGlobalConfigTag + '\n' + _getReMarked().render(thePreserver.getPreserved());
+        $(textAreaId).value = thePreserver.restore(html);
     }
 
     /**
@@ -670,7 +717,7 @@
                 });
             } else {
                 pContent.then(function (error, markdownContent) {
-                    markdownContent = marked(_parserBefore(markdownContent));
+                    markdownContent = marked(_handleMagentoMediaUrl(markdownContent));
                     this._setIframe(markdownContent);
                 }, this);
                 pContent.done(null, content);
