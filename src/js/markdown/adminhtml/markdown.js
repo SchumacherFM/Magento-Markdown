@@ -693,6 +693,11 @@
         this.data = {};
         this._isHtmlPreview = false;
         this._livePreviewSetUpDone = false;
+        this.lpInputElement = new Element('input', {
+            'type': 'text',
+            'class': 'input-text',
+            'value': ''
+        });
     }
 
     /**
@@ -700,6 +705,12 @@
      *
      */
     TabPreviewHandler.prototype = {
+        _localStorageGet: function (key) {
+            return window.localStorage.getItem('schumacherfm_markdown_' + this.data.textAreaId + '_' + key);
+        },
+        _localStorageSet: function (key, value) {
+            return window.localStorage.setItem('schumacherfm_markdown_' + this.data.textAreaId + '_' + key, value);
+        },
         setData: function (data) {
             this._isHtmlPreview = false;
             this.data = data;
@@ -781,8 +792,51 @@
                 ul.insert('<li><a href="' + url + '" target="__livePreviewB">' + url + '</a></li>');
             });
 
+            if (_markDownGlobalConfig.previewUrls.length === 0) {
+                var liElement = new Element('li'),
+                    reload = new Element('a', {'href': '#'});
+
+                this.lpInputElement.value = this._localStorageGet('lpUrl');
+                this.lpInputElement.observe('change', this._observeUserLivePreviewUrl.bind(this));
+                reload.update('Reload?');
+                reload.observe('click', this._observeUserLivePreviewUrlReload.bind(this));
+                liElement.update('Please enter live preview URL. (Cannot be detected automatically) ');
+                liElement.insert(reload);
+                liElement.insert(this.lpInputElement);
+                ul.insert(liElement);
+            }
+
             this._livePreviewSetUpDone = true;
             return _markDownGlobalConfig.previewUrls[0] || null;
+        },
+        _observeUserLivePreviewSetiFrame: function (url) {
+            if (url.search(/^htt(p|ps):\/\/[a-z0-9]+/) !== -1) {
+                this._setIframeSrc(url);
+            } else {
+                alert('Cannot find a URL ...');
+            }
+        },
+        _observeUserLivePreviewUrl: function (event) {
+            var value = (event.srcElement || event.target).value.toLowerCase();
+            this._localStorageSet('lpUrl', value);
+            this._observeUserLivePreviewSetiFrame(value);
+        },
+        _observeUserLivePreviewUrlReload: function (event) {
+            event.preventDefault();
+            var value = this.lpInputElement.value.toLowerCase(),
+                rand = 'rand=' + Math.random(),
+                randPos = value.indexOf('rand=');
+
+            if (randPos !== -1) {
+                value = value.substr(randPos - 1, 20);
+            }
+            this._localStorageSet('lpUrl', value);
+            if (value.indexOf('?') !== -1) {
+                value = value + '&' + rand;
+            } else {
+                value = value + '?' + rand;
+            }
+            this._observeUserLivePreviewSetiFrame(value);
         },
         livePreview: function () {
             var firstUrl = this._setUpLivePreview();
