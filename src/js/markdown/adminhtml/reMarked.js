@@ -297,7 +297,9 @@ reMarked = function(opts) {
 			var n, buf = "";
 			for (var i in this.c) {
 				n = this.c[i];
-				buf += (n.bef || "") + n.rend() + (n.aft || "");
+                if(Object.prototype.toString.call(n) === '[object Object]'){
+                    buf += (n.bef || "") + n.rend() + (n.aft || "");
+                }
 			}
 			return buf.replace(/^\n+|\n+$/, "");
 		}

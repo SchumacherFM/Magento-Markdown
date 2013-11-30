@@ -52,7 +52,7 @@ class SchumacherFM_Markdown_Block_Adminhtml_Form_Renderer_Fieldset_Element_Texta
      */
     public function getIframe($name, $useSandBox = TRUE)
     {
-        $sandBox = $useSandBox === TRUE ? ' sandbox="allow-same-origin"' : '';
+        $sandBox = $useSandBox === TRUE ? ' sandbox' : ''; // ="allow-same-origin"
         return '<iframe class="iframePreview" ' . $sandBox . ' name="' . $name . '" src="" style="' .
         $this->_helper->getPreviewIframeCSS() . '"></iframe>';
     }

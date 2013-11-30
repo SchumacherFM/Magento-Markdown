@@ -548,7 +548,7 @@
             bold_char: "*",      // char used for strong
             emph_char: "_",      // char used for em
             gfm_del: true,     // ~~strikeout~~ for <del>strikeout</del>
-            gfm_tbls: false,     // markdown-extra tables @SchumacherFM: if true the error on line 518 in remarked.js :-(
+            gfm_tbls: true,     // markdown-extra tables
             tbl_edges: false,    // show side edges on tables
             hash_lnks: false,    // anchors w/hash hrefs as links
             br_only: false    // avoid using "  " as line break indicator
@@ -563,6 +563,7 @@
      */
     function htmlToMarkDown(element, textAreaId) {
         var html = $(textAreaId).value || '',
+            markDownGlobalConfigTag = '',
             _instance = epicEditorInstances[textAreaId] || false,
             _loadedEpic = _isEpicEditorEnabled() && false !== _instance && _instance.is('loaded');
 
@@ -570,13 +571,11 @@
             toggleEpicEditor(element, textAreaId);
         }
 
-
         if (_markDownGlobalConfig.tag !== '' && html.indexOf(_markDownGlobalConfig.tag) === -1) {
-            $(textAreaId).value = _markDownGlobalConfig.tag + '\n' + _getReMarked().render(html);
+            markDownGlobalConfigTag = _markDownGlobalConfig.tag;
         }
-        if (_markDownGlobalConfig.tag === '') {
-            $(textAreaId).value = _getReMarked().render(html);
-        }
+        // @todo preserve magento special tags like {{store ... }}
+        $(textAreaId).value = markDownGlobalConfigTag + '\n' + _getReMarked().render(html);
     }
 
     /**
@@ -708,9 +707,10 @@
                 htmlString = _highlightOpt(_htmlBeautify(htmlString));
             }
 
-            // @todo add here js in the iframe html for getting the scroll position
+            // http://www.thecssninja.com/javascript/pointer-events-60fps
             this._setIframeSrc('data:text/html;charset=utf-8,' +
-                encodeURIComponent('<html><head>' + this._getStyleSheets() + '</head><body>' +
+                encodeURIComponent('<html><head>' + this._getStyleSheets() +
+                    '</head><body style="pointer-events:none;">' +
                     this._getJavaScript()
                     +
                     htmlString
