@@ -15,7 +15,9 @@
         isViewMarkdownSourceHtml = false,
         _initializedFileReaderContainer = {},
         _textAreaCurrentCaretObject = {}, // set by the onClick event
-        _toggleMarkdownSourceOriginalMarkdown = '';
+        _toggleMarkdownSourceOriginalMarkdown = '',
+        tempIframeJSSource = '',
+        iFrameScrollPositions = {};
 
     /**
      *
@@ -639,9 +641,6 @@
             _createFileReaderInstance(target);
         }
     }
-
-    var tempIframeJSSource = '',
-        iFrameScrollPositions = {};
 
     /**
      *
