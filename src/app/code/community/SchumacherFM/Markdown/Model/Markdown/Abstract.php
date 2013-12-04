@@ -83,9 +83,9 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
      */
     public function setOptions(array $options = NULL)
     {
-		if(false === empty($options)){
-			$this->_options = array_merge($this->_options, $options);			
-		}
+        if (FALSE === empty($options)) {
+            $this->_options = array_merge($this->_options, $options);
+        }
         return $this;
     }
 
@@ -112,6 +112,16 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
         $force                      = isset($this->_options['force']) && $this->_options['force'] === TRUE;
         $protectMagento             = isset($this->_options['protectMagento']) && $this->_options['protectMagento'] === TRUE;
         $this->_currentRenderedText = $text;
+        $cacheKey                   = $this->getCacheKey();
+        $useCache                   = Mage::app()->useCache('markdown') && FALSE !== $cacheKey;
+
+        if (TRUE === $useCache) {
+            $renderedCachedText = Mage::app()->loadCache($cacheKey);
+            if (FALSE === empty($renderedCachedText)) {
+                Varien_Profiler::stop('renderMarkdown');
+                return $renderedCachedText;
+            }
+        }
 
         if (!$this->_isMarkdown() && $force === FALSE) {
             return $this->_currentRenderedText;
@@ -127,6 +137,11 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
         if ($protectMagento === TRUE) {
             $this->_preserveMagentoVariablesDecode();
         }
+
+        if (TRUE === $useCache) {
+            Mage::app()->saveCache($this->_currentRenderedText, $cacheKey, array('markdown'), (int)Mage::getStoreConfig('markdown/markdown/cache_lifetime'));
+        }
+
         Varien_Profiler::stop('renderMarkdown');
         return $this->_currentRenderedText;
     }
@@ -207,5 +222,21 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
     public function isMarkdown(&$text)
     {
         return strpos($text, $this->_tag) !== FALSE;
+    }
+
+    /**
+     * @return string|boolean
+     */
+    public function getCacheKey()
+    {
+        //Checking if we are in secure area
+        $store = Mage::app()->getStore();
+        if ($store->isAdmin()) {
+            return FALSE; // don't cache in the backend
+        } else {
+            $secure = $store->isFrontUrlSecure() && Mage::app()->getRequest()->isSecure();
+        }
+        $cacheKeyInfo = $store->getId() . DS . $secure . DS . $this->_currentRenderedText;
+        return sha1($cacheKeyInfo);
     }
 }

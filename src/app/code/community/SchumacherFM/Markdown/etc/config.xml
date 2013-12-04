@@ -15,6 +15,15 @@
     </modules>
 
     <global>
+        <cache>
+            <types>
+                <markdown translate="label,description" module="markdown">
+                    <label>Markdown</label>
+                    <description>Compiled Markdown files</description>
+                    <tags>MARKDOWN</tags>
+                </markdown>
+            </types>
+        </cache>
         <models>
             <markdown>
                 <class>SchumacherFM_Markdown_Model</class>
@@ -140,6 +149,7 @@
                 <hide_insert_image_button>1</hide_insert_image_button>
                 <highlight_style>github.css</highlight_style>
                 <preview_style>github.css</preview_style>
+                <cache_lifetime>86400</cache_lifetime>
             </markdown>
             <markdown_extra>
                 <enable>0</enable>
