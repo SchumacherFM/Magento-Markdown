@@ -79,11 +79,6 @@ into each html tag attribute: style.
 	<h1 style="font-size..."></h1>
 ```
 
-#### HTML to Markdown reMarked.js
-
-Converting tables into real markdown tables is buggy and does not work at the moment. So GFM tables has been disabled
-but all HTML tables tags are preserved and nicely formatted after converting.
-
 Developer Usage
 ---------------
 
