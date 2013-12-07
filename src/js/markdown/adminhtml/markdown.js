@@ -763,9 +763,11 @@
                 reload = new Element('a', {'href': '#'}),
                 url = _markDownGlobalConfig.previewUrl + '?___store=';
 
-            _markDownGlobalConfig.stores.forEach(function (storeCode) {
-                ul.insert('<li><a href="' + url + storeCode + '" target="' + self.data.textAreaId + '__livePreviewB">' + storeCode + '</a></li>');
-            });
+            if (_markDownGlobalConfig.previewUrl !== '') {
+                _markDownGlobalConfig.stores.forEach(function (storeCode) {
+                    ul.insert('<li><a href="' + url + storeCode + '" target="' + self.data.textAreaId + '__livePreviewB">' + storeCode + '</a></li>');
+                });
+            }
 
             if (_markDownGlobalConfig.previewUrl === '') {
 
