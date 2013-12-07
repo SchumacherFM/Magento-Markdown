@@ -143,6 +143,11 @@ textarea.initMarkdown.fReaderDrag {
     border           : 1px solid #ddd;
 }
 
+.mdTabpage .previewStores li {
+    display       : inline;
+    padding-right : 1em;
+}
+
 .mdParserInfo {
     padding-top : 13px;
 }

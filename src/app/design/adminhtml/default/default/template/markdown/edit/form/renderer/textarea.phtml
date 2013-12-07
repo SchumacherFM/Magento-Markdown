@@ -30,8 +30,8 @@
             <?php echo $this->getIframe('__previewB', FALSE); ?>
         </div>
         <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__livePreviewB">
-            <ul class="previewUrls"></ul>
-            <?php echo $this->getIframe('__livePreviewB'); ?>
+            <ul class="previewStores"></ul>
+            <?php echo $this->getIframe($this->getElementId() . '__livePreviewB'); ?>
         </div>
         <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__htmlPreviewB">
             <?php echo $this->getIframe('__htmlPreviewB', FALSE); ?>

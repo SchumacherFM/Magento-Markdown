@@ -29,11 +29,11 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
     protected $_currentElement = NULL;
 
     /**
-     * contains all live preview URLs
+     * contains the base live preview URL
      *
      * @var array
      */
-    protected $_livePreviewUrls = array();
+    protected $_livePreviewUrl = NULL;
 
     /**
      * adminhtml_block_html_before
@@ -79,46 +79,48 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
      * @todo this needs to be extended for each block on which markdown can occur.
      *
      * @param Mage_Core_Block_Abstract $block
+     *
+     * @return null
      */
     protected function _tryToGetPreviewUrl(Mage_Core_Block_Abstract $block)
     {
+        if (NULL !== $this->_livePreviewUrl) {
+            return NULL;
+        }
+
         // cms page edit
         if (TRUE === $this->_isElementEditor()) {
 
             /* @var $model Mage_Cms_Model_Page */
-            $model   = Mage::registry('cms_page');
+            $model = Mage::registry('cms_page');
+            if (empty($model)) {
+                return NULL;
+            }
             $coreUrl = Mage::getModel('core/url');
 
-            foreach ($model->getStoreId() as $storeId) {
-                $_storeCode               = Mage::app()->getStore($storeId)->getCode();
-                $_identifier              = $model->getIdentifier();
-                $urlModel                 = $coreUrl->setStore($storeId);
-                $this->_livePreviewUrls[] = $urlModel->getUrl(
-                    $_identifier, array(
-                        '_current' => FALSE,
-                        '_query'   => '___store=' . $_storeCode
-                    )
-                );
-            }
+            $this->_livePreviewUrl = $coreUrl->getUrl(
+                $model->getIdentifier(), array(
+                    '_current' => FALSE
+                )
+            );
         }
 
+        // catalog
         if (TRUE === $this->_isCatalogElementAllowed()) {
             /** @var Mage_Catalog_Model_Product $product */
             $product = Mage::registry('current_product');
             /** @var Mage_Catalog_Model_Category $category */
             $category = Mage::registry('current_category');
 
-            $storeIds = Mage::app()->getStores(TRUE, FALSE);
-            foreach ($storeIds as $id => $store) {
-                /** @var $store Mage_Core_Model_Store */
-                if ($product) {
-                    $this->_livePreviewUrls[] = $product->getUrlInStore(array('_store' => $id));
-                }
-                if ($category) {
-                    $this->_livePreviewUrls[] = $category->getCategoryIdUrl() . '?___store=' . $store->getCode();
-                }
+            if ($product) {
+                $this->_livePreviewUrl = $product->getUrlInStore();
             }
+            if ($category) {
+                $this->_livePreviewUrl = $category->getCategoryIdUrl();
+            }
+            $this->_livePreviewUrl = preg_replace('~\?___store=[^\&]+~i', '', $this->_livePreviewUrl);
         }
+        return NULL;
     }
 
     /**
@@ -192,11 +194,12 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
             $config['eru'] = $this->_helper->getAdminRenderUrl(array('markdownExtra' => 1)); // extra renderer url
         }
 
+        $config['stores']  = $this->_helper->getStoreCodes();
         $config['eeloc']   = $this->_helper->isEpicEditorLoadOnClick();
         $config['hideIIB'] = $this->_helper->isHiddenInsertImageButton();
         $config['mdCss']   = $this->_helper->getMarkdownStyleCss(TRUE);
         $config['hlCss']   = $this->_helper->getHighLightStyleCss(TRUE);
-        $config['lpUrls']  = $this->_livePreviewUrls;
+        $config['lpUrl']   = $this->_livePreviewUrl;
         $config['feaBUrl'] = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS) . 'markdown/adminhtml/feature/'; // feature base url (raptor)
 
         if ($this->_helper->isReMarkedEnabled() === TRUE) {

@@ -5,6 +5,7 @@
  * @copyright   Copyright (c)
  */
 /*global $,$$,marked,varienGlobalEvents,Ajax,hljs,FileReaderJS,Event,encode_base64,reMarked,Effect,Element*/
+/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, noarg:true, noempty:true, nonew:true, undef:true, strict:false, browser:true, prototypejs:true */
 ;
 (function () {
     'use strict';
@@ -53,7 +54,8 @@
             eeLoadOnClick: config.eeloc || false,
             isHiddenInsertImageButton: config.hideIIB || true,
             previewCSS: config.mdCss || false,
-            previewUrls: config.lpUrls || [],
+            previewUrl: config.lpUrl || '',
+            stores: config.stores || [],
             featureBaseUrl: config.feaBUrl || '',
             highLightCSS: config.hlCss || false,
             reMarkedCfg: decodeURIComponent(config.rmc || '{}').evalJSON(true)
@@ -643,55 +645,6 @@
         }
     }
 
-    /**
-     *
-     * @param event
-     * @private
-     */
-    function _buildTabsFactory(event) {
-        var target = event.target || event.srcElement,
-            $mdTextArea = {},
-            mageButtons = [],
-            $parentTd = target.parentNode,
-            $mageButtons = $('buttons' + target.id),
-            iFrameJs = null;
-
-        if (target.readAttribute('data-tabsBuilt')) {
-            return;
-        }
-
-        if ($mageButtons) {
-            mageButtons = $mageButtons.select('button');
-            mageButtons.each(function (buttonElement) {
-                $(target.id + '__writeB').insert({
-                    top: buttonElement
-                });
-            });
-        }
-
-        $mdTextArea = $parentTd.select('.mdTextArea')[0];
-        $mdTextArea.insert(target);
-
-        $parentTd.select('.mdTabContainer')[0].show();
-        target.writeAttribute('data-tabsBuilt', 1);
-
-        if (false === _isFileReaderEnabled()) {
-            $parentTd.select('.md-filereader-text')[0].remove();
-        }
-
-        iFrameJs = $(target.id + '__iFrameJS');
-        if (iFrameJs) { // bug if called in catalog/category/edit
-            tempIframeJSSource = iFrameJs.innerHTML.replace('~~origin~~', document.location.origin);
-
-            //        window.addEventListener("message", receiveMessage, false);
-            Event.observe(window, 'message', function (event) {
-                var data = event.data.split('=');
-                iFrameScrollPositions[data[0]] = ~~data[1]; // convert to int via ~~
-            });
-        }
-
-    }
-
     /******************************************************************************************************
      *
      * @constructor
@@ -804,30 +757,36 @@
                 return null;
             }
 
-            var ul = this.data.tabBody.select('.previewUrls')[0];
-            _markDownGlobalConfig.previewUrls.forEach(function (url) {
-                ul.insert('<li><a href="' + url + '" target="__livePreviewB">' + url + '</a></li>');
+            var self = this,
+                ul = self.data.tabBody.select('.previewStores')[0],
+                liElement = new Element('li'),
+                reload = new Element('a', {'href': '#'}),
+                url = _markDownGlobalConfig.previewUrl + '?___store=';
+
+            _markDownGlobalConfig.stores.forEach(function (storeCode) {
+                ul.insert('<li><a href="' + url + storeCode + '" target="' + self.data.textAreaId + '__livePreviewB">' + storeCode + '</a></li>');
             });
 
-            if (_markDownGlobalConfig.previewUrls.length === 0) {
-                var liElement = new Element('li'),
-                    reload = new Element('a', {'href': '#'});
+            if (_markDownGlobalConfig.previewUrl === '') {
 
-                this.lpInputElement.value = this._localStorageGet('lpUrl');
+                this.lpInputElement.value = self._localStorageGet('lpUrl');
                 this.lpInputElement.observe('change', this._observeUserLivePreviewUrl.bind(this));
                 reload.update('Reload?');
-                reload.observe('click', this._observeUserLivePreviewUrlReload.bind(this));
+                reload.observe('click', self._observeUserLivePreviewUrlReload.bind(this));
                 liElement.update('Please enter live preview URL. (Cannot be detected automatically) ');
                 liElement.insert(reload);
-                liElement.insert(this.lpInputElement);
+                liElement.insert(self.lpInputElement);
                 ul.insert(liElement);
             }
 
             this._livePreviewSetUpDone = true;
-            return _markDownGlobalConfig.previewUrls[0] || null;
+            return _markDownGlobalConfig.previewUrl !== '' ? url + (_markDownGlobalConfig.stores[0] || 'default') : null;
+        },
+        _isUrl: function (url) {
+            return url.search(/^htt(p|ps):\/\/[a-z0-9]+/) !== -1;
         },
         _observeUserLivePreviewSetiFrame: function (url) {
-            if (url.search(/^htt(p|ps):\/\/[a-z0-9]+/) !== -1) {
+            if (true === this._isUrl(url)) {
                 this._setIframeSrc(url);
             } else {
                 if (this._lockedRaptor === false) { // only load once the raptor
@@ -844,7 +803,9 @@
         },
         _observeUserLivePreviewUrl: function (event) {
             var value = (event.srcElement || event.target).value.toLowerCase();
-            this._localStorageSet('lpUrl', value);
+            if (true === this._isUrl(value)) {
+                this._localStorageSet('lpUrl', value);
+            }
             this._observeUserLivePreviewSetiFrame(value);
         },
         _observeUserLivePreviewUrlReload: function (event) {
@@ -856,7 +817,9 @@
             if (randPos !== -1) {
                 value = value.substr(randPos - 1, 20);
             }
-            this._localStorageSet('lpUrl', value);
+            if (true === this._isUrl(value)) {
+                this._localStorageSet('lpUrl', value);
+            }
             if (value.indexOf('?') !== -1) {
                 value = value + '&' + rand;
             } else {
@@ -988,44 +951,53 @@
         } // end func raptorize
     };
 
-    /*************************************************************************************************************
-     * loads the filereader, epiceditor
+    /**
+     * event on click at textarea.initMarkdown
+     * @param event
+     * @private
      */
-    function _mdInitialize() {
-        _initGlobalConfig();
-
-        var parentElementIds = ['product_edit_form', 'edit_form', 'category-edit-container', 'email_template_edit_form'],
+    function _onClickBuildTabsFactory(event) {
+        var target = event.target || event.srcElement,
+            $mdTextArea = {},
+            mageButtons = [],
+            $parentTd = target.parentNode,
+            $mageButtons = $('buttons' + target.id),
+            iFrameJs = null,
             tabPreview = new TabPreviewHandler();
 
-        if (varienGlobalEvents) {
-            varienGlobalEvents.fireEvent('mdLoadForms', parentElementIds);
+        if (target.readAttribute('data-tabsBuilt')) {
+            return;
         }
 
-        //  loading multiple instances on one page
-        // only works with event delegation due category edit page ... and the varientabs js class ...
-        // fire event for customization varienGlobalEvents.attachEventHandler('showTab', function (e) {...}
-        parentElementIds.forEach(function (elementId) {
-            var $elementId = $(elementId);
-            if ($elementId) {
-
-                $elementId.on('click', 'textarea.initMarkdown', _buildTabsFactory);
-
-                // some things are only possible with event delegation ...
-                if (true === _isEpicEditorEnabled() && true === _markDownGlobalConfig.eeLoadOnClick) {
-                    $elementId.on('click', 'textarea.initEpicEditor', _createEpicEditorInstances);
-                }
-                if (true === _isFileReaderEnabled()) {
-                    $elementId.on('click', 'textarea.initMarkdown', _createFileReaderFactory);
-                }
-            }
-        });
-
-        if (_markDownGlobalConfig.isHiddenInsertImageButton === true) {
-            $$('button.add-image').each(function (element) {
-                element.remove();
+        if ($mageButtons) {
+            mageButtons = $mageButtons.select('button');
+            mageButtons.each(function (buttonElement) {
+                $(target.id + '__writeB').insert({
+                    top: buttonElement
+                });
             });
         }
 
+        $mdTextArea = $parentTd.select('.mdTextArea')[0];
+        $mdTextArea.insert(target);
+
+        $parentTd.select('.mdTabContainer')[0].show();
+        target.writeAttribute('data-tabsBuilt', 1);
+
+        if (false === _isFileReaderEnabled()) {
+            $parentTd.select('.md-filereader-text')[0].remove();
+        }
+
+        iFrameJs = $(target.id + '__iFrameJS'); // in category edit the security of prototype strips out the script template
+        if (iFrameJs) { // so this is null in category edit
+            tempIframeJSSource = iFrameJs.innerHTML.replace('~~origin~~', document.location.origin);
+
+            //        window.addEventListener("message", receiveMessage, false);
+            Event.observe(window, 'message', function (event) {
+                var data = event.data.split('=');
+                iFrameScrollPositions[data[0]] = ~~data[1]; // convert to int via ~~
+            });
+        }
         /**
          * creating clickable tabs
          */
@@ -1057,6 +1029,44 @@
                 }
             });
         });
+    } // end _onClickBuildTabsFactory
+
+    /*************************************************************************************************************
+     * loads the filereader, epiceditor
+     */
+    function _mdInitialize() {
+        _initGlobalConfig();
+
+        var parentElementIds = ['product_edit_form', 'edit_form', 'category-edit-container', 'email_template_edit_form'];
+
+        if (varienGlobalEvents) {
+            varienGlobalEvents.fireEvent('mdLoadForms', parentElementIds);
+        }
+
+        //  loading multiple instances on one page
+        // only works with event delegation due category edit page ... and the varientabs js class ...
+        // fire event for customization varienGlobalEvents.attachEventHandler('showTab', function (e) {...}
+        parentElementIds.forEach(function (elementId) {
+            var $elementId = $(elementId);
+            if ($elementId) {
+
+                $elementId.on('click', 'textarea.initMarkdown', _onClickBuildTabsFactory);
+
+                // some things are only possible with event delegation ...
+                if (true === _isEpicEditorEnabled() && true === _markDownGlobalConfig.eeLoadOnClick) {
+                    $elementId.on('click', 'textarea.initEpicEditor', _createEpicEditorInstances);
+                }
+                if (true === _isFileReaderEnabled()) {
+                    $elementId.on('click', 'textarea.initMarkdown', _createFileReaderFactory);
+                }
+            }
+        });
+
+        if (_markDownGlobalConfig.isHiddenInsertImageButton === true) {
+            $$('button.add-image').each(function (element) {
+                element.remove();
+            });
+        }
     }
 
     this.toggleMarkdown = toggleMarkdown;

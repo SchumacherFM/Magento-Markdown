@@ -288,4 +288,18 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
         }
         return $handles;
     }
+
+    /**
+     * @return array
+     */
+    public function getStoreCodes()
+    {
+        $stores    = array();
+        $appStores = Mage::app()->getStores(TRUE, FALSE);
+        foreach ($appStores as $store) {
+            /** @var $store Mage_Core_Model_Store */
+            $stores[] = $store->getCode();
+        }
+        return $stores;
+    }
 }
