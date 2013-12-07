@@ -53,7 +53,6 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         $block            = $observer->getEvent()->getBlock();
         $isWidgetElement  = $block instanceof Mage_Adminhtml_Block_Widget_Form_Renderer_Fieldset_Element;
         $isCatalogElement = $block instanceof Mage_Adminhtml_Block_Catalog_Form_Renderer_Fieldset_Element;
-        $this->_tryToGetPreviewUrl($block);
 
         /**
          * main reason for this layout handle thing is to avoid loading of lot of unused JS/CSS ...
@@ -69,6 +68,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
             $_isEmailTemplateElementAllowed = $this->_isEmailTemplateElementAllowed();
 
             if ($_isElementEditor || $_isCatalogElementAllowed || $_isEmailTemplateElementAllowed) {
+                $this->_tryToGetPreviewUrl($block);
                 $method = $isLayoutHandleAllowed ? '_integrate' : '_addMarkdownHint';
                 $this->$method();
             }
@@ -76,27 +76,47 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
     }
 
     /**
-     * @todo this needs to be extended for each on which markdown can occur.
+     * @todo this needs to be extended for each block on which markdown can occur.
      *
      * @param Mage_Core_Block_Abstract $block
      */
     protected function _tryToGetPreviewUrl(Mage_Core_Block_Abstract $block)
     {
-        if ($block instanceof Mage_Adminhtml_Block_Cms_Page_Edit_Tab_Main) {
+        // cms page edit
+        if (TRUE === $this->_isElementEditor()) {
 
             /* @var $model Mage_Cms_Model_Page */
-            $model = Mage::registry('cms_page');
+            $model   = Mage::registry('cms_page');
+            $coreUrl = Mage::getModel('core/url');
 
             foreach ($model->getStoreId() as $storeId) {
-                $_storeCode            = Mage::app()->getStore($storeId)->getCode();
-                $_identifier           = $model->getIdentifier();
-                $urlModel              = Mage::getModel('core/url')->setStore($storeId);
+                $_storeCode               = Mage::app()->getStore($storeId)->getCode();
+                $_identifier              = $model->getIdentifier();
+                $urlModel                 = $coreUrl->setStore($storeId);
                 $this->_livePreviewUrls[] = $urlModel->getUrl(
                     $_identifier, array(
                         '_current' => FALSE,
                         '_query'   => '___store=' . $_storeCode
                     )
                 );
+            }
+        }
+
+        if (TRUE === $this->_isCatalogElementAllowed()) {
+            /** @var Mage_Catalog_Model_Product $product */
+            $product = Mage::registry('current_product');
+            /** @var Mage_Catalog_Model_Category $category */
+            $category = Mage::registry('current_category');
+
+            $storeIds = Mage::app()->getStores(TRUE, FALSE);
+            foreach ($storeIds as $id => $store) {
+                /** @var $store Mage_Core_Model_Store */
+                if ($product) {
+                    $this->_livePreviewUrls[] = $product->getUrlInStore(array('_store' => $id));
+                }
+                if ($category) {
+                    $this->_livePreviewUrls[] = $category->getCategoryIdUrl() . '?___store=' . $store->getCode();
+                }
             }
         }
     }
@@ -137,6 +157,10 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
 
         $this->_addMarkDownConfig();
 
+        Mage::dispatchEvent('markdown_merge_after_element_html', array(
+            'instance' => $this,
+        ));
+
         ksort($this->_afterElementHtml);
         $this->_currentElement->setData('after_element_html', $this->_generateTabs());
         $this->_afterElementHtml = array();
@@ -172,7 +196,8 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         $config['hideIIB'] = $this->_helper->isHiddenInsertImageButton();
         $config['mdCss']   = $this->_helper->getMarkdownStyleCss(TRUE);
         $config['hlCss']   = $this->_helper->getHighLightStyleCss(TRUE);
-        $config['lpUrls']   = $this->_livePreviewUrls; // @todo implement in JS
+        $config['lpUrls']  = $this->_livePreviewUrls;
+        $config['feaBUrl'] = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS) . 'markdown/adminhtml/feature/'; // feature base url (raptor)
 
         if ($this->_helper->isReMarkedEnabled() === TRUE) {
             $config['rmc'] = $this->_helper->getReMarkedConfig();

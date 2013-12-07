@@ -4,7 +4,7 @@
  * @author      Cyrill at Schumacher dot fm / @SchumacherFM
  * @copyright   Copyright (c)
  */
-/*global $,$$,marked,varienGlobalEvents,Ajax,hljs,FileReaderJS,Event,encode_base64,reMarked*/
+/*global $,$$,marked,varienGlobalEvents,Ajax,hljs,FileReaderJS,Event,encode_base64,reMarked,Effect,Element*/
 ;
 (function () {
     'use strict';
@@ -54,6 +54,7 @@
             isHiddenInsertImageButton: config.hideIIB || true,
             previewCSS: config.mdCss || false,
             previewUrls: config.lpUrls || [],
+            featureBaseUrl: config.feaBUrl || '',
             highLightCSS: config.hlCss || false,
             reMarkedCfg: decodeURIComponent(config.rmc || '{}').evalJSON(true)
         };
@@ -619,12 +620,12 @@
             toggleEpicEditor(element, textAreaId);
         }
 
+        html = thePreserver.getPreserved();
         if (_markDownGlobalConfig.tag !== '' && html.indexOf(_markDownGlobalConfig.tag) === -1) {
             markDownGlobalConfigTag = _markDownGlobalConfig.tag;
         }
 
-        html = markDownGlobalConfigTag + '\n' + _getReMarked().render(thePreserver.getPreserved());
-        $(textAreaId).value = thePreserver.restore(html);
+        $(textAreaId).value = thePreserver.restore(markDownGlobalConfigTag + '\n' + _getReMarked().render(html));
     }
 
     /**
@@ -651,18 +652,22 @@
         var target = event.target || event.srcElement,
             $mdTextArea = {},
             mageButtons = [],
-            $parentTd = target.parentNode;
+            $parentTd = target.parentNode,
+            $mageButtons = $('buttons' + target.id),
+            iFrameJs = null;
 
         if (target.readAttribute('data-tabsBuilt')) {
             return;
         }
 
-        mageButtons = $('buttons' + target.id).select('button');
-        mageButtons.each(function (buttonElement) {
-            $(target.id + '__writeB').insert({
-                top: buttonElement
+        if ($mageButtons) {
+            mageButtons = $mageButtons.select('button');
+            mageButtons.each(function (buttonElement) {
+                $(target.id + '__writeB').insert({
+                    top: buttonElement
+                });
             });
-        });
+        }
 
         $mdTextArea = $parentTd.select('.mdTextArea')[0];
         $mdTextArea.insert(target);
@@ -674,13 +679,16 @@
             $parentTd.select('.md-filereader-text')[0].remove();
         }
 
-        tempIframeJSSource = $(target.id + '__iFrameJS').innerHTML.replace('~~origin~~', document.location.origin);
+        iFrameJs = $(target.id + '__iFrameJS');
+        if (iFrameJs) { // bug if called in catalog/category/edit
+            tempIframeJSSource = iFrameJs.innerHTML.replace('~~origin~~', document.location.origin);
 
-//        window.addEventListener("message", receiveMessage, false);
-        Event.observe(window, 'message', function (event) {
-            var data = event.data.split('=');
-            iFrameScrollPositions[data[0]] = ~~data[1];
-        });
+            //        window.addEventListener("message", receiveMessage, false);
+            Event.observe(window, 'message', function (event) {
+                var data = event.data.split('=');
+                iFrameScrollPositions[data[0]] = ~~data[1]; // convert to int via ~~
+            });
+        }
 
     }
 
@@ -692,11 +700,20 @@
         this.data = {};
         this._isHtmlPreview = false;
         this._livePreviewSetUpDone = false;
+        this._reloadCounter = 0;
         this.lpInputElement = new Element('input', {
             'type': 'text',
             'class': 'input-text',
             'value': ''
         });
+        this._reloadAnswers = [
+            'Cannot find a URL ...',
+            'As I\'ve said before: Cannot find a URL ...',
+            'Would you please stop clicking on me?',
+            'Again ... you have to put in a valid URL!',
+            'One more click ...'
+        ];
+        this._lockedRaptor = false;
     }
 
     /**
@@ -713,6 +730,7 @@
         setData: function (data) {
             this._isHtmlPreview = false;
             this.data = data;
+            this._reloadCounter = 0;
             return this;
         },
         _preview: function () {
@@ -812,7 +830,16 @@
             if (url.search(/^htt(p|ps):\/\/[a-z0-9]+/) !== -1) {
                 this._setIframeSrc(url);
             } else {
-                alert('Cannot find a URL ...');
+                if (this._lockedRaptor === false) { // only load once the raptor
+                    this.lpInputElement.value = (this._reloadAnswers[this._reloadCounter] || this._reloadAnswers[0]);
+                    this._reloadCounter = this._reloadCounter + 1;
+                    if (this._reloadCounter === this._reloadAnswers.length) {
+                        this._raptorize();
+                        this._reloadCounter = 0;
+                    }
+                } else {
+                    this.lpInputElement.value = this._reloadAnswers[0];
+                }
             }
         },
         _observeUserLivePreviewUrl: function (event) {
@@ -843,7 +870,122 @@
             if (null !== firstUrl) {
                 this._setIframeSrc(firstUrl);
             }
-        }
+        },
+        _raptorize: function (options) {
+            // based on http://zurb.com/playground/jquery-raptorize
+            //the defaults
+            var self = this,
+                myOptions = options || {}, // make sure options object is valid
+                enterOn = myOptions.appearOn || 'time', //time, konami-code, click, code
+                delayTime = myOptions.delayTime || 2000, //time before raptor attacks on timer mode
+
+                sound = false,
+                canPlayMp3 = false,
+                canPlayOgg = false,
+
+                viewport = document.viewport.getDimensions(),
+                type = '',
+                src = '',
+                raptorAudioMarkup = {},
+                html5 = {},
+
+                myAudio = document.createElement('audio');
+
+            if (myAudio.canPlayType) {
+                canPlayMp3 = !!myAudio.canPlayType && '' !== myAudio.canPlayType('audio/mpeg');
+                canPlayOgg = !!myAudio.canPlayType && '' !== myAudio.canPlayType('audio/ogg; codecs="vorbis"');
+            }
+            if (canPlayMp3) {
+                type = 'audio/mp3';
+                src = _markDownGlobalConfig.featureBaseUrl + 'rs.mp3';
+                sound = true;
+            }
+            if (canPlayOgg) {
+                type = 'audio/ogg';
+                src = _markDownGlobalConfig.featureBaseUrl + 'rs.ogg';
+                sound = true;
+            }
+
+            //Raptor Sound
+            if (sound) {
+                raptorAudioMarkup = new Element('audio', {id: "elRaptorShriek", "preload": "auto"});
+                document.body.appendChild(raptorAudioMarkup);
+
+                html5 = new Element('source');
+                html5.type = type;
+                html5.src = src;
+                raptorAudioMarkup.appendChild(html5);
+            }
+            //Append Raptor and Style
+            var raptorImageMarkup = new Element('img', {
+                    id: 'elRaptor',
+                    src: _markDownGlobalConfig.featureBaseUrl + 'r.png'
+                }),
+                imgSize = {
+                    width: 400,
+                    height: 600
+                },
+                raptorPosition = {
+                    width: viewport.width - imgSize.width,
+                    height: viewport.height - imgSize.height
+                };
+
+            raptorImageMarkup.setStyle({
+                'position': 'fixed',
+                'opacity': 0,
+                'top': viewport.height + 'px',
+                'left': raptorPosition.width + 'px',
+                'zIndex': '10001',
+                'display': 'none'
+            });
+            document.body.insert(raptorImageMarkup);
+
+            function go() {
+                self.lpInputElement.value = ''; // clear input field where the hilarious ;-) text appears
+                self._lockedRaptor = true;
+
+                if (sound) {
+                    document.getElementById('elRaptorShriek').play();
+                }
+
+                var raptor = $('elRaptor').setStyle({
+                    "display": "block"
+                }), ep1, ep2;
+
+                function removeRaptor() {
+                    raptor.remove();
+                    $('elRaptorShriek').remove();
+                }
+
+                ep1 = new Effect.Parallel([
+                    new Effect.Opacity(raptor, { sync: true, from: 0, to: 1 }),
+                    new Effect.Move(raptor, {
+                        sync: true,
+                        x: raptorPosition.width,
+                        y: raptorPosition.height,
+                        mode: 'absolute',
+                        transition: Effect.Transitions.spring
+                    })
+                ], {duration: 1});
+
+                ep2 = new Effect.Move(raptor, {
+                    xsync: true,
+                    x: -1 * imgSize.width,
+                    y: viewport.height - 100,
+                    mode: 'absolute',
+                    transition: Effect.Transitions.spring,
+                    duration: 15,
+                    delay: 1.1
+                });
+                removeRaptor.delay(5);
+            }
+
+            //Determine Entrance
+            if (enterOn === 'time' && this._lockedRaptor === false) {
+                setTimeout(go, delayTime);
+            }
+
+        } // end func raptorize
     };
 
     /*************************************************************************************************************
