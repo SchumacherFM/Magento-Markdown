@@ -11,19 +11,22 @@ format, then convert it to structurally valid XHTML (or HTML).
 - Renders all CMS pages and all CMS blocks (Mage_Cms_Block_Block and Mage_Cms_Block_Widget_Block)
 - Renders every transactional email as Markdown (or MD Extra)
 - Rendering of catalog product and category short and long description fields have to be implemented in the phtml files by yourself.
-- Integrates the awesome [EpicEditor](http://epiceditor.com): split fullscreen editing, live previewing, automatic draft saving and offline support.
-- Drag'n'Drop of images supported in textarea fields. [Automatic image uploading](https://developer.mozilla.org/en-US/docs/Web/API/FileReader) integrated (>=
- IE10, Safari 6.0.2, FX3.6, Chrome 7, Opera 12.02)
+- Integrates the [EpicEditor](http://epiceditor.com): split fullscreen editing, live previewing, automatic draft saving and offline support. [1]
+- Drag'n'Drop, Copy'n'Past and classical file upload of images supported in textarea fields. [Automatic image uploading](https://developer.mozilla
+.org/en-US/docs/Web/API/FileReader) integrated (>=IE10, Safari 6.0.2, FX3.6, Chrome 7, Opera 12.02)
 - Converting of HTML into Markdown. Client side via JavaScript.
+- Preview mode either via on-the-fly rendering or Live Preview
 
 Full documentation of Markdown's syntax is available on [John's Markdown page](http://daringfireball.net/projects/markdown/)
+
+[1] Will be maybe removed in future versions
 
 Why do I need this?
 -------------------
 
 Because you want to get rid of the TinyMCE and force your customer to use easy and limited syntax.
 
-You can edit your markdown text with external editors:
+You can also edit your markdown text with external editors:
 
 #### Mac OS X
 
@@ -50,13 +53,17 @@ All options can be set per store view.
 - Enable or disable Markdown parser
 - Enable or disable Markdown extra parser
 - Set Markdown detection tag
+- Hide Image Insert button
+- HTML Source Preview Style CSS, choose one of ~20 different themes
+- Markdown Preview Style CSS, choose one of 9 different themes
+- Configure the CSS Style for all three preview iFrames
 - Add path to css file if using in transactional emails
-- Enable or disable Markdown EpicEditor
+- Enable or disable Markdown EpicEditor (Default disabled)
 - Enable or disable loading of the EpicEditor via click in a textarea field
 - Full configuration for Markdown EpicEditor - add a JSON object in the System -> Configuration section
-- Defining a custom upload folder for Drag'n'Drop image upload. This folder will be created automatically and recursively
+- Defining a custom upload folder for image upload. This folder will be created automatically and recursively
 - Enable or disable HTML to Markdown converter reMarked.js
-- Full configuration for converter reMarked.js - add a JSON object in the System -> Configuration section
+- Full configuration for converter reMarked.js. Add a JSON object in the System -> Configuration section
 - Integrate Markdown into your own module by adding the layout handle into the System -> Configuration section
 
 Every field which contains Markdown syntax must contain that detection tag otherwise it will not be parsed.
@@ -124,6 +131,17 @@ echo $instance->renderMarkdown('text goes here');
 
 ...
 
+#### Modifying the backend
+
+You can add an event to the Markdown observer which generates the backend view.
+
+```php
+        Mage::dispatchEvent('markdown_merge_after_element_html', array(
+            'instance' => $this,
+        ));
+```
+
+
 Todo
 ----
 
@@ -149,6 +167,15 @@ About
 
 History
 -------
+
+#### 2.1.0-rc.1
+
+- Major changes in the backend Github Issue #18
+- Renaming of buttons
+- EpicEditor disabled by default
+- Better style for the textarea field with outer glow
+- Besides image Drag'n'Drop added file upload and copy and paste for images
+- Enhanced preview mode
 
 #### 2.0.2
 
