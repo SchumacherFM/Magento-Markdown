@@ -44,7 +44,7 @@
      */
     ?>
     <script type="text/template" id="<?php echo $this->getElementId(); ?>__iFrameJS">
-        var sTimeOut, st = ~~'~~scrollto~~';
+        var sTimeOut, st = ~~'~~scrollto~~', ori = '~~origin~~';
         window.onload=function(){ if(st>0){ window.scrollTo(0,st);} }
         window.onscroll=function(event){
             if(sTimeOut){clearTimeout(sTimeOut);}
@@ -52,7 +52,7 @@
                 var target = event.target || event.srcElement,
                     doc = target.documentElement, body = document.body,
                     top = (doc && doc.scrollTop  || body && body.scrollTop  || 0);
-                    window.top.postMessage('~~id~~='+top,'~~origin~~');
+                if(ori.indexOf('~origin~')===-1){window.top.postMessage('~~id~~='+top,ori);}else{console.log('origin error:',ori);}
             },90);
         }
     </script>
