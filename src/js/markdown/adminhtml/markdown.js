@@ -1003,9 +1003,9 @@
         /**
          * creating clickable tabs
          */
-        $$('.mdTabs ul li').each(function (liElement) {
-
-            liElement.observe('click', function (event) {
+        $$('.mdTabs ul li a').each(function (aElement) {
+            aElement.observe('click', function (event) {
+                Event.stop(event);
                 var current = this.parentNode.getAttribute('data-current'),
                     idSplit = this.id.split('__'),
                     taId = idSplit[0],
@@ -1029,6 +1029,7 @@
                     });
                     tabPreview[ident]();
                 }
+
             });
         });
     } // end _onClickBuildTabsFactory
