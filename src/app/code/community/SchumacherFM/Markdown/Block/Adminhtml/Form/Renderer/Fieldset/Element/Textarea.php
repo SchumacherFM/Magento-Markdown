@@ -57,15 +57,18 @@ class SchumacherFM_Markdown_Block_Adminhtml_Form_Renderer_Fieldset_Element_Texta
         $this->_helper->getPreviewIframeCSS() . '"></iframe>';
     }
 
-    public function getDocsLinks() {
-        $helper = $this->_helper;
-        $template = '<a target="_blank" href="%s">%s</a>';
-        $markdownLink = sprintf($template, $helper->getCheatSheetUrl(), 'Markdown');
+    /**
+     * @return string
+     */
+    public function getDocsLinks()
+    {
+        $template     = '<a target="_blank" href="%s">%s</a>';
+        $markdownLink = sprintf($template, $this->_helper->getCheatSheetUrl(), 'Markdown');
 
-        if (! $this->_helper->isMarkdownExtra()) {
+        if (FALSE === $this->_helper->isMarkdownExtra()) {
             return $this->__('Content is parsed with %s', $markdownLink);
         } else {
-            $markdownExtraLink = sprintf($template, $helper->getMdExtraDocUrl(), 'Markdown Extra');
+            $markdownExtraLink = sprintf($template, $this->_helper->getMdExtraDocUrl(), 'Markdown Extra');
             return $this->__('Content is parsed with %s and %s', $markdownLink, $markdownExtraLink);
         }
     }

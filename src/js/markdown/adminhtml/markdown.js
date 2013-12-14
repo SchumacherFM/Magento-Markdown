@@ -1006,7 +1006,8 @@
         $$('.mdTabs ul li a').each(function (aElement) {
             aElement.observe('click', function (event) {
                 Event.stop(event);
-                var current = this.parentNode.parentNode.getAttribute('data-current'),
+                var grandParentsNode = this.parentNode.parentNode,
+                    current = grandParentsNode.getAttribute('data-current'),
                     idSplit = this.id.split('__'),
                     taId = idSplit[0],
                     ident = idSplit[idSplit.length - 1],
@@ -1020,7 +1021,7 @@
                 this.setAttribute('class', 'active'); // header
 
                 $tabBody.addClassName('active'); // page
-                this.parentNode.parentNode.setAttribute('data-current', ident);
+                grandParentsNode.setAttribute('data-current', ident);
 
                 if (typeof tabPreview[ident] === 'function') {
                     tabPreview.setData({
@@ -1029,7 +1030,6 @@
                     });
                     tabPreview[ident]();
                 }
-
             });
         });
     } // end _onClickBuildTabsFactory

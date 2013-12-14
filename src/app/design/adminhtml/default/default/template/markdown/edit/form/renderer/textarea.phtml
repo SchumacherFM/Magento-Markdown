@@ -22,7 +22,7 @@
             </li>
             <li>
                 <a href="#" id="<?php echo $this->getElementId(); ?>__htmlPreview" class="tab-item-link">
-                <?php echo $this->___('HTML Preview') ?>
+                    <?php echo $this->___('HTML Preview') ?>
                 </a>
             </li>
             <span class="mdParserInfo">
@@ -62,13 +62,13 @@
         var sTimeOut, st = ~~'~~scrollto~~', ori = '~~origin~~';
         window.onload=function(){ if(st>0){ window.scrollTo(0,st);} }
         window.onscroll=function(event){
-            if(sTimeOut){clearTimeout(sTimeOut);}
-            sTimeOut = setTimeout(function(){
-                var target = event.target || event.srcElement,
-                    doc = target.documentElement, body = document.body,
-                    top = (doc && doc.scrollTop  || body && body.scrollTop  || 0);
-                if(ori.indexOf('~origin~')===-1){window.top.postMessage('~~id~~='+top,ori);}else{console.log('origin error:',ori);}
-            },90);
+        if(sTimeOut){clearTimeout(sTimeOut);}
+        sTimeOut = setTimeout(function(){
+        var target = event.target || event.srcElement,
+        doc = target.documentElement, body = document.body,
+        top = (doc && doc.scrollTop  || body && body.scrollTop  || 0);
+        if(ori.indexOf('~origin~')===-1){window.top.postMessage('~~id~~='+top,ori);}else{console.log('origin error:',ori);}
+        },90);
         }
     </script>
 </div>

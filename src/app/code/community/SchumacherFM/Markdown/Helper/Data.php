@@ -79,6 +79,14 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * @return string
      */
+    public function getTextareaStyle()
+    {
+        return trim(Mage::getStoreConfig('markdown/markdown/textarea_style'));
+    }
+
+    /**
+     * @return string
+     */
     public function getMdExtraDocUrl()
     {
         return self::URL_MD_EXTRA_SYNTAX;

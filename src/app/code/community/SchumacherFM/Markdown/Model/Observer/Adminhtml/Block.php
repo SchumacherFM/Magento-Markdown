@@ -166,7 +166,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         ksort($this->_afterElementHtml);
         $this->_currentElement->setData('after_element_html', $this->_generateTabs());
         $this->_afterElementHtml = array();
-        $this->_currentElement->addClass('initMarkdown');
+        $this->_currentElement->addClass('initMarkdown ' . $this->_helper->getTextareaStyle());
         return $this;
     }
 
