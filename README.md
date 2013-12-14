@@ -168,6 +168,11 @@ About
 History
 -------
 
+#### 2.1.0-rc.2
+
+- Merged Pull Request [More native-like styling](https://github.com/SchumacherFM/Magento-Markdown/pull/20)
+- Add new option for styling of the backend textarea field
+
 #### 2.1.0-rc.1
 
 - Major changes in the backend Github Issue #18
