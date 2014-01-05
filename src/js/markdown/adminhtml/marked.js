@@ -514,6 +514,7 @@ function InlineLexer(links, options) {
   this.options = options || marked.defaults;
   this.links = links;
   this.rules = inline.normal;
+  this.renderer = this.options.renderer || new Renderer;
 
   if (!this.links) {
     throw new
@@ -577,11 +578,7 @@ InlineLexer.prototype.output = function(src) {
         text = escape(cap[1]);
         href = text;
       }
-      out += '<a href="'
-        + href
-        + '">'
-        + text
-        + '</a>';
+      out += this.renderer.link(href, null, text);
       continue;
     }
 
@@ -590,11 +587,7 @@ InlineLexer.prototype.output = function(src) {
       src = src.substring(cap[0].length);
       text = escape(cap[1]);
       href = text;
-      out += '<a href="'
-        + href
-        + '">'
-        + text
-        + '</a>';
+      out += this.renderer.link(href, null, text);
       continue;
     }
 
@@ -635,43 +628,35 @@ InlineLexer.prototype.output = function(src) {
     // strong
     if (cap = this.rules.strong.exec(src)) {
       src = src.substring(cap[0].length);
-      out += '<strong>'
-        + this.output(cap[2] || cap[1])
-        + '</strong>';
+      out += this.renderer.strong(this.output(cap[2] || cap[1]));
       continue;
     }
 
     // em
     if (cap = this.rules.em.exec(src)) {
       src = src.substring(cap[0].length);
-      out += '<em>'
-        + this.output(cap[2] || cap[1])
-        + '</em>';
+      out += this.renderer.em(this.output(cap[2] || cap[1]));
       continue;
     }
 
     // code
     if (cap = this.rules.code.exec(src)) {
       src = src.substring(cap[0].length);
-      out += '<code>'
-        + escape(cap[2], true)
-        + '</code>';
+      out += this.renderer.codespan(escape(cap[2], true));
       continue;
     }
 
     // br
     if (cap = this.rules.br.exec(src)) {
       src = src.substring(cap[0].length);
-      out += '<br>';
+      out += this.renderer.br();
       continue;
     }
 
     // del (gfm)
     if (cap = this.rules.del.exec(src)) {
       src = src.substring(cap[0].length);
-      out += '<del>'
-        + this.output(cap[1])
-        + '</del>';
+      out += this.renderer.del(this.output(cap[1]));
       continue;
     }
 
@@ -696,31 +681,12 @@ InlineLexer.prototype.output = function(src) {
  */
 
 InlineLexer.prototype.outputLink = function(cap, link) {
-  if (cap[0].charAt(0) !== '!') {
-    return '<a href="'
-      + escape(link.href)
-      + '"'
-      + (link.title
-      ? ' title="'
-      + escape(link.title)
-      + '"'
-      : '')
-      + '>'
-      + this.output(cap[1])
-      + '</a>';
-  } else {
-    return '<img src="'
-      + escape(link.href)
-      + '" alt="'
-      + escape(cap[1])
-      + '"'
-      + (link.title
-      ? ' title="'
-      + escape(link.title)
-      + '"'
-      : '')
-      + '>';
-  }
+  var href = escape(link.href)
+    , title = link.title ? escape(link.title) : null;
+
+  return cap[0].charAt(0) !== '!'
+    ? this.renderer.link(href, title, this.output(cap[1]))
+    : this.renderer.image(href, title, escape(cap[1]));
 };
 
 /**
@@ -769,18 +735,30 @@ InlineLexer.prototype.mangle = function(text) {
  * Renderer
  */
 
-function Renderer(options) {
-  this.options = options || {};
-}
+function Renderer() {}
 
-Renderer.prototype.blockcode = function(code, lang) {
-  if (!lang) {
-    return '<pre><code>' + escape(code, true) + '\n</code></pre>';
+Renderer.prototype.code = function(code, lang, escaped, options) {
+  options = options || {};
+
+  if (options.highlight) {
+    var out = options.highlight(code, lang);
+    if (out != null && out !== code) {
+      escaped = true;
+      code = out;
+    }
   }
-  return '<pre><code class="lang-'
+
+  if (!lang) {
+    return '<pre><code>'
+      + (escaped ? code : escape(code, true))
+      + '\n</code></pre>';
+  }
+
+  return '<pre><code class="'
+    + options.langPrefix
     + lang
     + '">'
-    + escape(code)
+    + (escaped ? code : escape(code))
     + '\n</code></pre>\n';
 };
 
@@ -788,15 +766,15 @@ Renderer.prototype.blockquote = function(quote) {
   return '<blockquote>\n' + quote + '</blockquote>\n';
 };
 
-Renderer.prototype.blockhtml = function(html) {
+Renderer.prototype.html = function(html) {
   return html;
 };
 
-Renderer.prototype.header = function(text, level, prefix, raw) {
+Renderer.prototype.heading = function(text, level, raw, options) {
   return '<h'
     + level
     + ' id="'
-    + prefix
+    + options.headerPrefix
     + raw.toLowerCase().replace(/[^\w]+/g, '-')
     + '">'
     + text
@@ -805,7 +783,7 @@ Renderer.prototype.header = function(text, level, prefix, raw) {
     + '>\n';
 };
 
-Renderer.prototype.hrule = function() {
+Renderer.prototype.hr = function() {
   return '<hr>\n';
 };
 
@@ -845,19 +823,55 @@ Renderer.prototype.tablecell = function(content, flags) {
   return tag + content + '</' + type + '>\n';
 };
 
+// span level renderer
+Renderer.prototype.strong = function(text) {
+  return '<strong>' + text + '</strong>';
+};
+
+Renderer.prototype.em = function(text) {
+  return '<em>' + text + '</em>';
+};
+
+Renderer.prototype.codespan = function(text) {
+  return '<code>' + text + '</code>';
+};
+
+Renderer.prototype.br = function() {
+  return '<br>';
+};
+
+Renderer.prototype.del = function(text) {
+  return '<del>' + text + '</del>';
+};
+
+Renderer.prototype.link = function(href, title, text) {
+  var out = '<a href="' + href + '"';
+  if (title) {
+    out += ' title="' + title + '"';
+  }
+  out += '>' + text + '</a>';
+  return out;
+};
+
+Renderer.prototype.image = function(href, title, text) {
+  var out = '<img src="' + href + '" alt="' + text + '"';
+  if (title) {
+    out += ' title="' + title + '"';
+  }
+  out += '>';
+  return out;
+};
+
 /**
  * Parsing & Compiling
  */
 
-function Parser(options, renderer) {
+function Parser(options) {
   this.tokens = [];
   this.token = null;
-  if (options instanceof Renderer) {
-    options = null;
-    renderer = options;
-  }
-  this.renderer = renderer || new Renderer();
   this.options = options || marked.defaults;
+  this.options.renderer = this.options.renderer || new Renderer;
+  this.renderer = this.options.renderer;
 }
 
 /**
@@ -874,7 +888,7 @@ Parser.parse = function(src, options, renderer) {
  */
 
 Parser.prototype.parse = function(src) {
-  this.inline = new InlineLexer(src.links, this.options);
+  this.inline = new InlineLexer(src.links, this.options, this.renderer);
   this.tokens = src.reverse();
 
   var out = '';
@@ -920,25 +934,26 @@ Parser.prototype.parseText = function() {
  */
 
 Parser.prototype.tok = function() {
-  var renderer = this.renderer;
-
   switch (this.token.type) {
     case 'space': {
       return '';
     }
     case 'hr': {
-      return renderer.hrule();
+      return this.renderer.hr();
     }
     case 'heading': {
-      return renderer.header(
+      return this.renderer.heading(
         this.inline.output(this.token.text),
         this.token.depth,
-        this.options.headerPrefix,
-        this.token.text
+        this.token.text,
+        this.options
       );
     }
     case 'code': {
-      return renderer.blockcode(this.token.text, this.token.lang);
+      return this.renderer.code(this.token.text,
+        this.token.lang,
+        this.token.escaped,
+        this.options);
     }
     case 'table': {
       var header = ''
@@ -952,28 +967,28 @@ Parser.prototype.tok = function() {
       // header
       cell = '';
       for (i = 0; i < this.token.header.length; i++) {
-        flags = {header: true, align: this.token.align[i]};
-        cell += renderer.tablecell(
+        flags = { header: true, align: this.token.align[i] };
+        cell += this.renderer.tablecell(
           this.inline.output(this.token.header[i]),
-          {header: true, align: this.token.align[i]}
+          { header: true, align: this.token.align[i] }
         );
       }
-      header += renderer.tablerow(cell);
+      header += this.renderer.tablerow(cell);
 
       for (i = 0; i < this.token.cells.length; i++) {
         row = this.token.cells[i];
 
         cell = '';
         for (j = 0; j < row.length; j++) {
-          cell += renderer.tablecell(
+          cell += this.renderer.tablecell(
             this.inline.output(row[j]),
-            {header: false, align: this.token.align[j]}
+            { header: false, align: this.token.align[j] }
           );
         }
 
-        body += renderer.tablerow(cell);
+        body += this.renderer.tablerow(cell);
       }
-      return renderer.table(header, body);
+      return this.renderer.table(header, body);
     }
     case 'blockquote_start': {
       var body = '';
@@ -982,16 +997,17 @@ Parser.prototype.tok = function() {
         body += this.tok();
       }
 
-      return renderer.blockquote(body);
+      return this.renderer.blockquote(body);
     }
     case 'list_start': {
-      var body = '', ordered = this.token.ordered;
+      var body = ''
+        , ordered = this.token.ordered;
 
       while (this.next().type !== 'list_end') {
         body += this.tok();
       }
 
-      return renderer.list(body, ordered);
+      return this.renderer.list(body, ordered);
     }
     case 'list_item_start': {
       var body = '';
@@ -1002,7 +1018,7 @@ Parser.prototype.tok = function() {
           : this.tok();
       }
 
-      return renderer.listitem(body);
+      return this.renderer.listitem(body);
     }
     case 'loose_item_start': {
       var body = '';
@@ -1011,21 +1027,19 @@ Parser.prototype.tok = function() {
         body += this.tok();
       }
 
-      return renderer.listitem(body);
+      return this.renderer.listitem(body);
     }
     case 'html': {
       var html = !this.token.pre && !this.options.pedantic
         ? this.inline.output(this.token.text)
         : this.token.text;
-      return renderer.blockhtml(html);
+      return this.renderer.html(html);
     }
     case 'paragraph': {
-      return renderer.paragraph(this.inline.output(this.token.text));
+      return this.renderer.paragraph(this.inline.output(this.token.text));
     }
     case 'text': {
-      return '<p>'
-        + this.parseText()
-        + '</p>\n';
+      return this.renderer.paragraph(this.parseText());
     }
   }
 };
@@ -1179,7 +1193,8 @@ marked.defaults = {
   highlight: null,
   langPrefix: 'lang-',
   smartypants: false,
-  headerPrefix: ''
+  headerPrefix: '',
+  renderer: new Renderer
 };
 
 /**
