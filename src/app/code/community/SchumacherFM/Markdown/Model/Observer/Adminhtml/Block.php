@@ -98,11 +98,14 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
             }
             $coreUrl = Mage::getModel('core/url');
 
-            $this->_livePreviewUrl = $coreUrl->getUrl(
-                $model->getIdentifier(), array(
-                    '_current' => FALSE
-                )
-            );
+            $identifier = $model->getIdentifier();
+            if (!empty($identifier)) {
+                $this->_livePreviewUrl = $coreUrl->getUrl(
+                    $identifier, array(
+                        '_current' => FALSE
+                    )
+                );
+            }
         }
 
         // catalog

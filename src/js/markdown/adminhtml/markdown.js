@@ -691,6 +691,11 @@
                 self = this,
                 content = $(this.data.textAreaId).value;
 
+            if (content.replace(/\s*/g, '') === '') {
+                self._setIframe('');
+                return false;
+            }
+
             if (_markDownGlobalConfig.extraRendererUrl) {
                 pContent = _mdExtraRender(content);
                 pContent.then(function (error, html) {
@@ -769,7 +774,7 @@
                 });
             }
 
-            if (_markDownGlobalConfig.previewUrl === '') {
+            if (true === _markDownGlobalConfig.previewUrl.empty()) {
 
                 this.lpInputElement.value = self._localStorageGet('lpUrl');
                 this.lpInputElement.observe('change', this._observeUserLivePreviewUrl.bind(this));
