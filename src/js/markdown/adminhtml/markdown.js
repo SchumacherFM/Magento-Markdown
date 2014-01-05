@@ -239,8 +239,8 @@
      */
     function _highlightOpt(htmlString, options) {
         options = options || {};
-        var _hlPre = options.hlPre || '<pre>',
-            _hlPost = options.hlPost || '</pre>';
+        var _hlPre = options.hlPre || '<pre><code>',
+            _hlPost = options.hlPost || '</code></pre>';
         return _hlPre + hljs.highlight('xml', htmlString).value + _hlPost;
     }
 
@@ -713,11 +713,9 @@
             return '<link href="' + styleUrl + '" rel="stylesheet" type="text/css" />';
         },
         _getStyleSheets: function () {
-            var styleSheet = this._getHtmlStyleSheet(_markDownGlobalConfig.previewCSS);
-            if (_markDownGlobalConfig.highLightCSS && this._isHtmlPreview) {
-                styleSheet += this._getHtmlStyleSheet(_markDownGlobalConfig.highLightCSS);
-            }
-            return styleSheet;
+            return _markDownGlobalConfig.highLightCSS && this._isHtmlPreview
+                ? this._getHtmlStyleSheet(_markDownGlobalConfig.highLightCSS)
+                : this._getHtmlStyleSheet(_markDownGlobalConfig.previewCSS);
         },
         _setIframeSrc: function (theSrc) {
             var theIframe = this.data.tabBody.select('.iframePreview')[0];
@@ -736,14 +734,16 @@
                 return false;
             }
 
+            var bodyStyle = 'pointer-events:none;';
             if (true === this._isHtmlPreview) {
                 htmlString = _highlightOpt(_htmlBeautify(htmlString));
+                bodyStyle += 'padding:0; margin:0;';
             }
 
             // http://www.thecssninja.com/javascript/pointer-events-60fps
             this._setIframeSrc('data:text/html;charset=utf-8,' +
                 encodeURIComponent('<html><head>' + this._getStyleSheets() +
-                    '</head><body style="pointer-events:none;">' +
+                    '</head><body style="' + bodyStyle + '">' +
                     this._getJavaScript()
                     +
                     htmlString
