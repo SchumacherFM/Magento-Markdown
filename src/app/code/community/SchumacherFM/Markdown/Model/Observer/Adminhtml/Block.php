@@ -345,15 +345,6 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
                 ))->toHtml();
         }
 
-        $this->_afterElementHtml[210] = Mage::getSingleton('core/layout')
-            ->createBlock('adminhtml/widget_button', '', array(
-                'label'   => $this->___('HTML Preview'),
-                'type'    => 'button',
-                'class'   => 'mdButton', // @todo maybe remove all those classes
-                'title'   => $this->___('View generated HTML source code'),
-                'onclick' => 'toggleMarkdownSource(this,\'' . $htmlId . '\');'
-            ))->toHtml();
-
         if ($this->_helper->isEpicEditorEnabled()) {
             $this->_afterElementHtml[500] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
