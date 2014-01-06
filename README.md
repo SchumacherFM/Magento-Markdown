@@ -164,6 +164,7 @@ About
 - Key: SchumacherFM_Markdown
 - Current Version: 2.0.2
 - [Download tarball](https://github.com/SchumacherFM/Magento-Markdown/tags)
+- Donation: [http://www.seashepherd.org/](http://www.seashepherd.org/)
 
 History
 -------
@@ -247,7 +248,7 @@ Compatibility
 - Magento >= 1.5
 - php >= 5.2.0
 
-There is the possibility that this extension may work with pre-1.5 Magento versions.
+There exists the possibility that this extension may work with pre-1.5 Magento versions.
 
 Support / Contribution
 ----------------------
@@ -348,8 +349,8 @@ Backend preview rendering via:
 Author
 ------
 
-[Cyrill Schumacher](https://github.com/SchumacherFM)
-
-[My pgp public key](http://www.schumacher.fm/cyrill.asc)
+[Cyrill Schumacher](https://github.com/SchumacherFM) - [My pgp public key](http://www.schumacher.fm/cyrill.asc)
 
 Made in Sydney, Australia :-)
+
+If you consider a donation please contribute to: [http://www.seashepherd.org/](http://www.seashepherd.org/)
