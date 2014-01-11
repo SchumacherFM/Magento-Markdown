@@ -15,7 +15,8 @@ format, then convert it to structurally valid XHTML (or HTML).
 - Drag'n'Drop, Copy'n'Past and classical file upload of images supported in textarea fields. [Automatic image uploading](https://developer.mozilla
 .org/en-US/docs/Web/API/FileReader) integrated (>=IE10, Safari 6.0.2, FX3.6, Chrome 7, Opera 12.02)
 - Converting of HTML into Markdown. Client side via JavaScript.
-- Preview mode either via on-the-fly rendering or Live Preview
+- Preview mode either via on-the-fly of rendered markdown or its HTML or Live Preview of the current page by choosing the approriate store view
+- Set permission per role under System -> Permissions -> Role that user can see different parts of the Markdown Editor
 
 Full documentation of Markdown's syntax is available on [John's Markdown page](http://daringfireball.net/projects/markdown/)
 
@@ -31,6 +32,7 @@ You can also edit your markdown text with external editors:
 #### Mac OS X
 
 - [Mou The missing Markdown editor for web developers](http://mouapp.com/)
+- [Lightpaper for Mac](http://clockworkengine.com/lightpaper-mac/)
 
 #### All platforms
 
@@ -52,6 +54,7 @@ All options can be set per store view.
 
 - Enable or disable Markdown parser
 - Enable or disable Markdown extra parser
+- Set permissions per role in System -> Permissions -> Roles
 - Set Markdown detection tag
 - Hide Image Insert button
 - HTML Source Preview Style CSS, choose one of ~20 different themes
@@ -168,6 +171,14 @@ About
 
 History
 -------
+
+#### 2.1.0-rc.3
+
+- Bug fix: HTML Preview code markup
+- Bug fix: HTML preview button should be removed
+- Bug fix: When there is no content, the Preview and Live Preview tabs show incorrect request
+- Feature: Feedback and ideas after being used in the wild.
+- Feature: Settings to enable/disable Preview, Live Preview and HTML Preview tabs (See Permissions -> Roles)
 
 #### 2.1.0-rc.2
 
@@ -354,3 +365,8 @@ Author
 Made in Sydney, Australia :-)
 
 If you consider a donation please contribute to: [http://www.seashepherd.org/](http://www.seashepherd.org/)
+
+Already donated (let me know if you would like to be listed):
+
+- Person 1
+- Person X
