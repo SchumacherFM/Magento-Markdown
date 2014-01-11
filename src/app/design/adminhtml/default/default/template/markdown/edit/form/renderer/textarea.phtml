@@ -10,21 +10,27 @@
                     <?php echo $this->___('Write') ?>
                 </a>
             </li>
+            <?php if($this->isPreviewAllowed()): ?>
             <li>
                 <a href="#" id="<?php echo $this->getElementId(); ?>__preview" class="tab-item-link">
                     <?php echo $this->___('Preview') ?>
                 </a>
             </li>
+            <?php endif; ?>
+            <?php if($this->isLivePreviewAllowed()): ?>
             <li>
                 <a href="#" id="<?php echo $this->getElementId(); ?>__livePreview" class="tab-item-link">
                     <?php echo $this->___('Live Preview') ?>
                 </a>
             </li>
+            <?php endif; ?>
+            <?php if($this->isHtmlPreviewAllowed()): ?>
             <li>
                 <a href="#" id="<?php echo $this->getElementId(); ?>__htmlPreview" class="tab-item-link">
                     <?php echo $this->___('HTML Preview') ?>
                 </a>
             </li>
+            <?php endif; ?>
             <span class="mdParserInfo">
                 <?php echo $this->getDocsLinks(); ?>
             </span>
@@ -41,16 +47,22 @@
                 <?php echo $this->___('or pasting from the clipboard.') ?>
             </p>
         </div>
+        <?php if($this->isPreviewAllowed()): ?>
         <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__previewB">
             <?php echo $this->getIframe('__previewB'); ?>
         </div>
+        <?php endif; ?>
+        <?php if($this->isLivePreviewAllowed()): ?>
         <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__livePreviewB">
             <ul class="previewStores"></ul>
             <?php echo $this->getIframe($this->getElementId() . '__livePreviewB'); ?>
         </div>
+        <?php endif; ?>
+        <?php if($this->isHtmlPreviewAllowed()): ?>
         <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__htmlPreviewB">
             <?php echo $this->getIframe('__htmlPreviewB'); ?>
         </div>
+        <?php endif; ?>
     </div>
     <?php
     /**

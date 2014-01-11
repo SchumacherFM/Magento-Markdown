@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @category    SchumacherFM_Markdown
  * @package     Block
@@ -25,6 +26,14 @@ class SchumacherFM_Markdown_Block_Adminhtml_Form_Renderer_Fieldset_Element_Texta
         parent::_construct();
         $this->setTemplate('markdown/edit/form/renderer/textarea.phtml');
         $this->_helper = Mage::helper('markdown');
+    }
+
+    protected function _toHtml()
+    {
+        if ($this->isEditorAllowed()) {
+            return parent::_toHtml();
+        }
+        return '<!-- Markdown Editor Disabled. See System -> Permission -> Roles -->';
     }
 
     /**
@@ -71,5 +80,37 @@ class SchumacherFM_Markdown_Block_Adminhtml_Form_Renderer_Fieldset_Element_Texta
             $markdownExtraLink = sprintf($template, $this->_helper->getMdExtraDocUrl(), 'Markdown Extra');
             return $this->__('Content is parsed with %s and %s', $markdownLink, $markdownExtraLink);
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEditorAllowed()
+    {
+        return (boolean)Mage::getSingleton('admin/session')->isAllowed('admin/markdown_editor');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPreviewAllowed()
+    {
+        return $this->isEditorAllowed() && (boolean)Mage::getSingleton('admin/session')->isAllowed('admin/markdown_editor/preview');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLivePreviewAllowed()
+    {
+        return $this->isEditorAllowed() && (boolean)Mage::getSingleton('admin/session')->isAllowed('admin/markdown_editor/livepreview');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHtmlPreviewAllowed()
+    {
+        return $this->isEditorAllowed() && (boolean)Mage::getSingleton('admin/session')->isAllowed('admin/markdown_editor/htmlpreview');
     }
 }

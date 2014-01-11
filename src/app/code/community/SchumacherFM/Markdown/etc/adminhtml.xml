@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
 /**
  * @category  SchumacherFM
  * @package   SchumacherFM_Markdown
@@ -9,22 +8,44 @@
 -->
 <config>
     <acl>
-   		<resources>
-   			<admin>
-   				<children>
-   					<system>
-   						<children>
-   							<config>
-   								<children>
-   									<markdown translate="title" module="markdown">
-   										<title>Markdown [M↓]</title>
-   									</markdown>
-   								</children>
-   							</config>
-   						</children>
-   					</system>
-   				</children>
-   			</admin>
-   		</resources>
-   	</acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <markdown translate="title" module="markdown">
+                                        <title>Markdown [M↓]</title>
+                                    </markdown>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+
+                    <markdown_editor translate="title" module="markdown">
+                        <title>Markdown Editor</title>
+                        <sort_order>700</sort_order>
+                        <children>
+
+                            <preview translate="title">
+                                <title>Show Preview Tab</title>
+                                <sort_order>0</sort_order>
+                            </preview>
+                            <livepreview translate="title">
+                                <title>Show Live Preview Tab</title>
+                                <sort_order>10</sort_order>
+                            </livepreview>
+                            <htmlpreview translate="title">
+                                <title>Show HTML Preview Tab</title>
+                                <sort_order>10</sort_order>
+                            </htmlpreview>
+
+                        </children>
+                    </markdown_editor>
+
+                </children>
+            </admin>
+        </resources>
+    </acl>
 </config>
