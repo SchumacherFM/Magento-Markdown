@@ -115,8 +115,18 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function isDisabled()
     {
-        return !(boolean)Mage::getStoreConfig('markdown/markdown/enable');
+        return ! Mage::getStoreConfigFlag('markdown/markdown/enable');
     }
+
+	/**
+	 * Check if Markdown is enabled for emails
+	 *
+	 * @return bool
+	 */
+	public function isEmailDisabled()
+	{
+		return ! Mage::getStoreConfigFlag('markdown/markdown/enable_email');
+	}
 
     /**
      * @param string $type enum email|page|block ... last two not supported, maybe later.
@@ -125,7 +135,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function isMarkdownExtra($type = NULL)
     {
-        return (boolean)Mage::getStoreConfig('markdown/markdown_extra/enable' . (!empty($type) ? '_' . $type : ''));
+        return Mage::getStoreConfigFlag('markdown/markdown_extra/enable' . (!empty($type) ? '_' . $type : ''));
     }
 
     /**
@@ -133,7 +143,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function isHiddenInsertImageButton()
     {
-        return (boolean)Mage::getStoreConfig('markdown/markdown/hide_insert_image_button');
+        return Mage::getStoreConfigFlag('markdown/markdown/hide_insert_image_button');
     }
 
     /**

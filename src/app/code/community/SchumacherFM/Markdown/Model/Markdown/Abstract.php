@@ -9,6 +9,7 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
 {
     protected $_tag = '';
     protected $_isDisabled = FALSE;
+    protected $_isEmailDisabled = FALSE;
 
     /**
      * @var string
@@ -38,6 +39,7 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
          */
         $this->_tag        = Mage::helper('markdown')->getDetectionTag();
         $this->_isDisabled = Mage::helper('markdown')->isDisabled();
+        $this->_isEmailDisabled = Mage::helper('markdown')->isEmailDisabled();
     }
 
     /**
