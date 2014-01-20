@@ -4,6 +4,12 @@
     <MARKDOWN_HEADER>
         <reference name="head">
             <action method="addJs">
+                <script>markdown/adminhtml/beautify-html.js</script>
+            </action>
+            <action method="addJs">
+                <script>markdown/adminhtml/highlight.pack.js</script>
+            </action>
+            <action method="addJs">
                 <script>markdown/adminhtml/reMarked.js</script>
             </action>
             <action method="addJs">

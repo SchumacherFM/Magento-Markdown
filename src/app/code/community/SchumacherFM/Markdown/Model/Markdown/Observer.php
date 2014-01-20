@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @category    SchumacherFM_Markdown
  * @package     Model
@@ -54,7 +55,7 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
     public function renderEmailTemplate(Varien_Event_Observer $observer)
     {
         $this->_currentObserverMethod = __FUNCTION__;
-        if ($this->_isDisabled) {
+        if ($this->_isDisabled || $this->_isEmailDisabled) {
             return NULL;
         }
 
@@ -66,7 +67,6 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
         $template = $object->getData('template_text');
 
         if ($this->isMarkdown($template)) {
-
             $this->setOptions(array(
                 'extra' => Mage::helper('markdown')->isMarkdownExtra('email')
             ));

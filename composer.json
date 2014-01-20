@@ -1,7 +1,7 @@
 {
     "name": "schumacherfm/markdown",
     "type": "magento-module",
-    "license": "BSD-3-Clause",
+    "license": "MIT",
     "homepage": "https://github.com/SchumacherFM/Magento-Markdown",
     "description": "Markdown as module for Magento! Replaces the TinyMCE editor. Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML)",
     "authors": [

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @category    SchumacherFM_Markdown
  * @package     Helper
@@ -27,11 +28,69 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * @return mixed|string
+     * @return string
      */
     public function getCheatSheetUrl()
     {
         return Mage::getStoreConfig('markdown/markdown/cheatsheet');
+    }
+
+    /**
+     * not DRY ;-)
+     *
+     * @param bool $fullPath
+     *
+     * @return string
+     */
+    public function getHighLightStyleCss($fullPath = FALSE)
+    {
+        $styleFile = Mage::getStoreConfig('markdown/markdown/highlight_style');
+        $return    = 'markdown' . DS . 'highlight' . DS . 'styles' . DS . $styleFile;
+        if (TRUE === $fullPath) {
+            return Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN) . DS . 'adminhtml' . DS . 'default' . DS . 'default' . DS . $return;
+        }
+        return $return;
+    }
+
+    /**
+     * not DRY ;-)
+     *
+     * @param bool $fullPath
+     *
+     * @return string
+     */
+    public function getMarkdownStyleCss($fullPath = FALSE)
+    {
+        $styleFile = Mage::getStoreConfig('markdown/markdown/preview_style');
+        $return    = 'markdown' . DS . 'styles' . DS . $styleFile;
+        if (TRUE === $fullPath) {
+            return Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN) . DS . 'adminhtml' . DS . 'default' . DS . 'default' . DS . $return;
+        }
+        return $return;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPreviewIframeCSS()
+    {
+        return trim(Mage::getStoreConfig('markdown/markdown/preview_iframe_css'));
+    }
+
+    /**
+     * @return string
+     */
+    public function getTextareaStyle()
+    {
+        return trim(Mage::getStoreConfig('markdown/markdown/textarea_style'));
+    }
+
+    /**
+     * @return string
+     */
+    public function getMdExtraDocUrl()
+    {
+        return self::URL_MD_EXTRA_SYNTAX;
     }
 
     /**
@@ -57,7 +116,17 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function isDisabled()
     {
-        return !(boolean)Mage::getStoreConfig('markdown/markdown/enable');
+        return !Mage::getStoreConfigFlag('markdown/markdown/enable');
+    }
+
+    /**
+     * Check if Markdown is enabled for emails
+     *
+     * @return bool
+     */
+    public function isEmailDisabled()
+    {
+        return !Mage::getStoreConfigFlag('markdown/markdown/enable_email');
     }
 
     /**
@@ -67,7 +136,15 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function isMarkdownExtra($type = NULL)
     {
-        return (boolean)Mage::getStoreConfig('markdown/markdown_extra/enable' . (!empty($type) ? '_' . $type : ''));
+        return Mage::getStoreConfigFlag('markdown/markdown_extra/enable' . (!empty($type) ? '_' . $type : ''));
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHiddenInsertImageButton()
+    {
+        return Mage::getStoreConfigFlag('markdown/markdown/hide_insert_image_button');
     }
 
     /**
@@ -147,8 +224,8 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getEpicEditorConfig()
     {
-        $config = $this->_getJsonConfig('epiceditor');
-        $config = FALSE !== $config ? json_decode($config, TRUE) : array();
+        $config             = $this->_getJsonConfig('epiceditor');
+        $config             = FALSE !== $config ? json_decode($config, TRUE) : array();
         $config['basePath'] = Mage::getBaseUrl('skin') . 'adminhtml/default/default/epiceditor/';
         return json_encode($config);
     }
@@ -229,5 +306,19 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
             $handles       = array_merge($handles, $customHandles);
         }
         return $handles;
+    }
+
+    /**
+     * @return array
+     */
+    public function getStoreCodes()
+    {
+        $stores    = array();
+        $appStores = Mage::app()->getStores(TRUE, FALSE);
+        foreach ($appStores as $store) {
+            /** @var $store Mage_Core_Model_Store */
+            $stores[] = $store->getCode();
+        }
+        return $stores;
     }
 }

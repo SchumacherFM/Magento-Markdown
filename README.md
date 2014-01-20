@@ -11,23 +11,28 @@ format, then convert it to structurally valid XHTML (or HTML).
 - Renders all CMS pages and all CMS blocks (Mage_Cms_Block_Block and Mage_Cms_Block_Widget_Block)
 - Renders every transactional email as Markdown (or MD Extra)
 - Rendering of catalog product and category short and long description fields have to be implemented in the phtml files by yourself.
-- Integrates the awesome [EpicEditor](http://epiceditor.com): split fullscreen editing, live previewing, automatic draft saving and offline support.
-- Drag'n'Drop of images supported in textarea fields. [Automatic image uploading](https://developer.mozilla.org/en-US/docs/Web/API/FileReader) integrated (>=
- IE10, Safari 6.0.2, FX3.6, Chrome 7, Opera 12.02)
+- Integrates the [EpicEditor](http://epiceditor.com): split fullscreen editing, live previewing, automatic draft saving and offline support. [1]
+- Drag'n'Drop, Copy'n'Past and classical file upload of images supported in textarea fields. [Automatic image uploading](https://developer.mozilla
+.org/en-US/docs/Web/API/FileReader) integrated (>=IE10, Safari 6.0.2, FX3.6, Chrome 7, Opera 12.02)
 - Converting of HTML into Markdown. Client side via JavaScript.
+- Preview mode either via on-the-fly of rendered markdown or its HTML or Live Preview of the current page by choosing the approriate store view
+- Set permission per role under System -> Permissions -> Role that user can see different parts of the Markdown Editor
 
 Full documentation of Markdown's syntax is available on [John's Markdown page](http://daringfireball.net/projects/markdown/)
+
+[1] Will be maybe removed in future versions
 
 Why do I need this?
 -------------------
 
 Because you want to get rid of the TinyMCE and force your customer to use easy and limited syntax.
 
-You can edit your markdown text with external editors:
+You can also edit your markdown text with external editors:
 
 #### Mac OS X
 
 - [Mou The missing Markdown editor for web developers](http://mouapp.com/)
+- [Lightpaper for Mac](http://clockworkengine.com/lightpaper-mac/)
 
 #### All platforms
 
@@ -49,14 +54,20 @@ All options can be set per store view.
 
 - Enable or disable Markdown parser
 - Enable or disable Markdown extra parser
+- Set permissions per role in System -> Permissions -> Roles
 - Set Markdown detection tag
+- Hide Image Insert button
+- Enable/Disable markdown rendering in email template
+- HTML Source Preview Style CSS, choose one of ~20 different themes
+- Markdown Preview Style CSS, choose one of 9 different themes
+- Configure the CSS Style for all three preview iFrames
 - Add path to css file if using in transactional emails
-- Enable or disable Markdown EpicEditor
+- Enable or disable Markdown EpicEditor (Default disabled)
 - Enable or disable loading of the EpicEditor via click in a textarea field
 - Full configuration for Markdown EpicEditor - add a JSON object in the System -> Configuration section
-- Defining a custom upload folder for Drag'n'Drop image upload. This folder will be created automatically and recursively
+- Defining a custom upload folder for image upload. This folder will be created automatically and recursively
 - Enable or disable HTML to Markdown converter reMarked.js
-- Full configuration for converter reMarked.js - add a JSON object in the System -> Configuration section
+- Full configuration for converter reMarked.js. Add a JSON object in the System -> Configuration section
 - Integrate Markdown into your own module by adding the layout handle into the System -> Configuration section
 
 Every field which contains Markdown syntax must contain that detection tag otherwise it will not be parsed.
@@ -78,11 +89,6 @@ into each html tag attribute: style.
 ```
 	<h1 style="font-size..."></h1>
 ```
-
-#### HTML to Markdown reMarked.js
-
-Converting tables into real markdown tables is buggy and does not work at the moment. So GFM tables has been disabled
-but all HTML tables tags are preserved and nicely formatted after converting.
 
 Developer Usage
 ---------------
@@ -129,6 +135,16 @@ echo $instance->renderMarkdown('text goes here');
 
 ...
 
+#### Modifying the backend
+
+You can add an event to the Markdown observer which generates the backend view.
+
+```php
+        Mage::dispatchEvent('markdown_merge_after_element_html', array(
+            'instance' => $this,
+        ));
+```
+
 Todo
 ----
 
@@ -149,11 +165,39 @@ About
 -----
 
 - Key: SchumacherFM_Markdown
-- Current Version: 2.0.2
+- Current Version: 2.1.0
 - [Download tarball](https://github.com/SchumacherFM/Magento-Markdown/tags)
+- Donation: [http://www.seashepherd.org/](http://www.seashepherd.org/)
 
 History
 -------
+
+#### 2.1.0
+
+- Enable/Disable markdown rendering in email template. (by Paul Hachmang)
+- Update marked.js
+
+#### 2.1.0-rc.3
+
+- Bug fix: HTML Preview code markup
+- Bug fix: HTML preview button should be removed
+- Bug fix: When there is no content, the Preview and Live Preview tabs show incorrect request
+- Feature: Feedback and ideas after being used in the wild.
+- Feature: Settings to enable/disable Preview, Live Preview and HTML Preview tabs (See Permissions -> Roles)
+
+#### 2.1.0-rc.2
+
+- Merged Pull Request [More native-like styling](https://github.com/SchumacherFM/Magento-Markdown/pull/20)
+- Add new option for styling of the backend textarea field
+
+#### 2.1.0-rc.1
+
+- Major changes in the backend Github Issue #18
+- Renaming of buttons
+- EpicEditor disabled by default
+- Better style for the textarea field with outer glow
+- Besides image Drag'n'Drop added file upload and copy and paste for images
+- Enhanced preview mode
 
 #### 2.0.2
 
@@ -220,7 +264,7 @@ Compatibility
 - Magento >= 1.5
 - php >= 5.2.0
 
-There is the possibility that this extension may work with pre-1.5 Magento versions.
+There exists the possibility that this extension may work with pre-1.5 Magento versions.
 
 Support / Contribution
 ----------------------
@@ -242,19 +286,38 @@ All rights reserved.
 
 #### PHP Markdown Lib
 
-Copyright (c) 2004-2013 Michel Fortin
-
-<http://michelf.ca/> <https://github.com/michelf/php-markdown/>
-
-All rights reserved.
+- Copyright (c) 2004-2013 Michel Fortin
+- [http://michelf.ca](http://michelf.ca)
+- [https://github.com/michelf/php-markdown/](https://github.com/michelf/php-markdown/)
 
 #### reMarked.js
 
-Copyright (c) 2013 Leon Sorokin / leeoniya
+- Copyright (c) 2013 Leon Sorokin / leeoniya
+- [https://github.com/leeoniya/reMarked.js](https://github.com/leeoniya/reMarked.js)
 
-<https://github.com/leeoniya/reMarked.js/>
+#### marked.js
 
-MIT Licensed
+- Copyright (c) 2011-2013, Christopher Jeffrey. (MIT Licensed)
+- [https://github.com/chjj/marked](https://github.com/chjj/marked)
+
+#### highlight.js
+
+- Copyright (c) 2006, Ivan Sagalaev
+- [https://github.com/isagalaev/highlight.js](https://github.com/isagalaev/highlight.js)
+
+#### Markdown Styles
+
+- [http://mixu.net/markdown-styles/](http://mixu.net/markdown-styles/)
+
+#### beautify-html
+
+- Copyright (c) 2007-2013 Einar Lielmanis and contributors.
+- [https://github.com/einars/js-beautify/blob/master/js/lib/beautify-html.js](https://github.com/einars/js-beautify/blob/master/js/lib/beautify-html.js)
+
+#### EpicEditor
+
+- Copyright (c) 2011-2013, Oscar Godson (http://oscargodson.com)
+- [https://github.com/OscarGodson/EpicEditor](https://github.com/OscarGodson/EpicEditor)
 
 ####  Based on Markdown
 
@@ -302,8 +365,13 @@ Backend preview rendering via:
 Author
 ------
 
-[Cyrill Schumacher](https://github.com/SchumacherFM)
-
-[My pgp public key](http://www.schumacher.fm/cyrill.asc)
+[Cyrill Schumacher](https://github.com/SchumacherFM) - [My pgp public key](http://www.schumacher.fm/cyrill.asc)
 
 Made in Sydney, Australia :-)
+
+If you consider a donation please contribute to: [http://www.seashepherd.org/](http://www.seashepherd.org/)
+
+Already donated (let me know if you would like to be listed):
+
+- Person 1
+- Person X

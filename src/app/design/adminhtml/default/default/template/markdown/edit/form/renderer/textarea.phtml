@@ -1,0 +1,86 @@
+<?php
+/** @var $this SchumacherFM_Markdown_Block_Adminhtml_Form_Renderer_Fieldset_Element_Textarea */
+// @todo rewrite to <script type="text/template"> ... and include only once
+?>
+
+<div class="mdTabContainer" style="display:none;">
+    <div class="mdTabs">
+        <ul data-current="write" class="tabs-horiz">
+            <li><a href="#" id="<?php echo $this->getElementId(); ?>__write" class="tab-item-link active">
+                    <?php echo $this->___('Write') ?>
+                </a>
+            </li>
+            <?php if($this->isPreviewAllowed()): ?>
+            <li>
+                <a href="#" id="<?php echo $this->getElementId(); ?>__preview" class="tab-item-link">
+                    <?php echo $this->___('Preview') ?>
+                </a>
+            </li>
+            <?php endif; ?>
+            <?php if($this->isLivePreviewAllowed()): ?>
+            <li>
+                <a href="#" id="<?php echo $this->getElementId(); ?>__livePreview" class="tab-item-link">
+                    <?php echo $this->___('Live Preview') ?>
+                </a>
+            </li>
+            <?php endif; ?>
+            <?php if($this->isHtmlPreviewAllowed()): ?>
+            <li>
+                <a href="#" id="<?php echo $this->getElementId(); ?>__htmlPreview" class="tab-item-link">
+                    <?php echo $this->___('HTML Preview') ?>
+                </a>
+            </li>
+            <?php endif; ?>
+            <span class="mdParserInfo">
+                <?php echo $this->getDocsLinks(); ?>
+            </span>
+        </ul>
+    </div>
+    <div class="mdTabscontent">
+        <div class="mdTabpage active" id="<?php echo $this->getElementId(); ?>__writeB">
+            <?php echo $this->getAfterElementHtml(); ?>
+            <div class="mdTextArea"></div>
+            <p class="md-filereader-text note">
+                <?php echo $this->___('Attach images by dragging & dropping,') ?>
+                <input type="file" multiple="multiple" id="<?php echo $this->getFileReaderInputId() ?>" class="md-manual-file-chooser">
+                <a href="#"><?php echo $this->___('selecting them') ?></a>,
+                <?php echo $this->___('or pasting from the clipboard.') ?>
+            </p>
+        </div>
+        <?php if($this->isPreviewAllowed()): ?>
+        <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__previewB">
+            <?php echo $this->getIframe('__previewB'); ?>
+        </div>
+        <?php endif; ?>
+        <?php if($this->isLivePreviewAllowed()): ?>
+        <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__livePreviewB">
+            <ul class="previewStores"></ul>
+            <?php echo $this->getIframe($this->getElementId() . '__livePreviewB'); ?>
+        </div>
+        <?php endif; ?>
+        <?php if($this->isHtmlPreviewAllowed()): ?>
+        <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__htmlPreviewB">
+            <?php echo $this->getIframe('__htmlPreviewB'); ?>
+        </div>
+        <?php endif; ?>
+    </div>
+    <?php
+    /**
+     * this piece of js code will be injected into the iframe (above) via src="data:text/html,..." attribute
+     * in file src/js/markdown/adminhtml/markdown.js line 695
+     */
+    ?>
+    <script type="text/template" id="<?php echo $this->getElementId(); ?>__iFrameJS">
+        var sTimeOut, st = ~~'~~scrollto~~', ori = '~~origin~~';
+        window.onload=function(){ if(st>0){ window.scrollTo(0,st);} }
+        window.onscroll=function(event){
+        if(sTimeOut){clearTimeout(sTimeOut);}
+        sTimeOut = setTimeout(function(){
+        var target = event.target || event.srcElement,
+        doc = target.documentElement, body = document.body,
+        top = (doc && doc.scrollTop  || body && body.scrollTop  || 0);
+        if(ori.indexOf('~origin~')===-1){window.top.postMessage('~~id~~='+top,ori);}else{console.log('origin error:',ori);}
+        },90);
+        }
+    </script>
+</div>

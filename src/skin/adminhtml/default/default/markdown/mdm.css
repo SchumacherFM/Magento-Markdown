@@ -1,6 +1,134 @@
 /**
     Magento Markdown Module CSS
 */
-.fReaderDrag {
-    border : 5px solid darkseagreen;
+textarea.initMarkdown {
+    resize  : vertical;
+    padding : 5px;
+    display : block;
+}
+
+textarea.initMarkdown:focus {
+    border-color : #51a7e8;
+    box-shadow   : inset 0 1px 2px rgba(0, 0, 0, 0.075), 0 0 5px rgba(81, 167, 232, 0.5);
+}
+
+textarea.initMarkdown.fReaderDrag {
+    box-shadow : #c9ff00 0 0 3px;
+}
+
+/*<second design of the textarea>*/
+textarea.initMarkdown.lucida {
+    color                 : #666;
+    font-size             : 14px;
+    border-radius         : 8px;
+    -moz-border-radius    : 8px;
+    -webkit-border-radius : 8px;
+    margin                : 5px 0px 10px 0px;
+    padding               : 10px;
+    border                : #999 1px solid;
+    font-family           : "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    transition            : all 0.25s ease-in-out;
+    -moz-transition       : all 0.25s ease-in-out;
+    -webkit-transition    : all 0.25s ease-in-out;
+    box-shadow            : 0 0 5px rgba(81, 203, 238, 0);
+    -moz-box-shadow       : 0 0 5px rgba(81, 203, 238, 0);
+    -webkit-box-shadow    : 0 0 5px rgba(81, 203, 238, 0);
+    resize                : vertical;
+    display               : block;
+}
+
+textarea.initMarkdown.lucida:focus {
+    color              : #000;
+    outline            : none;
+    border             : #35a5e5 1px solid;
+    font-family        : "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    box-shadow         : 0 0 5px rgba(81, 203, 238, 1);
+    -moz-box-shadow    : 0 0 5px rgba(81, 203, 238, 1);
+    -webkit-box-shadow : 0 0 5px rgba(81, 203, 238, 1);
+}
+
+textarea.initMarkdown.lucida.fReaderDrag {
+    color              : #000;
+    outline            : none;
+    border             : #228b22 1px solid;
+    font-family        : "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    box-shadow         : 0 0 5px rgb(34, 139, 34) !important;
+    -moz-box-shadow    : 0 0 5px rgb(34, 139, 34) !important;
+    -webkit-box-shadow : 0 0 5px rgb(34, 139, 34) !important;
+}
+/*</second design of the textarea>*/
+
+.md-manual-file-chooser {
+    position    : absolute;
+    width       : 154px;
+    margin-left : -70px;
+    opacity     : 0.0001;
+    cursor      : pointer;
+}
+
+.mdTabContainer {
+}
+
+.mdTabContainer .tabs-horiz {
+    margin-bottom : 10px;
+}
+
+.mdTabContainer .tabs-horiz li {
+    margin : 0 4px;
+}
+
+.mdTabContainer .mdTextArea {
+    margin-top    : 10px;
+    margin-bottom : 5px;
+}
+
+.md-filereader-text {
+    margin-top : 2px;
+    width      : inherit !important;
+}
+
+.mdTabscontent {
+}
+
+.mdTabpage {
+    display : none;
+}
+
+.mdTabpage.active {
+    display : block;
+}
+
+.mdTabpage button {
+    margin-right : 5px;
+}
+
+.mdTabs > ul > li.active {
+    background          : white; /* old browsers */
+    cursor              : pointer;
+    color               : #333;
+    font-weight         : bold;
+    border-bottom-color : rgb(250, 250, 250);
+}
+
+.mdTabpage .iframePreview {
+    background-color : white;
+    width            : 100%;
+    height           : 40em;
+    border           : 1px solid #ddd;
+}
+
+.mdTabpage .previewStores li {
+    display       : inline;
+    padding-right : 1em;
+}
+
+.mdParserInfo {
+    float        : right;
+    margin-top   : 1px;
+    font-size    : 11px;
+    margin-right : 6px;
+}
+
+.md-parser-info a {
+    cursor : help;
 }
