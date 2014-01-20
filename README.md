@@ -57,6 +57,7 @@ All options can be set per store view.
 - Set permissions per role in System -> Permissions -> Roles
 - Set Markdown detection tag
 - Hide Image Insert button
+- Enable/Disable markdown rendering in email template
 - HTML Source Preview Style CSS, choose one of ~20 different themes
 - Markdown Preview Style CSS, choose one of 9 different themes
 - Configure the CSS Style for all three preview iFrames
@@ -144,7 +145,6 @@ You can add an event to the Markdown observer which generates the backend view.
         ));
 ```
 
-
 Todo
 ----
 
@@ -165,12 +165,17 @@ About
 -----
 
 - Key: SchumacherFM_Markdown
-- Current Version: 2.0.2
+- Current Version: 2.1.0
 - [Download tarball](https://github.com/SchumacherFM/Magento-Markdown/tags)
 - Donation: [http://www.seashepherd.org/](http://www.seashepherd.org/)
 
 History
 -------
+
+#### 2.1.0
+
+- Enable/Disable markdown rendering in email template. (by Paul Hachmang)
+- Update marked.js
 
 #### 2.1.0-rc.3
 
