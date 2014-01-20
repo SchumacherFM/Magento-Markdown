@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @category    SchumacherFM_Markdown
  * @package     Model
@@ -37,8 +38,8 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
         /**
          * due to some weired parsings ... every text field which should contain MD must start with this tag
          */
-        $this->_tag        = Mage::helper('markdown')->getDetectionTag();
-        $this->_isDisabled = Mage::helper('markdown')->isDisabled();
+        $this->_tag             = Mage::helper('markdown')->getDetectionTag();
+        $this->_isDisabled      = Mage::helper('markdown')->isDisabled();
         $this->_isEmailDisabled = Mage::helper('markdown')->isEmailDisabled();
     }
 

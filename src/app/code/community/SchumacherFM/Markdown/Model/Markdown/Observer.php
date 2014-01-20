@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @category    SchumacherFM_Markdown
  * @package     Model

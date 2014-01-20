@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @category    SchumacherFM_Markdown
  * @package     Helper
@@ -115,18 +116,18 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function isDisabled()
     {
-        return ! Mage::getStoreConfigFlag('markdown/markdown/enable');
+        return !Mage::getStoreConfigFlag('markdown/markdown/enable');
     }
 
-	/**
-	 * Check if Markdown is enabled for emails
-	 *
-	 * @return bool
-	 */
-	public function isEmailDisabled()
-	{
-		return ! Mage::getStoreConfigFlag('markdown/markdown/enable_email');
-	}
+    /**
+     * Check if Markdown is enabled for emails
+     *
+     * @return bool
+     */
+    public function isEmailDisabled()
+    {
+        return !Mage::getStoreConfigFlag('markdown/markdown/enable_email');
+    }
 
     /**
      * @param string $type enum email|page|block ... last two not supported, maybe later.
