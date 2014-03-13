@@ -7,7 +7,7 @@
  */
 abstract class SchumacherFM_Markdown_Model_Options_Styles_AbstractStyles
 {
-    protected $_path = [];
+    protected $_path = array();
 
     /**
      * Options getter
