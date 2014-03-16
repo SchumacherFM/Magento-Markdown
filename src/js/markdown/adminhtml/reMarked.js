@@ -41,13 +41,20 @@ reMarked = function(opts) {
 			// eg: "\n<tag>some content</tag>"
 			block1c: "dt dd caption legend figcaption output",
 			// eg: "\n\n<tag>some content</tag>"
-			block2c: "canvas audio video iframe",
+			block2c: "canvas audio video iframe"
 		},
 		tag_remap: {				// remap of variants or deprecated tags to internal classes
 			"i": "em",
 			"b": "strong"
 		}
 	};
+
+	// detect and tweak some stuff for IE 7 & 8
+	// http://www.pinlady.net/PluginDetect/IE/
+	var isIE = eval("/*@cc_on!@*/!1"),
+		docMode = document.documentMode,
+		ieLt9 = isIE && (!docMode || docMode < 9),
+		textContProp = ieLt9 ? "innerText" : "textContent";
 
 	extend(cfg, opts);
 
@@ -217,7 +224,7 @@ reMarked = function(opts) {
 
 							while (i++ < len) {
 								hcell = document.createElement("th");
-								hcell.textContent = cfg.col_pre + i;
+								hcell[textContProp] = cfg.col_pre + i;
 								hrow.appendChild(hcell);
 							}
 						}
@@ -241,7 +248,7 @@ reMarked = function(opts) {
 						continue;
 
 					// empty whitespace handling
-					if (name == "txt" && /^\s+$/.test(n.textContent)) {
+					if (name == "txt" && !nodeName(this.e).match(inlRe) && /^\s+$/.test(n[textContProp])) {
 						// ignore if first or last child (trim)
 						if (i == 0 || i == this.e.childNodes.length - 1)
 							continue;
@@ -359,7 +366,10 @@ reMarked = function(opts) {
 	lib.inl = lib.tag.extend({
 		rend: function()
 		{
-			return wrap.call(this, this.rendK(), this.wrap);
+			var kids = this.rendK(),
+				parts = kids.match(/^([ \t]*)(.*?)([ \t]*)$/) || [kids, "", kids, ""];
+
+			return parts[1] + wrap.call(this, parts[2], this.wrap) + parts[3];
 		}
 	});
 
@@ -569,7 +579,7 @@ reMarked = function(opts) {
 		lib.tfoot = cfg.gfm_tbls ? lib.cblk.extend() : lib.ctblk.extend();
 
 		lib.tr = cfg.gfm_tbls ? lib.cblk.extend({
-			wrapK: [cfg.tbl_edges ? "| " : "", cfg.tbl_edges ? " |" : ""],
+			wrapK: [cfg.tbl_edges ? "| " : "", cfg.tbl_edges ? " |" : ""]
 		}) : lib.ctblk.extend();
 
 		lib.th = cfg.gfm_tbls ? lib.inl.extend({
@@ -609,9 +619,11 @@ reMarked = function(opts) {
 					cols[this.i] = {w: null, a: ""};		// width and alignment
 				var col = cols[this.i];
 				col.w = Math.max(col.w || 0, this.guts.length);
-				if (this.e.align)
-					col.a = this.e.align;
-			},
+
+				var align = this.e.align || this.e.style.textAlign;
+				if (align)
+					col.a = align;
+			}
 		}) : lib.ctblk.extend();
 
 			lib.td = lib.th.extend();

@@ -172,26 +172,27 @@ About
 History
 -------
 
+#### 2.1.1
+
+- Update EpicEditor
+- Update marked.js to version v0.3.2
+- Update reMarked.js to latest version which fixes a lot of bugs
+- Tiny update of beautify-html.js (AMD)
+- Update highlight.js to version 8.0 http://highlightjs.org; new themes
+- Remove shortened array syntax (PHP 5.4 feature). Thanks [Dan Gibbs](https://github.com/Gibbs)!
+- Bug fix: Hide markdown in email editor when it is disabled. Thanks Paul Hachmang!
+
 #### 2.1.0
 
 - Enable/Disable markdown rendering in email template. (by Paul Hachmang)
 - Update marked.js
-
-#### 2.1.0-rc.3
-
 - Bug fix: HTML Preview code markup
 - Bug fix: HTML preview button should be removed
 - Bug fix: When there is no content, the Preview and Live Preview tabs show incorrect request
 - Feature: Feedback and ideas after being used in the wild.
 - Feature: Settings to enable/disable Preview, Live Preview and HTML Preview tabs (See Permissions -> Roles)
-
-#### 2.1.0-rc.2
-
 - Merged Pull Request [More native-like styling](https://github.com/SchumacherFM/Magento-Markdown/pull/20)
 - Add new option for styling of the backend textarea field
-
-#### 2.1.0-rc.1
-
 - Major changes in the backend Github Issue #18
 - Renaming of buttons
 - EpicEditor disabled by default
