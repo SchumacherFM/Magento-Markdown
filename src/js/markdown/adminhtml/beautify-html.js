@@ -1,74 +1,74 @@
 /*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
 /*
  https://github.com/einars/js-beautify/blob/master/js/lib/beautify-html.js
- The MIT License (MIT)
+  The MIT License (MIT)
 
- Copyright (c) 2007-2013 Einar Lielmanis and contributors.
+  Copyright (c) 2007-2013 Einar Lielmanis and contributors.
 
- Permission is hereby granted, free of charge, to any person
- obtaining a copy of this software and associated documentation files
- (the "Software"), to deal in the Software without restriction,
- including without limitation the rights to use, copy, modify, merge,
- publish, distribute, sublicense, and/or sell copies of the Software,
- and to permit persons to whom the Software is furnished to do so,
- subject to the following conditions:
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
 
- The above copyright notice and this permission notice shall be
- included in all copies or substantial portions of the Software.
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
 
 
  Style HTML
- ---------------
+---------------
 
- Written by Nochum Sossonko, (nsossonko@hotmail.com)
+  Written by Nochum Sossonko, (nsossonko@hotmail.com)
 
- Based on code initially developed by: Einar Lielmanis, <elfz@laacz.lv>
- http://jsbeautifier.org/
+  Based on code initially developed by: Einar Lielmanis, <einar@jsbeautifier.org>
+    http://jsbeautifier.org/
 
- Usage:
- style_html(html_source);
+  Usage:
+    style_html(html_source);
 
- style_html(html_source, options);
+    style_html(html_source, options);
 
- The options are:
- indent_inner_html (default false)  — indent <head> and <body> sections,
- indent_size (default 4)          — indentation size,
- indent_char (default space)      — character to indent with,
- wrap_line_length (default 250)            -  maximum amount of characters per line (0 = disable)
- brace_style (default "collapse") - "collapse" | "expand" | "end-expand"
- put braces on the same line as control statements (default), or put braces on own line (Allman / ANSI style), or just put end braces on own line.
- unformatted (defaults to inline tags) - list of tags, that shouldn't be reformatted
- indent_scripts (default normal)  - "keep"|"separate"|"normal"
- preserve_newlines (default true) - whether existing line breaks before elements should be preserved
- Only works before elements, not inside tags or for text.
- max_preserve_newlines (default unlimited) - maximum number of line breaks to be preserved in one chunk
- indent_handlebars (default false) - format and indent {{#foo}} and {{/foo}}
+  The options are:
+    indent_inner_html (default false)  — indent <head> and <body> sections,
+    indent_size (default 4)          — indentation size,
+    indent_char (default space)      — character to indent with,
+    wrap_line_length (default 250)            -  maximum amount of characters per line (0 = disable)
+    brace_style (default "collapse") - "collapse" | "expand" | "end-expand"
+            put braces on the same line as control statements (default), or put braces on own line (Allman / ANSI style), or just put end braces on own line.
+    unformatted (defaults to inline tags) - list of tags, that shouldn't be reformatted
+    indent_scripts (default normal)  - "keep"|"separate"|"normal"
+    preserve_newlines (default true) - whether existing line breaks before elements should be preserved
+                                        Only works before elements, not inside tags or for text.
+    max_preserve_newlines (default unlimited) - maximum number of line breaks to be preserved in one chunk
+    indent_handlebars (default false) - format and indent {{#foo}} and {{/foo}}
 
- e.g.
+    e.g.
 
- style_html(html_source, {
- 'indent_inner_html': false,
- 'indent_size': 2,
- 'indent_char': ' ',
- 'wrap_line_length': 78,
- 'brace_style': 'expand',
- 'unformatted': ['a', 'sub', 'sup', 'b', 'i', 'u'],
- 'preserve_newlines': true,
- 'max_preserve_newlines': 5,
- 'indent_handlebars': false
- });
- */
+    style_html(html_source, {
+      'indent_inner_html': false,
+      'indent_size': 2,
+      'indent_char': ' ',
+      'wrap_line_length': 78,
+      'brace_style': 'expand',
+      'unformatted': ['a', 'sub', 'sup', 'b', 'i', 'u'],
+      'preserve_newlines': true,
+      'max_preserve_newlines': 5,
+      'indent_handlebars': false
+    });
+*/
 
-(function () {
+(function() {
 
     function trim(s) {
         return s.replace(/^\s+|\s+$/g, '');
@@ -89,14 +89,13 @@
             brace_style,
             unformatted,
             preserve_newlines,
-            max_preserve_newlines,
-            indent_handlebars;
+            max_preserve_newlines;
 
         options = options || {};
 
         // backwards compatibility to 1.3.4
         if ((options.wrap_line_length === undefined || parseInt(options.wrap_line_length, 10) === 0) &&
-            (options.max_char === undefined || parseInt(options.max_char, 10) === 0)) {
+                (options.max_char === undefined || parseInt(options.max_char, 10) === 0)) {
             options.wrap_line_length = options.max_char;
         }
 
@@ -104,7 +103,7 @@
         indent_size = parseInt(options.indent_size || 4, 10);
         indent_character = options.indent_char || ' ';
         brace_style = options.brace_style || 'collapse';
-        wrap_line_length = parseInt(options.wrap_line_length, 10) === 0 ? 32786 : parseInt(options.wrap_line_length || 250, 10);
+        wrap_line_length =  parseInt(options.wrap_line_length, 10) === 0 ? 32786 : parseInt(options.wrap_line_length || 250, 10);
         unformatted = options.unformatted || ['a', 'span', 'bdo', 'em', 'strong', 'dfn', 'code', 'samp', 'kbd', 'var', 'cite', 'abbr', 'acronym', 'q', 'sub', 'sup', 'tt', 'i', 'b', 'big', 'small', 'u', 's', 'strike', 'font', 'ins', 'del', 'pre', 'address', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
         preserve_newlines = options.preserve_newlines || true;
         max_preserve_newlines = preserve_newlines ? parseInt(options.max_preserve_newlines || 32786, 10) : 0;
@@ -129,7 +128,7 @@
                 whitespace: "\n\r\t ".split(''),
                 single_token: 'br,input,link,meta,!doctype,basefont,base,area,hr,wbr,param,img,isindex,?xml,embed,?php,?,?='.split(','), //all the single tags for HTML
                 extra_liners: 'head,body,/html'.split(','), //for tags that need a line of whitespace before them
-                in_array: function (what, arr) {
+                in_array: function(what, arr) {
                     for (var i = 0; i < arr.length; i++) {
                         if (what === arr[i]) {
                             return true;
@@ -139,7 +138,7 @@
                 }
             };
 
-            this.traverse_whitespace = function () {
+            this.traverse_whitespace = function() {
                 var input_char = '';
 
                 input_char = this.input.charAt(this.pos);
@@ -158,7 +157,7 @@
                 return false;
             };
 
-            this.get_content = function () { //function to capture regular content between tags
+            this.get_content = function() { //function to capture regular content between tags
 
                 var input_char = '',
                     content = [],
@@ -211,7 +210,7 @@
                 return content.length ? content.join('') : '';
             };
 
-            this.get_contents_to = function (name) { //get the full content of a script or style to pass to js_beautify
+            this.get_contents_to = function(name) { //get the full content of a script or style to pass to js_beautify
                 if (this.pos === this.input.length) {
                     return ['', 'TK_EOF'];
                 }
@@ -228,7 +227,7 @@
                 return content;
             };
 
-            this.record_tag = function (tag) { //function to record a tag and its parent in this.tags Object
+            this.record_tag = function(tag) { //function to record a tag and its parent in this.tags Object
                 if (this.tags[tag + 'count']) { //check for the existence of this tag type
                     this.tags[tag + 'count']++;
                     this.tags[tag + this.tags[tag + 'count']] = this.indent_level; //and record the present indent level
@@ -240,7 +239,7 @@
                 this.tags.parent = tag + this.tags[tag + 'count']; //and make this the current parent (i.e. in the case of a div 'div1')
             };
 
-            this.retrieve_tag = function (tag) { //function to retrieve the opening tag to the corresponding closer
+            this.retrieve_tag = function(tag) { //function to retrieve the opening tag to the corresponding closer
                 if (this.tags[tag + 'count']) { //if the openener is not in the Object we ignore it
                     var temp_parent = this.tags.parent; //check to see if it's a closable tag.
                     while (temp_parent) { //till we reach '' (the initial value);
@@ -263,7 +262,7 @@
                 }
             };
 
-            this.indent_to_tag = function (tag) {
+            this.indent_to_tag = function(tag) {
                 // Match the indentation level to the last use of this tag, but don't remove it.
                 if (!this.tags[tag + 'count']) {
                     return;
@@ -280,7 +279,7 @@
                 }
             };
 
-            this.get_tag = function (peek) { //function to get a full tag and parse its type
+            this.get_tag = function(peek) { //function to get a full tag and parse its type
                 var input_char = '',
                     content = [],
                     comment = '',
@@ -462,7 +461,7 @@
                 return content.join(''); //returns fully formatted tag
             };
 
-            this.get_comment = function (start_pos) { //function to return comment content in its entirety
+            this.get_comment = function(start_pos) { //function to return comment content in its entirety
                 // this is will have very poor perf, but will work for now.
                 var comment = '',
                     delimiter = '>',
@@ -505,7 +504,7 @@
                 return comment;
             };
 
-            this.get_unformatted = function (delimiter, orig_tag) { //function to return unformatted content in its entirety
+            this.get_unformatted = function(delimiter, orig_tag) { //function to return unformatted content in its entirety
 
                 if (orig_tag && orig_tag.toLowerCase().indexOf(delimiter) !== -1) {
                     return '';
@@ -531,11 +530,11 @@
                         if (input_char === '\n' || input_char === '\r') {
                             content += '\n';
                             /*  Don't change tab indention for unformatted blocks.  If using code for html editing, this will greatly affect <pre> tags if they are specified in the 'unformatted array'
-                             for (var i=0; i<this.indent_level; i++) {
-                             content += this.indent_string;
-                             }
-                             space = false; //...and make sure other indentation is erased
-                             */
+                for (var i=0; i<this.indent_level; i++) {
+                  content += this.indent_string;
+                }
+                space = false; //...and make sure other indentation is erased
+                */
                             this.line_char_count = 0;
                             continue;
                         }
@@ -554,7 +553,7 @@
                 return content;
             };
 
-            this.get_token = function () { //initial handler for token-retrieval
+            this.get_token = function() { //initial handler for token-retrieval
                 var token;
 
                 if (this.last_token === 'TK_TAG_SCRIPT' || this.last_token === 'TK_TAG_STYLE') { //check if we need to format javascript
@@ -585,7 +584,7 @@
                 }
             };
 
-            this.get_full_indent = function (level) {
+            this.get_full_indent = function(level) {
                 level = this.indent_level + level || 0;
                 if (level < 1) {
                     return '';
@@ -594,7 +593,7 @@
                 return Array(level + 1).join(this.indent_string);
             };
 
-            this.is_unformatted = function (tag_check, unformatted) {
+            this.is_unformatted = function(tag_check, unformatted) {
                 //is this an HTML5 block-level link?
                 if (!this.Utils.in_array(tag_check, unformatted)) {
                     return false;
@@ -606,7 +605,7 @@
 
                 //at this point we have an  tag; is its first child something we want to remain
                 //unformatted?
-                var next_tag = this.get_tag(true /* peek. */);
+                var next_tag = this.get_tag(true /* peek. */ );
 
                 // test next_tag to see if it is just html tag (no external content)
                 var tag = (next_tag || "").match(/^\s*<\s*\/?([a-z]*)\s*[^>]*>\s*$/);
@@ -621,7 +620,7 @@
                 }
             };
 
-            this.printer = function (js_source, indent_character, indent_size, wrap_line_length, brace_style) { //handles input/output and some other printing functions
+            this.printer = function(js_source, indent_character, indent_size, wrap_line_length, brace_style) { //handles input/output and some other printing functions
 
                 this.input = js_source || ''; //gets the input for the Parser
                 this.output = [];
@@ -637,7 +636,7 @@
                     this.indent_string += this.indent_character;
                 }
 
-                this.print_newline = function (force, arr) {
+                this.print_newline = function(force, arr) {
                     this.line_char_count = 0;
                     if (!arr || !arr.length) {
                         return;
@@ -647,14 +646,14 @@
                     }
                 };
 
-                this.print_indentation = function (arr) {
+                this.print_indentation = function(arr) {
                     for (var i = 0; i < this.indent_level; i++) {
                         arr.push(this.indent_string);
                         this.line_char_count += this.indent_string.length;
                     }
                 };
 
-                this.print_token = function (text) {
+                this.print_token = function(text) {
                     if (text || text !== '') {
                         if (this.output.length && this.output[this.output.length - 1] === '\n') {
                             this.print_indentation(this.output);
@@ -664,7 +663,7 @@
                     this.print_token_raw(text);
                 };
 
-                this.print_token_raw = function (text) {
+                this.print_token_raw = function(text) {
                     if (text && text !== '') {
                         if (text.length > 1 && text[text.length - 1] === '\n') {
                             // unformatted tags can grab newlines as their last character
@@ -681,11 +680,11 @@
                     this.newlines = 0;
                 };
 
-                this.indent = function () {
+                this.indent = function() {
                     this.indent_level++;
                 };
 
-                this.unindent = function () {
+                this.unindent = function() {
                     if (this.indent_level > 0) {
                         this.indent_level--;
                     }
@@ -807,13 +806,13 @@
         return multi_parser.output.join('');
     }
 
-    if (typeof define === "function") {
+    if (typeof define === "function" && define.amd) {
         // Add support for require.js
-        define(["./beautify.js", "./beautify-css.js"], function (js_beautify, css_beautify) {
+        define(["./beautify", "./beautify-css"], function(js_beautify, css_beautify) {
             return {
-                html_beautify: function (html_source, options) {
-                    return style_html(html_source, options, js_beautify, css_beautify);
-                }
+              html_beautify: function(html_source, options) {
+                return style_html(html_source, options, js_beautify, css_beautify);
+              }
             };
         });
     } else if (typeof exports !== "undefined") {
@@ -822,17 +821,17 @@
         var js_beautify = require('./beautify.js').js_beautify;
         var css_beautify = require('./beautify-css.js').css_beautify;
 
-        exports.html_beautify = function (html_source, options) {
+        exports.html_beautify = function(html_source, options) {
             return style_html(html_source, options, js_beautify, css_beautify);
         };
     } else if (typeof window !== "undefined") {
         // If we're running a web page and don't have either of the above, add our one global
-        window.html_beautify = function (html_source, options) {
+        window.html_beautify = function(html_source, options) {
             return style_html(html_source, options, window.js_beautify, window.css_beautify);
         };
     } else if (typeof global !== "undefined") {
         // If we don't even have window, try global.
-        global.html_beautify = function (html_source, options) {
+        global.html_beautify = function(html_source, options) {
             return style_html(html_source, options, global.js_beautify, global.css_beautify);
         };
     }
