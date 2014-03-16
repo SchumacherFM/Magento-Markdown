@@ -239,8 +239,8 @@
      */
     function _highlightOpt(htmlString, options) {
         options = options || {};
-        var _hlPre = options.hlPre || '<pre><code>',
-            _hlPost = options.hlPost || '</code></pre>';
+        var _hlPre = options.hlPre || '<pre class="hljs">',
+            _hlPost = options.hlPost || '</pre>';
         return _hlPre + hljs.highlight('xml', htmlString).value + _hlPost;
     }
 
