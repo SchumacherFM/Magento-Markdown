@@ -1045,30 +1045,15 @@
     function _mdInitialize() {
         _initGlobalConfig();
 
-        var parentElementIds = ['product_edit_form', 'edit_form', 'category-edit-container', 'email_template_edit_form'];
+        document.on('click', 'textarea.initMarkdown', _onClickBuildTabsFactory);
 
-        if (varienGlobalEvents) {
-            varienGlobalEvents.fireEvent('mdLoadForms', parentElementIds);
+        // some things are only possible with event delegation ...
+        if (true === _isEpicEditorEnabled() && true === _markDownGlobalConfig.eeLoadOnClick) {
+            document.on('click', 'textarea.initEpicEditor', _createEpicEditorInstances);
         }
-
-        //  loading multiple instances on one page
-        // only works with event delegation due category edit page ... and the varientabs js class ...
-        // fire event for customization varienGlobalEvents.attachEventHandler('showTab', function (e) {...}
-        parentElementIds.forEach(function (elementId) {
-            var $elementId = $(elementId);
-            if ($elementId) {
-
-                $elementId.on('click', 'textarea.initMarkdown', _onClickBuildTabsFactory);
-
-                // some things are only possible with event delegation ...
-                if (true === _isEpicEditorEnabled() && true === _markDownGlobalConfig.eeLoadOnClick) {
-                    $elementId.on('click', 'textarea.initEpicEditor', _createEpicEditorInstances);
-                }
-                if (true === _isFileReaderEnabled()) {
-                    $elementId.on('click', 'textarea.initMarkdown', _createFileReaderFactory);
-                }
-            }
-        });
+        if (true === _isFileReaderEnabled()) {
+            document.on('click', 'textarea.initMarkdown', _createFileReaderFactory);
+        }
 
         if (_markDownGlobalConfig.isHiddenInsertImageButton === true) {
             $$('button.add-image').each(function (element) {
