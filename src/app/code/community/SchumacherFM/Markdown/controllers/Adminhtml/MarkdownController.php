@@ -59,16 +59,17 @@ class SchumacherFM_Markdown_Adminhtml_MarkdownController extends Mage_Adminhtml_
         );
         $binaryData = base64_decode($this->getRequest()->getParam('binaryData', ''));
         $file       = json_decode($this->getRequest()->getParam('file', '[]'), TRUE);
-        $fileName   = preg_replace('~[^\w\.]+~i', '', isset($file['name']) ? $file['name'] : '');
+
+        if (! (isset($file['extra']['nameNoExtension']) && isset($file['extra']['extension'])) || empty($binaryData)) {
+            $return['msg'] = 'Either fileName or binaryData or file is empty ...';
+            return $this->_setReturn($return, TRUE);
+        }
+        $fileName = $file['extra']['nameNoExtension'].'.'.$file['extra']['extension'];
 
         if (strpos(strtolower($fileName), 'clipboard') !== FALSE) {
             $fileName = 'clipboard_' . date('Ymd-His') . '_' . str_replace('clipboard', '', strtolower($fileName));
         }
-
-        if (empty($fileName) || empty($binaryData) || empty($file)) {
-            $return['msg'] = 'Either fileName or binaryData or file is empty ...';
-            return $this->_setReturn($return, TRUE);
-        }
+        $fileName   = preg_replace('~[^\w\.]+~i', '_', $fileName);
 
         $savePath = $this->_getStorageRoot() . $this->_getStorageSubDirectory();
         $io       = new Varien_Io_File();
