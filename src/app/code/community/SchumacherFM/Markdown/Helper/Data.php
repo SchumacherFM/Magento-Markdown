@@ -297,7 +297,6 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
             'adminhtml_cms_page_edit'              => 1,
             'adminhtml_catalog_product_edit'       => 1,
             'adminhtml_catalog_category_edit'      => 1,
-            'mpblog_admin_adminhtml_post_edit'     => 1,
         );
 
         if (!$this->isEmailDisabled()) {
