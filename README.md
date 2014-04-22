@@ -165,12 +165,17 @@ About
 -----
 
 - Key: SchumacherFM_Markdown
-- Current Version: 2.1.0
+- Current Version: 2.1.2
 - [Download tarball](https://github.com/SchumacherFM/Magento-Markdown/tags)
 - Donation: [http://www.seashepherd.org/](http://www.seashepherd.org/)
 
 History
 -------
+
+#### 2.1.2
+
+- Initialize Markdown now in all textarea fields
+- Bugfix in Drag & Drop file upload
 
 #### 2.1.1
 
@@ -371,8 +376,3 @@ Author
 Made in Sydney, Australia :-)
 
 If you consider a donation please contribute to: [http://www.seashepherd.org/](http://www.seashepherd.org/)
-
-Already donated (let me know if you would like to be listed):
-
-- Person 1
-- Person X
