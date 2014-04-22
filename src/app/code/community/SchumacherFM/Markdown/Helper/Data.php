@@ -293,6 +293,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
         $handles = array(
             'editor'                               => 1,
             'adminhtml_cms_block_edit'             => 1,
+            'adminhtml_cms_page_index'             => 1,
             'adminhtml_cms_page_edit'              => 1,
             'adminhtml_catalog_product_edit'       => 1,
             'adminhtml_catalog_category_edit'      => 1,
