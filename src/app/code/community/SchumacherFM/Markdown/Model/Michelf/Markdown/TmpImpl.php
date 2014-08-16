@@ -37,7 +37,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
     public $code_class_prefix = "";
     # Class attribute for code blocks goes on the `code` tag;
     # setting this to true will put attributes on the `pre` tag instead.
-    public $code_attr_on_pre = FALSE;
+    public $code_attr_on_pre = false;
 
     # Predefined abbreviations.
     public $predef_abbr = array();
@@ -123,6 +123,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
         parent::teardown();
     }
 
+
     ### Extra Attribute Parser ###
 
     # Expression to use to catch attributes (includes the braces)
@@ -146,12 +147,12 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 
         # handle classes and ids (only first id taken into account)
         $classes = array();
-        $id      = FALSE;
+        $id      = false;
         foreach ($elements as $element) {
             if ($element{0} == '.') {
                 $classes[] = substr($element, 1);
             } else if ($element{0} == '#') {
-                if ($id === FALSE) $id = substr($element, 1);
+                if ($id === false) $id = substr($element, 1);
             }
         }
 
@@ -198,7 +199,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 					(?:[ ]* ' . $this->id_class_attr_catch_re . ' )?  # $5 = extra id & class attr
 							(?:\n+|\Z)
 			}xm',
-            array(&$this, '_stripLinkDefinitions_callback'),
+            array($this, '_stripLinkDefinitions_callback'),
             $text);
         return $text;
     }
@@ -213,20 +214,21 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
         return ''; # String that will replace the block
     }
 
+
     ### HTML Block Parser ###
 
     # Tags that are always treated as block tags:
-    protected $block_tags_re = 'p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|address|form|fieldset|iframe|hr|legend|article|section|nav|aside|hgroup|header|footer|figcaption';
+    protected $block_tags_re = 'p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|address|form|fieldset|iframe|hr|legend|article|section|nav|aside|hgroup|header|footer|figcaption|figure';
 
     # Tags treated as block tags only if the opening tag is alone on its line:
-    protected $context_block_tags_re = 'script|noscript|ins|del|iframe|object|source|track|param|math|svg|canvas|audio|video';
+    protected $context_block_tags_re = 'script|noscript|style|ins|del|iframe|object|source|track|param|math|svg|canvas|audio|video';
 
     # Tags where markdown="1" default to span mode:
     protected $contain_span_tags_re = 'p|h[1-6]|li|dd|dt|td|th|legend|address';
 
     # Tags which must not have their contents modified, no matter where
     # they appear:
-    protected $clean_tags_re = 'script|math|svg';
+    protected $clean_tags_re = 'script|style|math|svg';
 
     # Tags that do not need to be closed.
     protected $auto_close_tags_re = 'hr|img|param|source|track';
@@ -259,7 +261,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
     }
 
     protected function _hashHTMLBlocks_inMarkdown($text, $indent = 0,
-                                                  $enclosing_tag_re = '', $span = FALSE)
+                                                  $enclosing_tag_re = '', $span = false)
     {
         #
         # Parse markdown text, calling _HashHTMLBlocks_InHTML for block tags.
@@ -323,9 +325,6 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 					<\?.*?\?> | <%.*?%>	# Processing instruction
 				|
 					<!\[CDATA\[.*?\]\]>	# CData Block
-				|
-					# Code span marker
-					`+
 				' . (!$span ? ' # If not in span.
 				|
 					# Indented code block
@@ -337,7 +336,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 				|
 					# Fenced code block marker
 					(?<= ^ | \n )
-					[ ]{0,' . ($indent + 3) . '}~{3,}
+					[ ]{0,' . ($indent + 3) . '}(?:~{3,}|`{3,})
 									[ ]*
 					(?:
 					\.?[-_:a-zA-Z0-9]+ # standalone class name
@@ -345,8 +344,14 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 						' . $this->id_class_attr_nocatch_re . ' # extra attributes
 					)?
 					[ ]*
-					\n
+					(?= \n )
 				' : '') . ' # End (if not is span).
+				|
+					# Code span marker
+					# Note, this regex needs to go after backtick fenced
+					# code blocks but it should also be kept outside of the
+					# "if not in span" condition adding backticks to the parser
+					`+
 				)
 			}xs';
 
@@ -388,25 +393,11 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
             $tag_re = preg_quote($tag); # For use in a regular expression.
 
             #
-            # Check for: Code span marker
-            #
-            if ($tag{0} == "`") {
-                # Find corresponding end marker.
-                $tag_re = preg_quote($tag);
-                if (preg_match('{^(?>.+?|\n(?!\n))*?(?<!`)' . $tag_re . '(?!`)}',
-                    $text, $matches)
-                ) {
-                    # End marker found: pass text unchanged until marker.
-                    $parsed .= $tag . $matches[0];
-                    $text = substr($text, strlen($matches[0]));
-                } else {
-                    # Unmatched marker: just skip it.
-                    $parsed .= $tag;
-                }
-            } #
             # Check for: Fenced code block marker.
+            # Note: need to recheck the whole tag to disambiguate backtick
+            # fences from code spans
             #
-            else if (preg_match('{^\n?([ ]{0,' . ($indent + 3) . '})(~+)}', $tag, $capture)) {
+            if (preg_match('{^\n?([ ]{0,' . ($indent + 3) . '})(~{3,}|`{3,})[ ]*(?:\.?[-_:a-zA-Z0-9]+|' . $this->id_class_attr_nocatch_re . ')?[ ]*\n?$}', $tag, $capture)) {
                 # Fenced code block marker: find matching end marker.
                 $fence_indent = strlen($capture[1]); # use captured indent in re
                 $fence_re     = $capture[2]; # use captured fence in re
@@ -420,14 +411,34 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
                     # No end marker: just skip it.
                     $parsed .= $tag;
                 }
-            } #
+            }
+            #
             # Check for: Indented code block.
             #
             else if ($tag{0} == "\n" || $tag{0} == " ") {
                 # Indented code block: pass it unchanged, will be handled
                 # later.
                 $parsed .= $tag;
-            } #
+            }
+            #
+            # Check for: Code span marker
+            # Note: need to check this after backtick fenced code blocks
+            #
+            else if ($tag{0} == "`") {
+                # Find corresponding end marker.
+                $tag_re = preg_quote($tag);
+                if (preg_match('{^(?>.+?|\n(?!\n))*?(?<!`)' . $tag_re . '(?!`)}',
+                    $text, $matches)
+                ) {
+                    # End marker found: pass text unchanged until marker.
+                    $parsed .= $tag . $matches[0];
+                    $text = substr($text, strlen($matches[0]));
+                } else {
+                    # Unmatched marker: just skip it.
+                    $parsed .= $tag;
+                }
+            }
+            #
             # Check for: Opening Block level tag or
             #            Opening Context Block tag (like ins and del)
             #               used as a block tag (tag is alone on it's line).
@@ -439,11 +450,12 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
             ) {
                 # Need to parse tag and following text using the HTML parser.
                 list($block_text, $text) =
-                    $this->_hashHTMLBlocks_inHTML($tag . $text, "hashBlock", TRUE);
+                    $this->_hashHTMLBlocks_inHTML($tag . $text, "hashBlock", true);
 
                 # Make sure it stays outside of any paragraph by adding newlines.
                 $parsed .= "\n\n$block_text\n\n";
-            } #
+            }
+            #
             # Check for: Clean tag (like script, math)
             #            HTML Comments, processing instructions.
             #
@@ -453,10 +465,11 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
                 # Need to parse tag and following text using the HTML parser.
                 # (don't check for markdown attribute)
                 list($block_text, $text) =
-                    $this->_hashHTMLBlocks_inHTML($tag . $text, "hashClean", FALSE);
+                    $this->_hashHTMLBlocks_inHTML($tag . $text, "hashClean", false);
 
                 $parsed .= $block_text;
-            } #
+            }
+            #
             # Check for: Tag with same name as enclosing tag.
             #
             else if ($enclosing_tag_re !== '' &&
@@ -649,7 +662,6 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
                     $block_text = "";
                 } else $block_text .= $tag;
             }
-
         } while ($depth > 0);
 
         #
@@ -676,7 +688,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
         # Turn Markdown link shortcuts into XHTML <a> tags.
         #
         if ($this->in_anchor) return $text;
-        $this->in_anchor = TRUE;
+        $this->in_anchor = true;
 
         #
         # First, handle reference-style links: [link text] [id]
@@ -695,7 +707,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 			  \]
 			)
 			}xs',
-            array(&$this, '_doAnchors_reference_callback'), $text);
+            array($this, '_doAnchors_reference_callback'), $text);
 
         #
         # Next, inline-style links: [link text](url "optional title")
@@ -723,7 +735,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 			  (?:[ ]? ' . $this->id_class_attr_catch_re . ' )?	 # $8 = id/class attributes
 			)
 			}xs',
-            array(&$this, '_doAnchors_inline_callback'), $text);
+            array($this, '_doAnchors_inline_callback'), $text);
 
         #
         # Last, handle reference-style shortcuts: [link text]
@@ -737,9 +749,9 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 			  \]
 			)
 			}xs',
-            array(&$this, '_doAnchors_reference_callback'), $text);
+            array($this, '_doAnchors_reference_callback'), $text);
 
-        $this->in_anchor = FALSE;
+        $this->in_anchor = false;
         return $text;
     }
 
@@ -760,7 +772,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 
         if (isset($this->urls[$link_id])) {
             $url = $this->urls[$link_id];
-            $url = $this->encodeAttribute($url);
+            $url = $this->encodeURLAttribute($url);
 
             $result = "<a href=\"$url\"";
             if (isset($this->titles[$link_id])) {
@@ -788,7 +800,13 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
         $title       =& $matches[7];
         $attr        = $this->doExtraAttributes("a", $dummy =& $matches[8]);
 
-        $url = $this->encodeAttribute($url);
+        // if the URL was of the form <s p a c e s> it got caught by the HTML
+        // tag parser and hashed. Need to reverse the process before using the URL.
+        $unhashed = $this->unhash($url);
+        if ($unhashed != $url)
+            $url = preg_replace('/^<(.*)>$/', '\1', $unhashed);
+
+        $url = $this->encodeURLAttribute($url);
 
         $result = "<a href=\"$url\"";
         if (isset($title)) {
@@ -826,7 +844,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 
 			)
 			}xs',
-            array(&$this, '_doImages_reference_callback'), $text);
+            array($this, '_doImages_reference_callback'), $text);
 
         #
         # Next, handle inline images:  ![alt text](url "optional title")
@@ -856,7 +874,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 			  (?:[ ]? ' . $this->id_class_attr_catch_re . ' )?	 # $8 = id/class attributes
 			)
 			}xs',
-            array(&$this, '_doImages_inline_callback'), $text);
+            array($this, '_doImages_inline_callback'), $text);
 
         return $text;
     }
@@ -873,7 +891,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 
         $alt_text = $this->encodeAttribute($alt_text);
         if (isset($this->urls[$link_id])) {
-            $url    = $this->encodeAttribute($this->urls[$link_id]);
+            $url    = $this->encodeURLAttribute($this->urls[$link_id]);
             $result = "<img src=\"$url\" alt=\"$alt_text\"";
             if (isset($this->titles[$link_id])) {
                 $title = $this->titles[$link_id];
@@ -901,7 +919,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
         $attr        = $this->doExtraAttributes("img", $dummy =& $matches[8]);
 
         $alt_text = $this->encodeAttribute($alt_text);
-        $url      = $this->encodeAttribute($url);
+        $url      = $this->encodeURLAttribute($url);
         $result   = "<img src=\"$url\" alt=\"$alt_text\"";
         if (isset($title)) {
             $title = $this->encodeAttribute($title);
@@ -931,7 +949,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
                 (?:[ ]+ ' . $this->id_class_attr_catch_re . ' )?	 # $3 = id/class attributes
 				[ ]*\n(=+|-+)[ ]*\n+				# $3: Header footer
 			}mx',
-            array(&$this, '_doHeaders_callback_setext'), $text);
+            array($this, '_doHeaders_callback_setext'), $text);
 
         # atx-style headers:
         #	# Header 1        {#header1}
@@ -950,7 +968,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 				[ ]*
 				\n+
 			}xm',
-            array(&$this, '_doHeaders_callback_atx'), $text);
+            array($this, '_doHeaders_callback_atx'), $text);
 
         return $text;
     }
@@ -1005,7 +1023,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 				)
 				(?=\n|\Z)					# Stop at final double newline.
 			}xm',
-            array(&$this, '_doTable_leadingPipe_callback'), $text);
+            array($this, '_doTable_leadingPipe_callback'), $text);
 
         #
         # Find tables without leading pipe.
@@ -1031,7 +1049,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 				)
 				(?=\n|\Z)					# Stop at final double newline.
 			}xm',
-            array(&$this, '_DoTable_callback'), $text);
+            array($this, '_DoTable_callback'), $text);
 
         return $text;
     }
@@ -1160,7 +1178,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 				(?>\A\n?|(?<=\n\n))
 				' . $whole_list_re . '
 			}mx',
-            array(&$this, '_doDefLists_callback'), $text);
+            array($this, '_doDefLists_callback'), $text);
 
         return $text;
     }
@@ -1200,7 +1218,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 			(?=\n?[ ]{0,3}:[ ])				# lookahead for following line feed
 											#   with a definition mark.
 			}xm',
-            array(&$this, '_processDefListItems_callback_dt'), $list_str);
+            array($this, '_processDefListItems_callback_dt'), $list_str);
 
         # Process actual definitions.
         $list_str = preg_replace_callback('{
@@ -1217,7 +1235,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 				)
 			)
 			}xm',
-            array(&$this, '_processDefListItems_callback_dd'), $list_str);
+            array($this, '_processDefListItems_callback_dd'), $list_str);
 
         return $list_str;
     }
@@ -1267,7 +1285,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 				(?:\n|\A)
 				# 1: Opening marker
 				(
-					~{3,} # Marker: three tilde or more.
+					(?:~{3,}|`{3,}) # 3 or more tildes/backticks.
 				)
 				[ ]*
 				(?:
@@ -1286,9 +1304,9 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 				)
 
 				# Closing marker.
-				\1 [ ]* \n
+				\1 [ ]* (?= \n )
 			}xm',
-            array(&$this, '_doFencedCodeBlocks_callback'), $text);
+            array($this, '_doFencedCodeBlocks_callback'), $text);
 
         return $text;
     }
@@ -1300,7 +1318,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
         $codeblock = $matches[4];
         $codeblock = htmlspecialchars($codeblock, ENT_NOQUOTES);
         $codeblock = preg_replace_callback('/^\n+/',
-            array(&$this, '_doFencedCodeBlocks_newlines'), $codeblock);
+            array($this, '_doFencedCodeBlocks_newlines'), $codeblock);
 
         if ($classname != "") {
             if ($classname{0} == '.')
@@ -1322,24 +1340,25 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
             strlen($matches[0]));
     }
 
+
     #
     # Redefining emphasis markers so that emphasis by underscore does not
     # work in the middle of a word.
     #
     protected $em_relist = array(
-        ''  => '(?:(?<!\*)\*(?!\*)|(?<![a-zA-Z0-9_])_(?!_))(?=\S|$)(?![\.,:;]\s)',
-        '*' => '(?<=\S|^)(?<!\*)\*(?!\*)',
-        '_' => '(?<=\S|^)(?<!_)_(?![a-zA-Z0-9_])',
+        ''  => '(?:(?<!\*)\*(?!\*)|(?<![a-zA-Z0-9_])_(?!_))(?![\.,:;]?\s)',
+        '*' => '(?<![\s*])\*(?!\*)',
+        '_' => '(?<![\s_])_(?![a-zA-Z0-9_])',
     );
     protected $strong_relist = array(
-        ''   => '(?:(?<!\*)\*\*(?!\*)|(?<![a-zA-Z0-9_])__(?!_))(?=\S|$)(?![\.,:;]\s)',
-        '**' => '(?<=\S|^)(?<!\*)\*\*(?!\*)',
-        '__' => '(?<=\S|^)(?<!_)__(?![a-zA-Z0-9_])',
+        ''   => '(?:(?<!\*)\*\*(?!\*)|(?<![a-zA-Z0-9_])__(?!_))(?![\.,:;]?\s)',
+        '**' => '(?<![\s*])\*\*(?!\*)',
+        '__' => '(?<![\s_])__(?![a-zA-Z0-9_])',
     );
     protected $em_strong_relist = array(
-        ''    => '(?:(?<!\*)\*\*\*(?!\*)|(?<![a-zA-Z0-9_])___(?!_))(?=\S|$)(?![\.,:;]\s)',
-        '***' => '(?<=\S|^)(?<!\*)\*\*\*(?!\*)',
-        '___' => '(?<=\S|^)(?<!_)___(?![a-zA-Z0-9_])',
+        ''    => '(?:(?<!\*)\*\*\*(?!\*)|(?<![a-zA-Z0-9_])___(?!_))(?![\.,:;]?\s)',
+        '***' => '(?<![\s*])\*\*\*(?!\*)',
+        '___' => '(?<![\s_])___(?![a-zA-Z0-9_])',
     );
 
     protected function formParagraphs($text)
@@ -1398,13 +1417,13 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 					.+				# actual text
 				|
 					\n				# newlines but
-					(?!\[\^.+?\]:\s)# negative lookahead for footnote marker.
+					(?!\[.+?\][ ]?:\s)# negative lookahead for footnote or link definition marker.
 					(?!\n+[ ]{0,3}\S)# ensure line is not blank and followed
 									# by non-indented content
 				)*
 			)
 			}xm',
-            array(&$this, '_stripFootnotes_callback'),
+            array($this, '_stripFootnotes_callback'),
             $text);
         return $text;
     }
@@ -1434,7 +1453,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
         # Append footnote list to text.
         #
         $text = preg_replace_callback('{F\x1Afn:(.*?)\x1A:}',
-            array(&$this, '_appendFootnotes_callback'), $text);
+            array($this, '_appendFootnotes_callback'), $text);
 
         if (!empty($this->footnotes_ordered)) {
             $text .= "\n\n";
@@ -1442,7 +1461,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
             $text .= "<hr" . $this->empty_element_suffix . "\n";
             $text .= "<ol>\n\n";
 
-            $attr = " rev=\"footnote\"";
+            $attr = "";
             if ($this->fn_backlink_class != "") {
                 $class = $this->fn_backlink_class;
                 $class = $this->encodeAttribute($class);
@@ -1466,7 +1485,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
                 $footnote .= "\n"; # Need to append newline before parsing.
                 $footnote = $this->runBlockGamut("$footnote\n");
                 $footnote = preg_replace_callback('{F\x1Afn:(.*?)\x1A:}',
-                    array(&$this, '_appendFootnotes_callback'), $footnote);
+                    array($this, '_appendFootnotes_callback'), $footnote);
 
                 $attr    = str_replace("%%", ++$num, $attr);
                 $note_id = $this->encodeAttribute($note_id);
@@ -1551,7 +1570,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
 			^[ ]{0,' . $less_than_tab . '}\*\[(.+?)\][ ]?:	# abbr_id = $1
 			(.*)					# text = $2 (no blank lines allowed)
 			}xm',
-            array(&$this, '_stripAbbreviations_callback'),
+            array($this, '_stripAbbreviations_callback'),
             $text);
         return $text;
     }
@@ -1580,7 +1599,7 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
                 '(?:' . $this->abbr_word_re . ')' .
                 '(?![\w\x1A])' .
                 '}',
-                array(&$this, '_doAbbreviations_callback'), $text);
+                array($this, '_doAbbreviations_callback'), $text);
         }
         return $text;
     }
@@ -1600,5 +1619,4 @@ class SchumacherFM_Markdown_Model_Michelf_Markdown_TmpImpl extends SchumacherFM_
             return $matches[0];
         }
     }
-
 }
