@@ -149,8 +149,7 @@ Todo
 ----
 
 - For version 3.0 replace the EpicEditor with StackEdit
-- For version 4.0 parallel support for Magento2
-- For version 5.0 drop Magento1 support
+- Create a version for Magento2
 
 Installation Instructions
 -------------------------
@@ -165,12 +164,18 @@ About
 -----
 
 - Key: SchumacherFM_Markdown
-- Current Version: 2.1.0
+- Current Version: 2.2.0
 - [Download tarball](https://github.com/SchumacherFM/Magento-Markdown/tags)
 - Donation: [http://www.seashepherd.org/](http://www.seashepherd.org/)
 
 History
 -------
+
+#### 2.2.0
+
+- Update PHP Markdown Lib to version 1.4.1 (4 May 2014) For more details see [here](https://github.com/michelf/php-markdown)
+- Update reMarked.js to latest version
+- Update marked.js to latest version. Fixes some regex bugs
 
 #### 2.1.1
 
@@ -281,24 +286,24 @@ Licence BSD-3-Clause
 
 #### Magento Markdown Implementation
 
-Copyright (c) 2013 Cyrill (at) Schumacher dot fm
+Copyright (c) 2014 Cyrill (at) Schumacher dot fm
 
 All rights reserved.
 
 #### PHP Markdown Lib
 
-- Copyright (c) 2004-2013 Michel Fortin
+- Copyright (c) 2004-2014 Michel Fortin
 - [http://michelf.ca](http://michelf.ca)
 - [https://github.com/michelf/php-markdown/](https://github.com/michelf/php-markdown/)
 
 #### reMarked.js
 
-- Copyright (c) 2013 Leon Sorokin / leeoniya
+- Copyright (c) 2014 Leon Sorokin / leeoniya
 - [https://github.com/leeoniya/reMarked.js](https://github.com/leeoniya/reMarked.js)
 
 #### marked.js
 
-- Copyright (c) 2011-2013, Christopher Jeffrey. (MIT Licensed)
+- Copyright (c) 2011-2014, Christopher Jeffrey. (MIT Licensed)
 - [https://github.com/chjj/marked](https://github.com/chjj/marked)
 
 #### highlight.js
@@ -312,12 +317,12 @@ All rights reserved.
 
 #### beautify-html
 
-- Copyright (c) 2007-2013 Einar Lielmanis and contributors.
+- Copyright (c) 2007-2014 Einar Lielmanis and contributors.
 - [https://github.com/einars/js-beautify/blob/master/js/lib/beautify-html.js](https://github.com/einars/js-beautify/blob/master/js/lib/beautify-html.js)
 
 #### EpicEditor
 
-- Copyright (c) 2011-2013, Oscar Godson (http://oscargodson.com)
+- Copyright (c) 2011-2014, Oscar Godson (http://oscargodson.com)
 - [https://github.com/OscarGodson/EpicEditor](https://github.com/OscarGodson/EpicEditor)
 
 ####  Based on Markdown
@@ -368,11 +373,8 @@ Author
 
 [Cyrill Schumacher](https://github.com/SchumacherFM) - [My pgp public key](http://www.schumacher.fm/cyrill.asc)
 
+[@SchumacherFM](https://twitter.com/SchumacherFM)
+
 Made in Sydney, Australia :-)
 
 If you consider a donation please contribute to: [http://www.seashepherd.org/](http://www.seashepherd.org/)
-
-Already donated (let me know if you would like to be listed):
-
-- Person 1
-- Person X
