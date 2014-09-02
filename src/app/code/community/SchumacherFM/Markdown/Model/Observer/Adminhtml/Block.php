@@ -341,7 +341,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         if ($this->_helper->getDetectionTag() !== '') {
             $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
-                    'label'   => $this->___('Markdown enable'),
+                    'label'   => $this->_helper->__('Markdown enable'),
                     'type'    => 'button',
                     'class'   => 'mdButton',
                     'onclick' => 'toggleMarkdown(\'' . $htmlId . '\');'
@@ -351,7 +351,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         if ($this->_helper->isEpicEditorEnabled()) {
             $this->_afterElementHtml[500] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
-                    'label'   => $this->___('EpicEditor'),
+                    'label'   => $this->_helper->__('EpicEditor'),
                     'class'   => 'mdButton',
                     'type'    => 'button',
                     'onclick' => 'toggleEpicEditor(this,\'' . $htmlId . '\');'
@@ -361,22 +361,12 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         if ($this->_helper->isReMarkedEnabled() === TRUE) {
             $this->_afterElementHtml[600] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
-                    'label'   => $this->___('Convert HTML to Markdown'),
+                    'label'   => $this->_helper->__('Convert HTML to Markdown'),
                     'class'   => 'mdButton',
                     'type'    => 'button',
                     'onclick' => 'htmlToMarkDown(this,\'' . $htmlId . '\');'
                 ))->toHtml();
         }
         return $this;
-    }
-
-    /**
-     * @param $translation
-     *
-     * @return string
-     */
-    protected function ___($translation)
-    {
-        return $this->_helper->__($translation);
     }
 }

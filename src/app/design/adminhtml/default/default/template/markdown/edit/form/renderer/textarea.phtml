@@ -7,27 +7,27 @@
     <div class="mdTabs">
         <ul data-current="write" class="tabs-horiz">
             <li><a href="#" id="<?php echo $this->getElementId(); ?>__write" class="tab-item-link active">
-                    <?php echo $this->___('Write') ?>
+                    <?php echo $this->_helper->__('Write') ?>
                 </a>
             </li>
             <?php if($this->isPreviewAllowed()): ?>
             <li>
                 <a href="#" id="<?php echo $this->getElementId(); ?>__preview" class="tab-item-link">
-                    <?php echo $this->___('Preview') ?>
+                    <?php echo $this->_helper->__('Preview') ?>
                 </a>
             </li>
             <?php endif; ?>
             <?php if($this->isLivePreviewAllowed()): ?>
             <li>
                 <a href="#" id="<?php echo $this->getElementId(); ?>__livePreview" class="tab-item-link">
-                    <?php echo $this->___('Live Preview') ?>
+                    <?php echo $this->_helper->__('Live Preview') ?>
                 </a>
             </li>
             <?php endif; ?>
             <?php if($this->isHtmlPreviewAllowed()): ?>
             <li>
                 <a href="#" id="<?php echo $this->getElementId(); ?>__htmlPreview" class="tab-item-link">
-                    <?php echo $this->___('HTML Preview') ?>
+                    <?php echo $this->_helper->__('HTML Preview') ?>
                 </a>
             </li>
             <?php endif; ?>
@@ -41,10 +41,10 @@
             <?php echo $this->getAfterElementHtml(); ?>
             <div class="mdTextArea"></div>
             <p class="md-filereader-text note">
-                <?php echo $this->___('Attach images by dragging & dropping,') ?>
+                <?php echo $this->_helper->__('Attach images by dragging & dropping,') ?>
                 <input type="file" multiple="multiple" id="<?php echo $this->getFileReaderInputId() ?>" class="md-manual-file-chooser">
-                <a href="#"><?php echo $this->___('selecting them') ?></a>,
-                <?php echo $this->___('or pasting from the clipboard.') ?>
+                <a href="#"><?php echo $this->_helper->__('selecting them') ?></a>,
+                <?php echo $this->_helper->__('or pasting from the clipboard.') ?>
             </p>
         </div>
         <?php if($this->isPreviewAllowed()): ?>
