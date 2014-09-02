@@ -131,8 +131,15 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
      */
     protected function _addMarkdownHint()
     {
+        $request = Mage::app()->getRequest();
+
+        $url = Mage::helper("adminhtml")->getUrl("adminhtml/markdown/addHandle", array(
+            'handle' => $request->getModuleName() .'_'.$request->getControllerName().'_'.$request->getActionName()
+        ));
+        $enableLink = '<a href="'.$url.'">'.$this->_helper->__('Enable').'</a>';
+
         $this->_currentElement->setData('after_element_html', '<small>' .
-            $this->___('Markdown feature may be available here!')
+            $this->_helper->__('Markdown feature may be available here! [%s]', $enableLink)
             . '</small>' . $this->_currentElement->getData('after_element_html'));
         return $this;
     }
