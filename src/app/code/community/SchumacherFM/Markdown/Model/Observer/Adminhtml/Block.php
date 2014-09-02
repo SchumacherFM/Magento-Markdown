@@ -88,41 +88,14 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
             return NULL;
         }
 
-        // cms page edit
-        if (TRUE === $this->_isElementEditor()) {
-
-            /* @var $model Mage_Cms_Model_Page */
-            $model = Mage::registry('cms_page');
-            if (empty($model)) {
-                return NULL;
-            }
-            $coreUrl = Mage::getModel('core/url');
-
-            $identifier = $model->getIdentifier();
-            if (!empty($identifier)) {
-                $this->_livePreviewUrl = $coreUrl->getUrl(
-                    $identifier, array(
-                        '_current' => FALSE
-                    )
-                );
-            }
+        $storeId = Mage::app()->getRequest()->getParam('store_id');
+        if ($storeId) {
+            $store = Mage::app()->getStore($storeId);
+        } else {
+            $store = Mage::app()->getDefaultStoreView();
         }
 
-        // catalog
-        if (TRUE === $this->_isCatalogElementAllowed()) {
-            /** @var Mage_Catalog_Model_Product $product */
-            $product = Mage::registry('current_product');
-            /** @var Mage_Catalog_Model_Category $category */
-            $category = Mage::registry('current_category');
-
-            if ($product) {
-                $this->_livePreviewUrl = $product->getUrlInStore();
-            }
-            if ($category) {
-                $this->_livePreviewUrl = $category->getCategoryIdUrl();
-            }
-            $this->_livePreviewUrl = preg_replace('~\?___store=[^\&]+~i', '', $this->_livePreviewUrl);
-        }
+        $this->_livePreviewUrl = $store->getUrl('markdown/index/preview');
         return NULL;
     }
 

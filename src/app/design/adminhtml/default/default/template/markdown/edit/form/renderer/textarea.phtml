@@ -10,13 +10,6 @@
                     <?php echo $this->_helper->__('Write') ?>
                 </a>
             </li>
-            <?php if($this->isPreviewAllowed()): ?>
-            <li>
-                <a href="#" id="<?php echo $this->getElementId(); ?>__preview" class="tab-item-link">
-                    <?php echo $this->_helper->__('Preview') ?>
-                </a>
-            </li>
-            <?php endif; ?>
             <?php if($this->isLivePreviewAllowed()): ?>
             <li>
                 <a href="#" id="<?php echo $this->getElementId(); ?>__livePreview" class="tab-item-link">
@@ -47,15 +40,14 @@
                 <?php echo $this->_helper->__('or pasting from the clipboard.') ?>
             </p>
         </div>
-        <?php if($this->isPreviewAllowed()): ?>
-        <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__previewB">
-            <?php echo $this->getIframe('__previewB'); ?>
-        </div>
-        <?php endif; ?>
         <?php if($this->isLivePreviewAllowed()): ?>
         <div class="mdTabpage" id="<?php echo $this->getElementId(); ?>__livePreviewB">
             <ul class="previewStores"></ul>
             <?php echo $this->getIframe($this->getElementId() . '__livePreviewB'); ?>
+            <form action="action" method="post" class="iframeForm"
+                  target="<?php echo $this->getElementId() . '__livePreviewB'; ?>">
+                <input type="hidden" name="markdown" class="iframeInput"/>
+            </form>
         </div>
         <?php endif; ?>
         <?php if($this->isHtmlPreviewAllowed()): ?>

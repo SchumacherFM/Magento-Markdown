@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<layout>
+    <markdown_index_preview>
+        <reference name="root">
+            <action method="setTemplate"><template>page/empty.phtml</template></action>
+        </reference>
+        <reference name="head">
+            <action method="addCss"><stylesheet>markdown/mdm.css</stylesheet></action>
+        </reference>
+        <reference name="content">
+            <block type="core/text" name="markdown_content" />
+        </reference>
+    </markdown_index_preview>
+</layout>

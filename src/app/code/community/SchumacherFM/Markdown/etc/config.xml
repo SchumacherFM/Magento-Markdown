@@ -78,6 +78,22 @@
                 </observers>
             </core_abstract_load_after>
         </events>
+        <routers>
+            <markdown>
+                <use>standard</use>
+                <args>
+                    <module>SchumacherFM_Markdown</module>
+                    <frontName>markdown</frontName>
+                </args>
+            </markdown>
+        </routers>
+        <layout>
+            <updates>
+                <markdown>
+                    <file>markdown.xml</file>
+                </markdown>
+            </updates>
+        </layout>
     </frontend>
 
     <admin>

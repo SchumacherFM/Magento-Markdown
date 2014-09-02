@@ -835,11 +835,11 @@
             this._observeUserLivePreviewSetiFrame(value);
         },
         livePreview: function () {
-            var firstUrl = this._setUpLivePreview();
-
-            if (null !== firstUrl) {
-                this._setIframeSrc(firstUrl);
-            }
+            var name = this.data.tabBody.select('.iframePreview')[0].getAttribute("name");
+            var form = this.data.tabBody.select('.iframeForm')[0];
+            form.setAttribute('action', _markDownGlobalConfig.previewUrl);
+            this.data.tabBody.select('.iframeInput')[0].value = $(this.data.textAreaId).value;
+            form.submit();
         },
         _raptorize: function (options) {
             // based on http://zurb.com/playground/jquery-raptorize
