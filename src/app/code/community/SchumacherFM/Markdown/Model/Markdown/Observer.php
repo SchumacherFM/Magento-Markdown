@@ -34,6 +34,18 @@ class SchumacherFM_Markdown_Model_Markdown_Observer extends SchumacherFM_Markdow
         return Mage::helper('markdown')->isMarkdownExtra($this->_mdExtraUsage[$this->_currentObserverMethod]);
     }
 
+
+    public function disableWysiwyg(Varien_Event_Observer $observer)
+    {
+        /** @var Varien_Object $config */
+        $config = $observer->getConfig();
+
+        $handles = Mage::app()->getLayout()->getUpdate()->getHandles();
+        if (in_array('MARKDOWN_ENABLED', $handles)) {
+            $config->setData('enabled', false);
+        }
+    }
+
     /**
      * @return bool
      */

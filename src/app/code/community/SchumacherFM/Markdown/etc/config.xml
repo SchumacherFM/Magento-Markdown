@@ -46,35 +46,45 @@
                 <class>SchumacherFM_Markdown_Helper</class>
             </markdown>
         </helpers>
+        <events>
+            <cms_wysiwyg_config_prepare>
+                <observers>
+                    <markdown>
+                        <type>singleton</type>
+                        <class>markdown/markdown_observer</class>
+                        <method>disableWysiwyg</method>
+                    </markdown>
+                </observers>
+            </cms_wysiwyg_config_prepare>
+        </events>
     </global>
     <frontend>
         <events>
             <cms_page_render>
                 <observers>
-                    <markdown_renderer>
+                    <markdown>
                         <type>singleton</type>
                         <class>markdown/markdown_observer</class>
                         <method>renderPage</method>
-                    </markdown_renderer>
+                    </markdown>
                 </observers>
             </cms_page_render>
-
             <core_block_abstract_to_html_after>
                 <observers>
-                    <markdown_renderer>
+                    <markdown>
                         <type>singleton</type>
                         <class>markdown/markdown_observer</class>
                         <method>renderBlock</method>
-                    </markdown_renderer>
+                    </markdown>
                 </observers>
             </core_block_abstract_to_html_after>
 
             <core_abstract_load_after>
                 <observers>
-                    <markdown_core_email_template>
+                    <markdown>
                         <class>markdown/markdown_observer</class>
                         <method>renderEmailTemplate</method>
-                    </markdown_core_email_template>
+                    </markdown>
                 </observers>
             </core_abstract_load_after>
         </events>
@@ -147,14 +157,6 @@
                     </markdown_adminhtml_block_html_before_page>
                 </observers>
             </adminhtml_block_html_before>
-            <core_config_data_save_after>
-                <observers>
-                    <markdown_core_config_data>
-                        <class>markdown/editor_observer</class>
-                        <method>enableDisableWysiwyg</method>
-                    </markdown_core_config_data>
-                </observers>
-            </core_config_data_save_after>
         </events>
     </adminhtml>
     <default>
