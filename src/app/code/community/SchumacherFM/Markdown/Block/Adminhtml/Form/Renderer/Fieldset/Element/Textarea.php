@@ -37,16 +37,6 @@ class SchumacherFM_Markdown_Block_Adminhtml_Form_Renderer_Fieldset_Element_Texta
     }
 
     /**
-     * @param $translation
-     *
-     * @return string
-     */
-    public function ___($translation)
-    {
-        return $this->_helper->__($translation);
-    }
-
-    /**
      * @return string
      */
     public function  getFileReaderInputId()

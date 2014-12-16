@@ -88,41 +88,14 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
             return NULL;
         }
 
-        // cms page edit
-        if (TRUE === $this->_isElementEditor()) {
-
-            /* @var $model Mage_Cms_Model_Page */
-            $model = Mage::registry('cms_page');
-            if (empty($model)) {
-                return NULL;
-            }
-            $coreUrl = Mage::getModel('core/url');
-
-            $identifier = $model->getIdentifier();
-            if (!empty($identifier)) {
-                $this->_livePreviewUrl = $coreUrl->getUrl(
-                    $identifier, array(
-                        '_current' => FALSE
-                    )
-                );
-            }
+        $storeId = Mage::app()->getRequest()->getParam('store_id');
+        if ($storeId) {
+            $store = Mage::app()->getStore($storeId);
+        } else {
+            $store = Mage::app()->getDefaultStoreView();
         }
 
-        // catalog
-        if (TRUE === $this->_isCatalogElementAllowed()) {
-            /** @var Mage_Catalog_Model_Product $product */
-            $product = Mage::registry('current_product');
-            /** @var Mage_Catalog_Model_Category $category */
-            $category = Mage::registry('current_category');
-
-            if ($product) {
-                $this->_livePreviewUrl = $product->getUrlInStore();
-            }
-            if ($category) {
-                $this->_livePreviewUrl = $category->getCategoryIdUrl();
-            }
-            $this->_livePreviewUrl = preg_replace('~\?___store=[^\&]+~i', '', $this->_livePreviewUrl);
-        }
+        $this->_livePreviewUrl = $store->getUrl('markdown/index/preview');
         return NULL;
     }
 
@@ -131,8 +104,15 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
      */
     protected function _addMarkdownHint()
     {
+        $request = Mage::app()->getRequest();
+
+        $url = Mage::helper("adminhtml")->getUrl("adminhtml/markdown/addHandle", array(
+            'handle' => $request->getModuleName() .'_'.$request->getControllerName().'_'.$request->getActionName()
+        ));
+        $enableLink = '<a href="'.$url.'">'.$this->_helper->__('Enable').'</a>';
+
         $this->_currentElement->setData('after_element_html', '<small>' .
-            $this->___('Markdown feature may be available here!')
+            $this->_helper->__('Markdown feature may be available here! [%s]', $enableLink)
             . '</small>' . $this->_currentElement->getData('after_element_html'));
         return $this;
     }
@@ -341,7 +321,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         if ($this->_helper->getDetectionTag() !== '') {
             $this->_afterElementHtml[200] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
-                    'label'   => $this->___('Markdown enable'),
+                    'label'   => $this->_helper->__('Markdown enable'),
                     'type'    => 'button',
                     'class'   => 'mdButton',
                     'onclick' => 'toggleMarkdown(\'' . $htmlId . '\');'
@@ -351,7 +331,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         if ($this->_helper->isEpicEditorEnabled()) {
             $this->_afterElementHtml[500] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
-                    'label'   => $this->___('EpicEditor'),
+                    'label'   => $this->_helper->__('EpicEditor'),
                     'class'   => 'mdButton',
                     'type'    => 'button',
                     'onclick' => 'toggleEpicEditor(this,\'' . $htmlId . '\');'
@@ -361,22 +341,12 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         if ($this->_helper->isReMarkedEnabled() === TRUE) {
             $this->_afterElementHtml[600] = Mage::getSingleton('core/layout')
                 ->createBlock('adminhtml/widget_button', '', array(
-                    'label'   => $this->___('Convert HTML to Markdown'),
+                    'label'   => $this->_helper->__('Convert HTML to Markdown'),
                     'class'   => 'mdButton',
                     'type'    => 'button',
                     'onclick' => 'htmlToMarkDown(this,\'' . $htmlId . '\');'
                 ))->toHtml();
         }
         return $this;
-    }
-
-    /**
-     * @param $translation
-     *
-     * @return string
-     */
-    protected function ___($translation)
-    {
-        return $this->_helper->__($translation);
     }
 }

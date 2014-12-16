@@ -30,9 +30,8 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_LayoutUpdate
         $update = $layout->getUpdate();
 
         if ($this->_isAllowed($update)) {
-            $update->addHandle('MARKDOWN_HEADER');
+            $update->addHandle('MARKDOWN_ENABLED');
         }
-
     }
 
     /**

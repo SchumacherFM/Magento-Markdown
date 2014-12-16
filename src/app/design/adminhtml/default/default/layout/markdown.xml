@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <layout>
     <!--@see SchumacherFM_Markdown_Model_Observer_Adminhtml_LayoutUpdate-->
-    <MARKDOWN_HEADER>
+    <MARKDOWN_ENABLED>
         <reference name="head">
             <action method="addJs">
                 <script>markdown/adminhtml/beautify-html.js</script>
@@ -27,5 +27,5 @@
                 <params/>
             </action>
         </reference>
-    </MARKDOWN_HEADER>
+    </MARKDOWN_ENABLED>
 </layout>

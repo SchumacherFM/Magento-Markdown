@@ -7,6 +7,37 @@
  */
 class SchumacherFM_Markdown_Adminhtml_MarkdownController extends Mage_Adminhtml_Controller_Action
 {
+    public function addHandleAction() {
+        $handle = $this->getRequest()->getParam('handle');
+        if (! $handle) {
+            $this->_redirectReferer();
+        }
+
+        $customHandles = trim(Mage::getStoreConfig('markdown/markdown/custom_layout_handles'));
+        if (!empty($customHandles)) {
+            $customHandles = preg_split('~\s+~', $customHandles, -1, PREG_SPLIT_NO_EMPTY);
+        } else {
+            $customHandles = array();
+        }
+
+        if (array_search($handle, $customHandles) !== false) {
+            Mage::getSingleton('adminhtml/session')
+                ->addError($this->__('Could not enable markdown for this page.'));
+            $this->_redirectReferer();
+        }
+
+        $customHandles[] = $handle;
+
+        Mage::getConfig()->saveConfig(
+            'markdown/markdown/custom_layout_handles',
+            implode("\n", $customHandles));
+        Mage::getConfig()->cleanCache();
+
+        Mage::getSingleton('adminhtml/session')
+            ->addSuccess($this->__('Enabled markdown for this page.'));
+
+        $this->_redirectReferer();
+    }
     /**
      * @return void
      */
