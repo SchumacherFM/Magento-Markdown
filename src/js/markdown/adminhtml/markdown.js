@@ -1045,14 +1045,25 @@
     function _mdInitialize() {
         _initGlobalConfig();
 
-        document.on('click', 'textarea.initMarkdown', _onClickBuildTabsFactory);
+        // Support for jquery event binding
+        function bindEvent(obj, event, selector, handler) {
+            if (typeof obj.on === "function") {
+                obj.on(event, selector, handler);
+            } else if (typeof $(obj).on === "function") {
+                $(obj).on(event, selector, handler);
+            } else if (typeof jQuery(obj).on === "function") {
+                jQuery(obj).on(event, selector, handler);
+            }
+        }
+
+        bindEvent(document, 'click', 'textarea.initMarkdown', _onClickBuildTabsFactory);
 
         // some things are only possible with event delegation ...
         if (true === _isEpicEditorEnabled() && true === _markDownGlobalConfig.eeLoadOnClick) {
-            document.on('click', 'textarea.initEpicEditor', _createEpicEditorInstances);
+            bindEvent(document, 'click', 'textarea.initEpicEditor', _createEpicEditorInstances);
         }
         if (true === _isFileReaderEnabled()) {
-            document.on('click', 'textarea.initMarkdown', _createFileReaderFactory);
+            bindEvent(document, 'click', 'textarea.initMarkdown', _createFileReaderFactory);
         }
 
         if (_markDownGlobalConfig.isHiddenInsertImageButton === true) {
