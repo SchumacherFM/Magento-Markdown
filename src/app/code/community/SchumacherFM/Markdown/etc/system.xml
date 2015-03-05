@@ -8,7 +8,7 @@
 -->
 <config>
     <sections>
-        <markdown>
+        <markdown module="markdown">
             <label>Markdown [M↓]</label>
             <tab>general</tab>
             <frontend_type>text</frontend_type>
@@ -18,7 +18,7 @@
             <show_in_store>1</show_in_store>
 
             <groups>
-                <paypal_notice translate="label" module="paypal">
+                <paypal_notice translate="label">
                     <frontend_model>markdown/adminhtml_system_config_fieldset_hint</frontend_model>
                     <sort_order>0</sort_order>
                     <show_in_default>1</show_in_default>
