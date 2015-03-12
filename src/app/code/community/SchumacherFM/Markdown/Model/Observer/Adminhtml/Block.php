@@ -95,7 +95,9 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
             $store = Mage::app()->getDefaultStoreView();
         }
 
-        $this->_livePreviewUrl = $store->getUrl('markdown/index/preview');
+        $this->_livePreviewUrl = $store->getUrl('markdown/index/preview', array(
+            '_secure' => Mage::app()->getFrontController()->getRequest()->isSecure()
+        ));
         return NULL;
     }
 
