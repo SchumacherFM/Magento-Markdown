@@ -99,6 +99,12 @@ Anywhere in a .phtml file you can access the renderer via:
 <?php echo Mage::helper('markdown')->render($_description, [array $options] ); ?>
 ```
 
+If you need support for Magento Variables, including Images, you should render the original Magento output. For example, in catalog/product/view/description.phtml, one would use the following code to render markdown, including images and/or other Magento variables: 
+
+```
+<?php echo Mage::helper('markdown')->render($this->helper('catalog/output')->productAttribute($this->getProduct(), $_description, 'description')); ?>
+```
+
 Catalog product and category description fields have already enabled the markdown feature in the backend. For the frontend
 you have to implement the above mentioned code.
 

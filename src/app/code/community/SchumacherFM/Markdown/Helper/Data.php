@@ -20,7 +20,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function render($text, array $options = NULL)
+    public function render($text, array $options = null)
     {
         return Mage::getSingleton('markdown/markdown_render')
             ->setOptions($options)
@@ -42,11 +42,11 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function getHighLightStyleCss($fullPath = FALSE)
+    public function getHighLightStyleCss($fullPath = false)
     {
         $styleFile = Mage::getStoreConfig('markdown/markdown/highlight_style');
         $return    = 'markdown' . DS . 'highlight' . DS . 'styles' . DS . $styleFile;
-        if (TRUE === $fullPath) {
+        if (true === $fullPath) {
             return Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN) . DS . 'adminhtml' . DS . 'default' . DS . 'default' . DS . $return;
         }
         return $return;
@@ -59,11 +59,11 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function getMarkdownStyleCss($fullPath = FALSE)
+    public function getMarkdownStyleCss($fullPath = false)
     {
         $styleFile = Mage::getStoreConfig('markdown/markdown/preview_style');
         $return    = 'markdown' . DS . 'styles' . DS . $styleFile;
-        if (TRUE === $fullPath) {
+        if (true === $fullPath) {
             return Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN) . DS . 'adminhtml' . DS . 'default' . DS . 'default' . DS . $return;
         }
         return $return;
@@ -98,10 +98,10 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return mixed|string
      */
-    public function getDetectionTag($encoded = FALSE)
+    public function getDetectionTag($encoded = false)
     {
         $tag = trim(Mage::getStoreConfig('markdown/markdown/detection_tag'));
-        if (empty($tag) === TRUE) {
+        if (empty($tag) === true) {
             return '';
         }
         return $encoded ? rawurlencode($tag) : $tag;
@@ -134,7 +134,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return bool
      */
-    public function isMarkdownExtra($type = NULL)
+    public function isMarkdownExtra($type = null)
     {
         return Mage::getStoreConfigFlag('markdown/markdown_extra/enable' . (!empty($type) ? '_' . $type : ''));
     }
@@ -176,7 +176,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function getAdminRenderUrl(array $params = NULL)
+    public function getAdminRenderUrl(array $params = null)
     {
         return Mage::helper('adminhtml')->getUrl('adminhtml/markdown/render', $params);
     }
@@ -186,7 +186,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function getAdminFileUploadUrl(array $params = NULL)
+    public function getAdminFileUploadUrl(array $params = null)
     {
         return Mage::helper('adminhtml')->getUrl('adminhtml/markdown/fileUpload', $params);
     }
@@ -196,7 +196,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function getAdminEnableUrl(array $params = NULL)
+    public function getAdminEnableUrl(array $params = null)
     {
         return Mage::helper('adminhtml')->getUrl('adminhtml/markdown/enable', $params);
     }
@@ -225,7 +225,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     public function getEpicEditorConfig()
     {
         $config             = $this->_getJsonConfig('epiceditor');
-        $config             = FALSE !== $config ? json_decode($config, TRUE) : array();
+        $config             = false !== $config ? json_decode($config, true) : array();
         $config['basePath'] = Mage::getBaseUrl('skin') . 'adminhtml/default/default/epiceditor/';
         return json_encode($config);
     }
@@ -241,10 +241,10 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $config = trim(Mage::getStoreConfig('markdown/' . $type . '/config'));
         if (empty($config)) {
-            return FALSE;
+            return false;
         }
         $decoded = json_decode($config);
-        return $decoded instanceof stdClass ? rawurlencode($config) : FALSE;
+        return $decoded instanceof stdClass ? rawurlencode($config) : false;
     }
 
     /**
@@ -291,12 +291,12 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     public function getAllowedLayoutHandles()
     {
         $handles = array(
-            'editor'                               => 1,
-            'adminhtml_cms_block_edit'             => 1,
-            'adminhtml_cms_page_index'             => 1,
-            'adminhtml_cms_page_edit'              => 1,
-            'adminhtml_catalog_product_edit'       => 1,
-            'adminhtml_catalog_category_edit'      => 1,
+            'editor'                          => 1,
+            'adminhtml_cms_block_edit'        => 1,
+            'adminhtml_cms_page_index'        => 1,
+            'adminhtml_cms_page_edit'         => 1,
+            'adminhtml_catalog_product_edit'  => 1,
+            'adminhtml_catalog_category_edit' => 1,
         );
 
         if (!$this->isEmailDisabled()) {
@@ -306,7 +306,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
         $customHandles = trim((string)Mage::getStoreConfig('markdown/markdown/custom_layout_handles'));
         if (!empty($customHandles)) {
             $customHandles = preg_split('~\s+~', $customHandles, -1, PREG_SPLIT_NO_EMPTY);
-            $customHandles = array_flip($customHandles);
+            $customHandles = array_fill_keys($customHandles, 1);
             $handles       = array_merge($handles, $customHandles);
         }
         return $handles;
@@ -318,7 +318,7 @@ class SchumacherFM_Markdown_Helper_Data extends Mage_Core_Helper_Abstract
     public function getStoreCodes()
     {
         $stores    = array();
-        $appStores = Mage::app()->getStores(TRUE, FALSE);
+        $appStores = Mage::app()->getStores(true, false);
         foreach ($appStores as $store) {
             /** @var $store Mage_Core_Model_Store */
             $stores[] = $store->getCode();
