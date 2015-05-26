@@ -177,6 +177,13 @@ About
 History
 -------
 
+#### 2.2.1
+
+- Fix live preview URL (Paul)
+- Fix system.xml module definition (Paul)
+- Fix #39 #42: Hidden Insert ImageButton is always hidden.
+- Fix: Custom Layout Handler does not work with array_flip #40
+
 #### 2.2.0
 
 - Update PHP Markdown Lib to version 1.4.1 (4 May 2014) For more details see [here](https://github.com/michelf/php-markdown)
