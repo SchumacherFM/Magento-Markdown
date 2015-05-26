@@ -52,7 +52,7 @@
             mediaBaseUrl: _checkHttp(config.phi || false),
             extraRendererUrl: _checkHttp(config.eru || false),
             eeLoadOnClick: config.eeloc || false,
-            isHiddenInsertImageButton: config.hideIIB || true,
+            isHiddenInsertImageButton: config.hideIIB,
             previewCSS: config.mdCss || false,
             previewUrl: config.lpUrl || '',
             stores: config.stores || [],
