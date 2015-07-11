@@ -137,4 +137,9 @@ class SchumacherFM_Markdown_Adminhtml_MarkdownController extends Mage_Adminhtml_
     {
         return Mage::getConfig()->getOptions()->getMediaDir() . DS;
     }
+
+    protected function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('markdown_editor');
+    }
 }
