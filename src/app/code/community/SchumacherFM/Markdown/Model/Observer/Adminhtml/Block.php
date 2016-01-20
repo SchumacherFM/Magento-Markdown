@@ -109,7 +109,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
         $request = Mage::app()->getRequest();
 
         $url = Mage::helper("adminhtml")->getUrl("adminhtml/markdown/addHandle", array(
-            'handle' => $request->getModuleName() .'_'.$request->getControllerName().'_'.$request->getActionName()
+            'handle' => $request->getRouteName() .'_'.$request->getControllerName().'_'.$request->getActionName()
         ));
         $enableLink = '<a href="'.$url.'">'.$this->_helper->__('Enable').'</a>';
 
