@@ -181,7 +181,7 @@ class SchumacherFM_Markdown_Model_Observer_Adminhtml_Block
 
         $config['stores']  = $this->_helper->getStoreCodes();
         $config['eeloc']   = $this->_helper->isEpicEditorLoadOnClick();
-        $config['hideIIB'] = $this->_helper->isHiddenInsertImageButton();
+        $config['hideIIB'] = ($this->_helper->isHiddenInsertImageButton()?true:'false');
         $config['mdCss']   = $this->_helper->getMarkdownStyleCss(TRUE);
         $config['hlCss']   = $this->_helper->getHighLightStyleCss(TRUE);
         $config['lpUrl']   = $this->_livePreviewUrl;
