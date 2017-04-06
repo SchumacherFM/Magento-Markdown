@@ -127,6 +127,7 @@ abstract class SchumacherFM_Markdown_Model_Markdown_Abstract
         }
 
         if (!$this->_isMarkdown() && $force === FALSE) {
+            Varien_Profiler::stop('renderMarkdown');
             return $this->_currentRenderedText;
         }
 
